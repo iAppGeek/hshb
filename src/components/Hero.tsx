@@ -1,20 +1,38 @@
 import Image from 'next/image'
 import { GridPattern } from '@/components/GridPattern'
 import coverImage from '@/images/logo.png'
+import * as contentful from 'contentful'
 
-function Testimonial() {
+const client = contentful.createClient({
+  // This is the space ID. A space is like a project folder in Contentful terms
+  space: process.env.CONTENTFUL_SPACE,
+  // This is the access token for this space. Normally you get both ID and the token in the Contentful web app
+  accessToken: process.env.CONTENTFUL_TOKEN,
+})
+
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
+}
+
+async function Testimonial() {
+
+  // This API call will request an entry with the specified ID from the space defined at the top, using a space-specific access token
+
+  const entries = await client.getEntries({ content_type: "quotes" })
+  const quote = entries.items[getRandomInt(entries.items.length)];
+
   return (
     <figure className="relative mx-auto max-w-md text-center lg:mx-0 lg:text-left">
       <blockquote className="mt-2">
         <p className="font-display text-xl font-medium text-slate-900">
-          "A fabulous, fun atmosphere for children to learn about the Greek language, Greek & Cypriot culture, dance and customs.”
+          {quote.fields["text"] as string}
         </p>
       </blockquote>
       <figcaption className="mt-2 text-sm text-slate-500">
         <strong className="font-semibold text-blue-600 before:content-['—_']">
-          George
+          {quote.fields["author"] as string}
         </strong>
-        , Chairman
+        , {quote.fields["role"] as string}
       </figcaption>
     </figure>
   )
@@ -46,7 +64,7 @@ export function Hero() {
               Hellenic School of High Barnet
             </h1>
             <p className="mt-4 text-3xl text-slate-600">
-            We don’t just teach our children the Greek language, we also educate and enhance their knowledge of Greek and Cypriot lifestyles; from the Greek Orthodox religion, to the history and culture of the Hellenes. This includes traditional costumes, dance and music, celebrations of popular events, folk plays, what it was like to be Greek in our grandparents' time, and to move with changing times.
+              We don’t just teach our children the Greek language, we also educate and enhance their knowledge of Greek and Cypriot lifestyles; from the Greek Orthodox religion, to the history and culture of the Hellenes. This includes traditional costumes, dance and music, celebrations of popular events, folk plays, what it was like to be Greek in our grandparents' time, and to move with changing times.
             </p>
             <div className="mt-8 flex gap-4">
               {/* <Button href="#free-chapters" color="blue">

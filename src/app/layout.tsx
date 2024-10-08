@@ -13,7 +13,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'HSHB',
   description:
-    'A book and video course that teaches you how to design your own icons from scratch.',
+    'The Hellenic School of High Barnet. Located in Cockfosters North London, based in East Barnet Secondary School',
 }
 
 export default function RootLayout({

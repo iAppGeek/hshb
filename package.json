@@ -16,6 +16,7 @@
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.12",
     "clsx": "^2.1.0",
+    "contentful": "^11.0.3",
     "next": "^14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
