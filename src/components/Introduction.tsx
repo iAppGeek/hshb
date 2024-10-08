@@ -10,8 +10,7 @@ export function Introduction() {
     >
       <Container className="text-lg tracking-tight text-slate-700">
         <p className="font-display text-4xl font-bold tracking-tight text-slate-900">
-          “Everything Starts as a Square” is a book and video course that
-          teaches you a simple method to designing icons that anyone can learn.
+        "Students and staff have worked very hard to make HSHB the outstanding school it is and we are all proud of our achievements.
         </p>
         
         <div>

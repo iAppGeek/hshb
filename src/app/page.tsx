@@ -4,10 +4,10 @@ import { FreeChapters } from '@/components/FreeChapters'
 import { Hero } from '@/components/Hero'
 import { Introduction } from '@/components/Introduction'
 import { NavBar } from '@/components/NavBar'
-import { Pricing } from '@/components/Pricing'
 import { Resources } from '@/components/Resources'
 import { Screencasts } from '@/components/Screencasts'
-import { TableOfContents } from '@/components/TableOfContents'
+import { Staff } from '@/components/Staff'
+import { AboutTheSchool } from '@/components/AboutTheSchool'
 import { Testimonial } from '@/components/Testimonial'
 import { Testimonials } from '@/components/Testimonials'
 import avatarImage1 from '@/images/avatars/avatar-1.png'
@@ -19,7 +19,7 @@ export default function Home() {
       <Hero />
       <Introduction />
       <NavBar />
-      <TableOfContents />
+      <AboutTheSchool />
       <Testimonial
         id="testimonial-from-tommy-stroman"
         author={{
@@ -48,8 +48,8 @@ export default function Home() {
         </p>
       </Testimonial>
       <Resources />
+      <Staff/>
       <FreeChapters />
-      <Pricing />
       <Testimonials />
       <Author />
       <Footer />

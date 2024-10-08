@@ -7,17 +7,18 @@ import {
 import { SectionHeading } from '@/components/SectionHeading'
 
 const tableOfContents = {
-  'Getting started': {
-    'Getting started': 1,
-    'Intro to Figma': 15,
-    'Setting up your first artboard': 20,
+  'Curriculum': {
+    'Education': 1,
+    'Culture': 10,
+    'Dance': 28,
+    'Events': 20,
   },
-  Fundamentals: {
-    'Strokes and fills': 21,
-    'End points': 22,
-    'Bezier curves': 26,
-    'Designing on a grid': 31,
-    'Vector shapes': 45,
+  'The Commitee': {
+    'Why Join': 21,
+    'How it Works': 22,
+    'Fundraisers': 26,
+    'Volunteers': 31,
+    'Non elected memebers': 45,
   },
   'Boolean operations': {
     'Combining shapes': 50,
@@ -32,20 +33,19 @@ const tableOfContents = {
   },
 }
 
-export function TableOfContents() {
+export function AboutTheSchool() {
   return (
     <section
-      id="table-of-contents"
-      aria-labelledby="table-of-contents-title"
+      id="about-the-school"
+      aria-labelledby="about-the-school-title"
       className="scroll-mt-14 py-16 sm:scroll-mt-32 sm:py-20 lg:py-32"
     >
       <Container>
-        <SectionHeading number="1" id="table-of-contents-title">
-          Table of contents
+        <SectionHeading number="1" id="about-the-school-title">
+          About the School
         </SectionHeading>
         <p className="mt-8 font-display text-4xl font-bold tracking-tight text-slate-900">
-          Get a look at all of the content covered in the book. Everything you
-          need to know is inside.
+        Students and staff have worked very hard to make HSHB the outstanding school it is and we are all proud of our achievements.
         </p>
         <p className="mt-4 text-lg tracking-tight text-slate-700">
           “Everything Starts as a Square” is comprised of 240 tightly edited,
