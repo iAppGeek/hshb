@@ -1,8 +1,6 @@
 import Image, { type ImageProps } from 'next/image'
-
 import { Container } from '@/components/Container'
 import { GridPattern } from '@/components/GridPattern'
-import { StarRating } from '@/components/StarRating'
 
 export function Testimonial({
   id,
@@ -17,20 +15,17 @@ export function Testimonial({
     <aside
       id={id}
       aria-label={`Testimonial from ${author.name}`}
-      className="relative bg-slate-100 py-16 sm:py-32"
+      className="relative bg-slate-100 py-2 sm:py-6"
     >
       <div className="text-slate-900/10">
         <GridPattern x="50%" patternTransform="translate(0 80)" />
       </div>
       <Container size="xs" className="relative">
         <figure>
-          <div className="flex text-slate-900 sm:justify-center">
-            <StarRating />
-          </div>
-          <blockquote className="mt-10 font-display text-4xl font-medium tracking-tight text-slate-900 sm:text-center">
+          <blockquote className="font-display text-4xl font-medium tracking-tight text-slate-900 sm:text-center">
             {children}
           </blockquote>
-          <figcaption className="mt-10 flex items-center sm:justify-center">
+          <figcaption className="flex items-center sm:justify-center">
             <div className="overflow-hidden rounded-full bg-slate-200">
               <Image
                 className="h-12 w-12 object-cover"

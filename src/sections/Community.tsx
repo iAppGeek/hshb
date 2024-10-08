@@ -7,23 +7,46 @@ import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
 import { DiamondIcon } from '@/components/DiamondIcon'
-import { SectionHeading } from '@/components/SectionHeading'
 import cathleneBurrageImage from '@/images/avatars/cathlene-burrage.jpg'
 import damarisKimuraImage from '@/images/avatars/damaris-kimura.jpg'
 import dianneGuilianelliImage from '@/images/avatars/dianne-guilianelli.jpg'
 import erhartCockrinImage from '@/images/avatars/erhart-cockrin.jpg'
-import giordanoSagucioImage from '@/images/avatars/giordano-sagucio.jpg'
 import ibrahimFraschImage from '@/images/avatars/ibrahim-frasch.jpg'
 import jaquelinIschImage from '@/images/avatars/jaquelin-isch.jpg'
 import parkerJohnsonImage from '@/images/avatars/parker-johnson.jpg'
 import rinaldoBeynonImage from '@/images/avatars/rinaldo-beynon.jpg'
 import ronniCantadoreImage from '@/images/avatars/ronni-cantadore.jpg'
 import stevenMchailImage from '@/images/avatars/steven-mchail.jpg'
-import waylonHydenImage from '@/images/avatars/waylon-hyden.jpg'
 
 const days = [
   {
-    name: 'Education',
+    name: 'Get to Know',
+    date: 'Our Commitee',
+    speakers: [
+      {
+        name: 'Damaris Kimura',
+        role: 'Senior Engineer at OCP',
+        image: damarisKimuraImage,
+      },
+      {
+        name: 'Ibrahim Frasch',
+        role: 'Programmer at Umbrella Corp',
+        image: ibrahimFraschImage,
+      },
+      {
+        name: 'Cathlene Burrage',
+        role: 'Frontend Developer at Buy n Large',
+        image: cathleneBurrageImage,
+      },
+      {
+        name: 'Rinaldo Beynon',
+        role: 'Data Scientist at Rekall',
+        image: rinaldoBeynonImage,
+      }
+    ],
+  },
+  {
+    name: 'Get to Know',
     date: 'Our Teachers',
     speakers: [
       {
@@ -57,43 +80,7 @@ const days = [
         image: parkerJohnsonImage,
       },
     ],
-  },
-  {
-    name: 'PTA',
-    date: 'Our Commitee',
-    speakers: [
-      {
-        name: 'Damaris Kimura',
-        role: 'Senior Engineer at OCP',
-        image: damarisKimuraImage,
-      },
-      {
-        name: 'Ibrahim Frasch',
-        role: 'Programmer at Umbrella Corp',
-        image: ibrahimFraschImage,
-      },
-      {
-        name: 'Cathlene Burrage',
-        role: 'Frontend Developer at Buy n Large',
-        image: cathleneBurrageImage,
-      },
-      {
-        name: 'Rinaldo Beynon',
-        role: 'Data Scientist at Rekall',
-        image: rinaldoBeynonImage,
-      },
-      {
-        name: 'Waylon Hyden',
-        role: 'DevOps at RDA Corporation',
-        image: waylonHydenImage,
-      },
-      {
-        name: 'Giordano Sagucio',
-        role: 'Game Developer at Soylent Corp',
-        image: giordanoSagucioImage,
-      },
-    ],
-  },
+  }
 ]
 
 function ImageClipPaths({
@@ -117,7 +104,7 @@ function ImageClipPaths({
   )
 }
 
-export function Staff() {
+export function Community() {
   let id = useId()
   let [tabOrientation, setTabOrientation] = useState('horizontal')
 
@@ -138,22 +125,17 @@ export function Staff() {
 
   return (
     <section
-      id="our-staff"
-      aria-labelledby="our-staff-title"
-      className="scroll-mt-14 pb-8 pt-16 sm:scroll-mt-32 sm:pb-10 sm:pt-20 lg:pb-16 lg:pt-32"
-    >
+      id="our-community"
+      aria-labelledby="our-community-title"
+      className="py-8 m:py-10 lg:py-8">
       <ImageClipPaths id={id} />
       <Container>
-      <SectionHeading number="4" id="our-staff-title">
-          Our Staff
-        </SectionHeading>
         <p className="mt-8 font-display text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
-          The School Team
+          The School Community
         </p>
         <div className="mx-auto max-w-2xl lg:mx-0">
           <p className="mt-4 font-display text-2xl tracking-tight text-blue-900">
-            Learn from the experts on the cutting-edge of deception at the most
-            sinister companies.
+            Get to know the individuals that help keep the school running smoothly
           </p>
         </div>
         <TabGroup
@@ -166,7 +148,7 @@ export function Staff() {
               {({ selectedIndex }) => (
                 <>
                   {days.map((day, dayIndex) => (
-                    <div key={day.name} className="relative lg:pl-8">
+                    <div key={day.name + dayIndex} className="relative lg:pl-8">
                       <DiamondIcon
                         className={clsx(
                           'absolute left-[-0.5px] top-[0.5625rem] hidden h-1.5 w-1.5 overflow-visible lg:block',
@@ -203,9 +185,9 @@ export function Staff() {
             </TabList>
           </div>
           <TabPanels className="lg:col-span-3">
-            {days.map((day) => (
+            {days.map((day, index) => (
               <TabPanel
-                key={day.name}
+                key={day.name + index}
                 className="grid grid-cols-1 gap-x-8 gap-y-10 ui-not-focus-visible:outline-none sm:grid-cols-2 sm:gap-y-16 md:grid-cols-3"
                 unmount={false}
               >

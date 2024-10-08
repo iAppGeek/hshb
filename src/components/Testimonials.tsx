@@ -10,10 +10,7 @@ import {
 import avatarImage3 from '@/images/avatars/avatar-3.png'
 import avatarImage4 from '@/images/avatars/avatar-4.png'
 import avatarImage5 from '@/images/avatars/avatar-5.png'
-import avatarImage6 from '@/images/avatars/avatar-6.png'
 import avatarImage7 from '@/images/avatars/avatar-7.png'
-import avatarImage8 from '@/images/avatars/avatar-8.png'
-import avatarImage9 from '@/images/avatars/avatar-9.png'
 import avatarImage10 from '@/images/avatars/avatar-10.png'
 import avatarImage11 from '@/images/avatars/avatar-11.png'
 
@@ -36,16 +33,7 @@ const testimonials = [
         role: 'Growth Marketer',
         image: avatarImage4,
       },
-    },
-    {
-      content:
-        'I’ve been employed as a professional icon designer for years and still learned tons of new tricks that have made my work even better',
-      author: {
-        name: 'Krista Prosacco',
-        role: 'Professional Designer',
-        image: avatarImage9,
-      },
-    },
+    }
   ],
   [
     {
@@ -65,16 +53,7 @@ const testimonials = [
         role: 'Design Student',
         image: avatarImage11,
       },
-    },
-    {
-      content:
-        'I didn’t expect to find a lot of value in the community but now I’m in there for at least an hour every day picking up tips from other designers.',
-      author: {
-        name: 'Vernon Cummerata',
-        role: 'UI Engineer',
-        image: avatarImage8,
-      },
-    },
+    }
   ],
   [
     {
@@ -94,16 +73,7 @@ const testimonials = [
         role: 'Startup Founder',
         image: avatarImage10,
       },
-    },
-    {
-      content:
-        'All I can say is wow — this is easily the best icon design resource I’ve ever encountered.',
-      author: {
-        name: 'Leah Kiehn',
-        role: 'Creative Director',
-        image: avatarImage6,
-      },
-    },
+    }
   ],
 ]
 
@@ -147,15 +117,13 @@ export function Testimonials() {
     <section className="py-8 sm:py-10 lg:py-16">
       <Container className="text-center">
         <h2 className="font-display text-4xl font-bold tracking-tight text-slate-900">
-          Some kind words from early customers...
+          Some kind words from our Parents...
         </h2>
         <p className="mt-4 text-lg tracking-tight text-slate-600">
-          I worked with a small group of early access customers to make sure all
-          of the content in the book was exactly what they needed. Hears what
-          they had to say about the finished product.
+          ...
         </p>
       </Container>
-      <Expandable className="group mt-16">
+      <Expandable className="group mt-4">
         <ul
           role="list"
           className="mx-auto grid max-w-2xl grid-cols-1 gap-8 px-4 lg:max-w-7xl lg:grid-cols-3 lg:px-8"
@@ -163,7 +131,7 @@ export function Testimonials() {
           {testimonials
             .map((column) => column[0])
             .map((testimonial, testimonialIndex) => (
-              <li key={testimonialIndex} className="lg:hidden">
+              <li key={testimonialIndex}>
                 <Testimonial author={testimonial.author}>
                   {testimonial.content}
                 </Testimonial>
@@ -172,7 +140,7 @@ export function Testimonials() {
           {testimonials.map((column, columnIndex) => (
             <li
               key={columnIndex}
-              className="hidden group-data-[expanded]:list-item lg:list-item"
+              className="hidden group-data-[expanded]:list-item"
             >
               <ul role="list">
                 <ExpandableItems>
@@ -180,7 +148,7 @@ export function Testimonials() {
                     <li
                       key={testimonialIndex}
                       className={clsx(
-                        testimonialIndex === 0 && 'hidden lg:list-item',
+                        testimonialIndex === 0 && 'hidden list-item',
                         testimonialIndex === 1 && 'lg:mt-8',
                         testimonialIndex > 1 && 'mt-8',
                       )}

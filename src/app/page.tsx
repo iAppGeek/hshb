@@ -1,25 +1,24 @@
-import { Author } from '@/components/Author'
-import { Footer } from '@/components/Footer'
-import { FreeChapters } from '@/components/FreeChapters'
-import { Hero } from '@/components/Hero'
-import { Introduction } from '@/components/Introduction'
-import { NavBar } from '@/components/NavBar'
-import { Resources } from '@/components/Resources'
-import { Screencasts } from '@/components/Screencasts'
-import { Staff } from '@/components/Staff'
-import { AboutTheSchool } from '@/components/AboutTheSchool'
+import { Contact } from '@/sections/Contact'
+import { Footer } from '@/sections/Footer'
+import { Hero } from '@/sections/Hero'
+import { Introduction } from '@/sections/Introduction'
+import { Navbar } from '@/sections/Navbar'
+import { Events } from '@/sections/Events'
+import { Community } from '@/sections/Community'
+import { AboutUs } from '@/sections/AboutUs'
 import { Testimonial } from '@/components/Testimonial'
 import { Testimonials } from '@/components/Testimonials'
 import avatarImage1 from '@/images/avatars/avatar-1.png'
-import avatarImage2 from '@/images/avatars/avatar-2.png'
 
 export default function Home() {
   return (
     <>
+      <Navbar />
+
       <Hero />
       <Introduction />
-      <NavBar />
-      <AboutTheSchool />
+
+      <AboutUs />
       <Testimonial
         id="testimonial-from-tommy-stroman"
         author={{
@@ -33,25 +32,14 @@ export default function Home() {
           can create any icon I need in no time. Great resource!”
         </p>
       </Testimonial>
-      <Screencasts />
-      <Testimonial
-        id="testimonial-from-gerardo-stark"
-        author={{
-          name: 'Gerardo Stark',
-          role: 'Creator of Pandemicons',
-          image: avatarImage2,
-        }}
-      >
-        <p>
-          “I’ve tried to create my own icons in the past but quickly got
-          frustrated and gave up. Now I sell my own custom icon sets online.”
-        </p>
-      </Testimonial>
-      <Resources />
-      <Staff/>
-      <FreeChapters />
+      
+      <Community />
+      
+      <Events />
       <Testimonials />
-      <Author />
+      
+      <Contact />
+
       <Footer />
     </>
   )
