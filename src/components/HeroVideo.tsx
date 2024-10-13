@@ -1,9 +1,9 @@
 'use client'
+
+import { getCommunityDirectory } from '@/utils/data';
 import * as contentful from 'contentful'
 import React, { useMemo } from 'react';
 import { useEffect, useState } from 'react'
-
-console.log("HeroVideo", "env", process.env);
 
 type Props = { space: string, token: string }
 export const HeroVideo: React.FC<Props> = (props) => {
@@ -13,7 +13,6 @@ export const HeroVideo: React.FC<Props> = (props) => {
         // This is the access token for this space. Normally you get both ID and the token in the Contentful web app
         accessToken: props.token,
     }), [props.space, props.token]);
-
 
     const [videoUrl, setVideoUrl] = useState<string | undefined>(); //assets/video/drone.webm
     useEffect(() => { // spefic ID for the video in contentful

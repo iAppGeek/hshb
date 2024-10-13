@@ -14,3 +14,9 @@
     -webkit-transform: translate(-50%, -50%);
     position: absolute;
 }
+
+/* used by text setions loaded from contentful that need linebreaks */
+pre {
+    font-family: inherit;
+    white-space: pre-line;
+}

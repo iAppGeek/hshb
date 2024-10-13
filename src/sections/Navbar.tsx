@@ -1,13 +1,13 @@
 'use client'
 
 import Image from 'next/image'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import twitterIcon from "@/images/icons/twitter.svg";
 import facebookIcon from "@/images/icons/facebook.svg";
 import instagramIcon from "@/images/icons/instagram.svg";
-
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '@/images/logo.png'
+
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 

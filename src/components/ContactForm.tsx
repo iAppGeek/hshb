@@ -1,75 +1,75 @@
 'use client';
 
 import { FormEventHandler, useState } from 'react';
-
-function SuccessIcon() {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-        >
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-        </svg>
-    );
-}
-function ErrorIcon() {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-        >
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-        </svg>
-    );
-}
-
-
-
 import { BuildingOffice2Icon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
+const SuccessIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="stroke-current shrink-0 h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  );
+}
+const ErrorIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="stroke-current shrink-0 h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  );
+}
 
-export function ContactForm() {
+export type ContactFormProps = { text: string, address: string, number: string, email: string }
+export const ContactForm = (props: ContactFormProps) => {
   const [status, setStatus] = useState<String | null>(null);
-    const [error, setError] = useState<String | null>(null);
+  const [error, setError] = useState<String | null>(null);
 
-    const handleFormSubmit: FormEventHandler = async (event) => {
-        event.preventDefault();
-        try {
-            setStatus('pending');
-            setError(null);
-            const myForm = event.target;
-            //@ts-ignore 
-            const formData = new FormData(myForm);
-            const res = await fetch('/__forms.html', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                //@ts-ignore 
-                body: new URLSearchParams(formData).toString()
-            });
-            if (res.status === 200) {
-                setStatus('ok');
-            } else {
-                setStatus('error');
-                setError(`${res.status} ${res.statusText}`);
-            }
-        } catch (e) {
-            setStatus('error');
-            setError(`${e}`);
-        }
-    };
+  const numberLink = `tel:${props.number}`
+  const emailLink = `mailto:${props.email}`
+
+  const handleFormSubmit: FormEventHandler = async (event) => {
+    event.preventDefault();
+    try {
+      setStatus('pending');
+      setError(null);
+      const myForm = event.target;
+      //@ts-ignore 
+      const formData = new FormData(myForm);
+      const res = await fetch('/__forms.html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        //@ts-ignore 
+        body: new URLSearchParams(formData).toString()
+      });
+      if (res.status === 200) {
+        setStatus('ok');
+      } else {
+        setStatus('error');
+        setError(`${res.status} ${res.statusText}`);
+      }
+    } catch (e) {
+      setStatus('error');
+      setError(`${e}`);
+    }
+  };
 
   return (
     <div className="relative isolate bg-white">
@@ -101,13 +101,9 @@ export function ContactForm() {
               </svg>
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900">Get in touch</h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Our school is near to Cockfosters and Oakwood tube station as well as Oakleigh Park Rail Station.
-              <br />
-              The school is served by good public transport links with the 307, 298, 184 and 384 bus routes all making stops close to our school.
-              <br />
-              Cycle storage racks are available enabling students to ride their bikes to school and store them securely.
-            </p>
+            <pre className="mt-6 text-lg leading-8 text-gray-600">
+              {props.text}
+            </pre>
             <dl className="mt-10 space-y-4 text-base leading-7 text-gray-600">
               <div className="flex gap-x-4">
                 <dt className="flex-none">
@@ -115,11 +111,9 @@ export function ContactForm() {
                   <BuildingOffice2Icon aria-hidden="true" className="h-7 w-6 text-gray-400" />
                 </dt>
                 <dd>
-                  Hellenic School Of High Barnet
-                  <br />
-                  Chestnut Grove
-                  <br />
-                  Barnet, EN4 8PU
+                  <pre>
+                    {props.address}
+                  </pre>
                 </dd>
               </div>
               <div className="flex gap-x-4">
@@ -128,8 +122,8 @@ export function ContactForm() {
                   <PhoneIcon aria-hidden="true" className="h-7 w-6 text-gray-400" />
                 </dt>
                 <dd>
-                  <a href="tel:+44 (0) 7753 829 692" className="hover:text-gray-900">
-                    +44 (0) 7753 829 692
+                  <a href={numberLink} className="hover:text-gray-900">
+                    {props.number}
                   </a>
                 </dd>
               </div>
@@ -139,15 +133,15 @@ export function ContactForm() {
                   <EnvelopeIcon aria-hidden="true" className="h-7 w-6 text-gray-400" />
                 </dt>
                 <dd>
-                  <a href="mailto:info@hshb.org.uk" className="hover:text-gray-900">
-                    info@hshb.org.uk
+                  <a href={emailLink} className="hover:text-gray-900">
+                    {props.email}
                   </a>
                 </dd>
               </div>
             </dl>
           </div>
         </div>
-        {/* @ts-ignore */}
+
         <form className="px-6 py-12 pt-20 lg:px-8" name="contact-us-form" onSubmit={handleFormSubmit}>
           <input type="hidden" name="form-name" value="contact-us-form" />
           <div className="mx-auto max-w-xl lg:mr-0 lg:max-w-lg">
@@ -225,18 +219,18 @@ export function ContactForm() {
             </div>
             <div className="mt-8 flex justify-end">
               {status === 'ok' && (
-                        <div className="alert alert-success">
-                            <SuccessIcon />
-                            Submitted!
-                        </div>
-                    )}
-                    {status === 'error' && (
-                        <div className="alert alert-error">
-                            <ErrorIcon />
-                            {error}
-                        </div>
-                    )}
-                    <button
+                <div className="alert alert-success">
+                  <SuccessIcon />
+                  Submitted!
+                </div>
+              )}
+              {status === 'error' && (
+                <div className="alert alert-error">
+                  <ErrorIcon />
+                  {error}
+                </div>
+              )}
+              <button
                 type="submit"
                 className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >

@@ -7,81 +7,8 @@ import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
 import { DiamondIcon } from '@/components/DiamondIcon'
-import cathleneBurrageImage from '@/images/avatars/cathlene-burrage.jpg'
-import damarisKimuraImage from '@/images/avatars/damaris-kimura.jpg'
-import dianneGuilianelliImage from '@/images/avatars/dianne-guilianelli.jpg'
-import erhartCockrinImage from '@/images/avatars/erhart-cockrin.jpg'
-import ibrahimFraschImage from '@/images/avatars/ibrahim-frasch.jpg'
-import jaquelinIschImage from '@/images/avatars/jaquelin-isch.jpg'
-import parkerJohnsonImage from '@/images/avatars/parker-johnson.jpg'
-import rinaldoBeynonImage from '@/images/avatars/rinaldo-beynon.jpg'
-import ronniCantadoreImage from '@/images/avatars/ronni-cantadore.jpg'
-import stevenMchailImage from '@/images/avatars/steven-mchail.jpg'
 
-const days = [
-  {
-    name: 'Get to Know',
-    date: 'Our Commitee',
-    speakers: [
-      {
-        name: 'Damaris Kimura',
-        role: 'Senior Engineer at OCP',
-        image: damarisKimuraImage,
-      },
-      {
-        name: 'Ibrahim Frasch',
-        role: 'Programmer at Umbrella Corp',
-        image: ibrahimFraschImage,
-      },
-      {
-        name: 'Cathlene Burrage',
-        role: 'Frontend Developer at Buy n Large',
-        image: cathleneBurrageImage,
-      },
-      {
-        name: 'Rinaldo Beynon',
-        role: 'Data Scientist at Rekall',
-        image: rinaldoBeynonImage,
-      }
-    ],
-  },
-  {
-    name: 'Get to Know',
-    date: 'Our Teachers',
-    speakers: [
-      {
-        name: 'Steven McHail',
-        role: 'Designer at Globex Corporation',
-        image: stevenMchailImage,
-      },
-      {
-        name: 'Jaquelin Isch',
-        role: 'UX Design at InGen',
-        image: jaquelinIschImage,
-      },
-      {
-        name: 'Dianne Guilianelli',
-        role: 'General Manager at Initech',
-        image: dianneGuilianelliImage,
-      },
-      {
-        name: 'Ronni Cantadore',
-        role: 'Design Engineer at Weyland-Yutani',
-        image: ronniCantadoreImage,
-      },
-      {
-        name: 'Erhart Cockrin',
-        role: 'Product Lead at Cyberdyne Systems',
-        image: erhartCockrinImage,
-      },
-      {
-        name: 'Parker Johnson',
-        role: 'UI Designer at MomCorp',
-        image: parkerJohnsonImage,
-      },
-    ],
-  }
-]
+import type { CommunityDirectory } from '@/utils/data'
 
 function ImageClipPaths({
   id,
@@ -104,12 +31,14 @@ function ImageClipPaths({
   )
 }
 
-export function Community() {
+type Props = { directory: CommunityDirectory }
+export const Community = (props: Props) => {
   let id = useId()
-  let [tabOrientation, setTabOrientation] = useState('horizontal')
+  const { directory } = props;
+  const [tabOrientation, setTabOrientation] = useState('horizontal')
 
   useEffect(() => {
-    let lgMediaQuery = window.matchMedia('(min-width: 1024px)')
+    const lgMediaQuery = window.matchMedia('(min-width: 1024px)')
 
     function onMediaQueryChange({ matches }: { matches: boolean }) {
       setTabOrientation(matches ? 'vertical' : 'horizontal')
@@ -147,12 +76,12 @@ export function Community() {
             <TabList className="grid auto-cols-auto grid-flow-col justify-start gap-x-8 gap-y-10 whitespace-nowrap px-4 sm:mx-auto sm:max-w-2xl sm:grid-cols-3 sm:px-0 sm:text-center lg:grid-flow-row lg:grid-cols-1 lg:text-left">
               {({ selectedIndex }) => (
                 <>
-                  {days.map((day, dayIndex) => (
-                    <div key={day.name + dayIndex} className="relative lg:pl-8">
+                  {Object.keys(directory).map((group, groupIndex) => (
+                    <div key={group + groupIndex} className="relative lg:pl-8">
                       <DiamondIcon
                         className={clsx(
                           'absolute left-[-0.5px] top-[0.5625rem] hidden h-1.5 w-1.5 overflow-visible lg:block',
-                          dayIndex === selectedIndex
+                          groupIndex === selectedIndex
                             ? 'fill-blue-600 stroke-blue-600'
                             : 'fill-transparent stroke-slate-400',
                         )}
@@ -161,22 +90,19 @@ export function Community() {
                         <div
                           className={clsx(
                             'font-mono text-sm',
-                            dayIndex === selectedIndex
+                            groupIndex === selectedIndex
                               ? 'text-blue-600'
                               : 'text-slate-500',
                           )}
                         >
                           <Tab className="ui-not-focus-visible:outline-none">
                             <span className="absolute inset-0" />
-                            {day.name}
+                            Get to know
                           </Tab>
                         </div>
-                        <time
-                          dateTime={day.name}
-                          className="mt-1.5 block text-2xl font-semibold tracking-tight text-blue-900"
-                        >
-                          {day.date}
-                        </time>
+                        <span className="mt-1.5 block text-2xl font-semibold tracking-tight text-blue-900">
+                          {group}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -185,14 +111,14 @@ export function Community() {
             </TabList>
           </div>
           <TabPanels className="lg:col-span-3">
-            {days.map((day, index) => (
+            {Object.keys(directory).map((group, groupIndex) => (
               <TabPanel
-                key={day.name + index}
+                key={group + groupIndex}
                 className="grid grid-cols-1 gap-x-8 gap-y-10 ui-not-focus-visible:outline-none sm:grid-cols-2 sm:gap-y-16 md:grid-cols-3"
                 unmount={false}
               >
-                {day.speakers.map((speaker, speakerIndex) => (
-                  <div key={speakerIndex}>
+                {directory[group].map((person, personIndex) => (
+                  <div key={personIndex}>
                     <div className="group relative h-[17.5rem] transform overflow-hidden rounded-4xl">
                       <div
                         className={clsx(
@@ -201,27 +127,28 @@ export function Community() {
                             'border-blue-300',
                             'border-indigo-300',
                             'border-sky-300',
-                          ][speakerIndex % 3],
+                          ][personIndex % 3],
                         )}
                       />
                       <div
                         className="absolute inset-0 bg-indigo-50"
-                        style={{ clipPath: `url(#${id}-${speakerIndex % 3})` }}
+                        style={{ clipPath: `url(#${id}-${personIndex % 3})` }}
                       >
                         <Image
                           className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                          src={speaker.image}
-                          alt=""
-                          priority
+                          src={person.photo}
+                          alt={person.name + " avatar"}
+                          width={300}
+                          height={300}
                           sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
                         />
                       </div>
                     </div>
                     <h3 className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
-                      {speaker.name}
+                      {person.name}
                     </h3>
                     <p className="mt-1 text-base tracking-tight text-slate-500">
-                      {speaker.role}
+                      {person.blurb}
                     </p>
                   </div>
                 ))}

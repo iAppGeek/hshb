@@ -2,7 +2,6 @@ import Image from 'next/image'
 import { Container } from '@/components/Container'
 import discordImage from '@/images/resources/discord.svg'
 import figmaImage from '@/images/resources/figma.svg'
-import videoPlayerImage from '@/images/resources/video-player.svg'
 
 const resources = [
   {
@@ -37,8 +36,8 @@ const resources = [
       return (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="absolute inset-0 flex items-center justify-center bg-[#6366F1]">
-          <Image src={discordImage} alt="" unoptimized />
-        </div>
+            <Image src={discordImage} alt="" unoptimized />
+          </div>
         </div>
       )
     },
