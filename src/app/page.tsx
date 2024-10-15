@@ -13,7 +13,7 @@ import { Testimonial } from '@/components/Testimonial'
 import { Testimonials } from '@/components/Testimonials'
 
 import * as contentful from 'contentful'
-import { getCommunityDirectory, getFeaturedQuote, getTextSectionData } from '@/utils/data'
+import { getCommunityDirectory, getEvents, getFeaturedQuote, getTextSectionData } from '@/data/contentful'
 
 const client = contentful.createClient({
   space: process.env.CONTENTFUL_SPACE,
@@ -32,6 +32,9 @@ const Home = async () => {
   const contactAddress = await getTextSectionData(client, "contact-address");
 
   const directory = await getCommunityDirectory(client);
+
+  const events = await getEvents(client);
+
   return (
     <>
       <Navbar />
@@ -56,7 +59,7 @@ const Home = async () => {
 
       <Community directory={directory} />
 
-      <Events />
+      <Events events={events} />
       <Testimonials />
 
       <Contact text={contactText} address={contactAddress} email={contactEmail} number={contactNumber} />

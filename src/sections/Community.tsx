@@ -8,7 +8,7 @@ import clsx from 'clsx'
 import { Container } from '@/components/Container'
 import { DiamondIcon } from '@/components/DiamondIcon'
 
-import type { CommunityDirectory } from '@/utils/data'
+import type { CommunityDirectory } from '@/data/contentful'
 
 function ImageClipPaths({
   id,
@@ -117,7 +117,7 @@ export const Community = (props: Props) => {
                 className="grid grid-cols-1 gap-x-8 gap-y-10 ui-not-focus-visible:outline-none sm:grid-cols-2 sm:gap-y-16 md:grid-cols-3"
                 unmount={false}
               >
-                {directory[group].map((person, personIndex) => (
+                {directory[group].sort((a, b) => a.priorityOrder - b.priorityOrder).map((person, personIndex) => (
                   <div key={personIndex}>
                     <div className="group relative h-[17.5rem] transform overflow-hidden rounded-4xl">
                       <div

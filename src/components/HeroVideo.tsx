@@ -1,6 +1,6 @@
 'use client'
 
-import { getCommunityDirectory } from '@/utils/data';
+import { getCommunityDirectory } from '@/data/contentful';
 import * as contentful from 'contentful'
 import React, { useMemo } from 'react';
 import { useEffect, useState } from 'react'
