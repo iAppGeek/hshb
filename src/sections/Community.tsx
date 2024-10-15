@@ -7,7 +7,6 @@ import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
 import { DiamondIcon } from '@/components/DiamondIcon'
-
 import type { CommunityDirectory } from '@/data/contentful'
 
 function ImageClipPaths({
@@ -33,8 +32,8 @@ function ImageClipPaths({
 
 type Props = { directory: CommunityDirectory }
 export const Community = (props: Props) => {
-  let id = useId()
-  const { directory } = props;
+  const id = useId()
+  const { directory } = props
   const [tabOrientation, setTabOrientation] = useState('horizontal')
 
   useEffect(() => {
@@ -56,7 +55,8 @@ export const Community = (props: Props) => {
     <section
       id="our-community"
       aria-labelledby="our-community-title"
-      className="py-8 m:py-10 lg:py-8">
+      className="m:py-10 py-8 lg:py-8"
+    >
       <ImageClipPaths id={id} />
       <Container>
         <p className="mt-8 font-display text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
@@ -64,7 +64,8 @@ export const Community = (props: Props) => {
         </p>
         <div className="mx-auto max-w-2xl lg:mx-0">
           <p className="mt-4 font-display text-2xl tracking-tight text-blue-900">
-            Get to know the individuals that help keep the school running smoothly
+            Get to know the individuals that help keep the school running
+            smoothly
           </p>
         </div>
         <TabGroup
@@ -114,44 +115,46 @@ export const Community = (props: Props) => {
             {Object.keys(directory).map((group, groupIndex) => (
               <TabPanel
                 key={group + groupIndex}
-                className="grid grid-cols-1 gap-x-8 gap-y-10 ui-not-focus-visible:outline-none sm:grid-cols-2 sm:gap-y-16 md:grid-cols-3"
+                className="ui-not-focus-visible:outline-none grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 sm:gap-y-16 md:grid-cols-3"
                 unmount={false}
               >
-                {directory[group].sort((a, b) => a.priorityOrder - b.priorityOrder).map((person, personIndex) => (
-                  <div key={personIndex}>
-                    <div className="group relative h-[17.5rem] transform overflow-hidden rounded-4xl">
-                      <div
-                        className={clsx(
-                          'absolute bottom-6 left-0 right-4 top-0 rounded-4xl border transition duration-300 group-hover:scale-95 xl:right-6',
-                          [
-                            'border-blue-300',
-                            'border-indigo-300',
-                            'border-sky-300',
-                          ][personIndex % 3],
-                        )}
-                      />
-                      <div
-                        className="absolute inset-0 bg-indigo-50"
-                        style={{ clipPath: `url(#${id}-${personIndex % 3})` }}
-                      >
-                        <Image
-                          className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                          src={person.photo}
-                          alt={person.name + " avatar"}
-                          width={300}
-                          height={300}
-                          sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                {directory[group]
+                  .sort((a, b) => a.priorityOrder - b.priorityOrder)
+                  .map((person, personIndex) => (
+                    <div key={personIndex}>
+                      <div className="group relative h-[17.5rem] transform overflow-hidden rounded-4xl">
+                        <div
+                          className={clsx(
+                            'absolute bottom-6 left-0 right-4 top-0 rounded-4xl border transition duration-300 group-hover:scale-95 xl:right-6',
+                            [
+                              'border-blue-300',
+                              'border-indigo-300',
+                              'border-sky-300',
+                            ][personIndex % 3],
+                          )}
                         />
+                        <div
+                          className="absolute inset-0 bg-indigo-50"
+                          style={{ clipPath: `url(#${id}-${personIndex % 3})` }}
+                        >
+                          <Image
+                            className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
+                            src={person.photo}
+                            alt={person.name + ' avatar'}
+                            width={300}
+                            height={300}
+                            sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                          />
+                        </div>
                       </div>
+                      <h3 className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
+                        {person.name}
+                      </h3>
+                      <p className="mt-1 text-base tracking-tight text-slate-500">
+                        {person.blurb}
+                      </p>
                     </div>
-                    <h3 className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
-                      {person.name}
-                    </h3>
-                    <p className="mt-1 text-base tracking-tight text-slate-500">
-                      {person.blurb}
-                    </p>
-                  </div>
-                ))}
+                  ))}
               </TabPanel>
             ))}
           </TabPanels>

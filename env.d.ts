@@ -1,6 +1,6 @@
 namespace NodeJS {
-    interface ProcessEnv {
-        CONTENTFUL_SPACE: string;
-        CONTENTFUL_TOKEN: string;
-    }
+  interface ProcessEnv {
+    CONTENTFUL_SPACE: string
+    CONTENTFUL_TOKEN: string
   }
+}
