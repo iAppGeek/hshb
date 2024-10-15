@@ -15,13 +15,14 @@ export type CommunityMemeber = {
 }
 export type CommunityDirectory = { [key: string]: CommunityMemeber[] }
 
-// const getLinkedAssetUrl = (parentNode: any) => {
-//   return 'https:' + (parentNode['fields']['file']['url'] as string)
-// }
-const getLinkedAssetUrl = (asset: contentful.Asset) => {
-  // return 'https:' + (parentNode['fields']['file']['url'] as string)
-  return asset?.fields?.file?.url
+const getLinkedAssetUrl = (parentNode: any) => {
+  return 'https:' + (parentNode['fields']['file']['url'] as string)
 }
+
+// Can be replaced with this?
+// const getLinkedAssetUrl = (asset: contentful.Asset) => {
+//   return asset?.fields?.file?.url
+// }
 
 let textCache: EntryCollection<EntrySkeletonType, undefined, string>
 export const getTextSectionData = async (
