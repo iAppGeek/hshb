@@ -17,7 +17,6 @@ function PlaceholderImage() {
 
 type Props = { events: PastEvent[] }
 export function Events(props: Props) {
-  console.log(props.events)
   return (
     <section
       id="events"

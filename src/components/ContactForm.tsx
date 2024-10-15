@@ -165,6 +165,7 @@ export const ContactForm = (props: ContactFormProps) => {
           </div>
         </div>
 
+        {/* This form needs to match what is in public/__form.html for hosting service to detect and handle form submission */}
         <form
           className="px-6 py-12 pt-20 lg:px-8"
           name="contact-us-form"

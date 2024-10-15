@@ -15,8 +15,8 @@ export type CommunityMemeber = {
 }
 export type CommunityDirectory = { [key: string]: CommunityMemeber[] }
 
-const getLinkedAssetUrl = (parentNode: any) => {
-  return 'https:' + (parentNode['fields']['file']['url'] as string)
+const getLinkedAssetUrl = (parentNode: contentful.Asset) => {
+  return 'https:' + (parentNode['fields']!['file']!['url'] as string)
 }
 
 // Can be replaced with this?
@@ -107,7 +107,6 @@ export const getEvents = async (
     // @ts-expect-error - media is an array of assets?
     media: entry.fields['media']?.map(getLinkedAssetUrl),
   }))
-  console.log(entries.items[1].fields)
   // @ts-expect-error - events is an array?
   return events
 }

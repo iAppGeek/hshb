@@ -23,7 +23,7 @@ export const HeroVideo: React.FC<Props> = (props) => {
     client.getAsset('772l5OashVngRRR1AzXL2r').then((entry) => {
       setVideoUrl(entry.fields.file?.url)
     })
-  }, [])
+  })
 
   return (
     <div
