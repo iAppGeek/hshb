@@ -1,12 +1,16 @@
-'use client';
+'use client'
 
-import { FormEventHandler, useState } from 'react';
-import { BuildingOffice2Icon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
+import { FormEventHandler, useState } from 'react'
+import {
+  BuildingOffice2Icon,
+  EnvelopeIcon,
+  PhoneIcon,
+} from '@heroicons/react/24/outline'
 const SuccessIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="stroke-current shrink-0 h-6 w-6"
+      className="h-6 w-6 shrink-0 stroke-current"
       fill="none"
       viewBox="0 0 24 24"
     >
@@ -17,13 +21,13 @@ const SuccessIcon = () => {
         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
       />
     </svg>
-  );
+  )
 }
 const ErrorIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="stroke-current shrink-0 h-6 w-6"
+      className="h-6 w-6 shrink-0 stroke-current"
       fill="none"
       viewBox="0 0 24 24"
     >
@@ -34,42 +38,47 @@ const ErrorIcon = () => {
         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
       />
     </svg>
-  );
+  )
 }
 
-export type ContactFormProps = { text: string, address: string, number: string, email: string }
+export type ContactFormProps = {
+  text: string
+  address: string
+  number: string
+  email: string
+}
 export const ContactForm = (props: ContactFormProps) => {
-  const [status, setStatus] = useState<String | null>(null);
-  const [error, setError] = useState<String | null>(null);
+  const [status, setStatus] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const numberLink = `tel:${props.number}`
   const emailLink = `mailto:${props.email}`
 
   const handleFormSubmit: FormEventHandler = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      setStatus('pending');
-      setError(null);
-      const myForm = event.target;
-      //@ts-ignore 
-      const formData = new FormData(myForm);
+      setStatus('pending')
+      setError(null)
+      const myForm = event.target
+      // @ts-expect-error - update event.target as HTMLFormElement ?
+      const formData = new FormData(myForm)
       const res = await fetch('/__forms.html', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        //@ts-ignore 
-        body: new URLSearchParams(formData).toString()
-      });
+        // @ts-expect-error - probably map over formData.entries() and stringify each entry ?
+        body: new URLSearchParams(formData).toString(),
+      })
       if (res.status === 200) {
-        setStatus('ok');
+        setStatus('ok')
       } else {
-        setStatus('error');
-        setError(`${res.status} ${res.statusText}`);
+        setStatus('error')
+        setError(`${res.status} ${res.statusText}`)
       }
     } catch (e) {
-      setStatus('error');
-      setError(`${e}`);
+      setStatus('error')
+      setError(`${e}`)
     }
-  };
+  }
 
   return (
     <div className="relative isolate bg-white">
@@ -97,10 +106,17 @@ export const ContactForm = (props: ContactFormProps) => {
                 <svg x="100%" y={-1} className="overflow-visible fill-gray-50">
                   <path d="M-470.5 0h201v201h-201Z" strokeWidth={0} />
                 </svg>
-                <rect fill="url(#83fd4e5a-9d52-42fc-97b6-718e5d7ee527)" width="100%" height="100%" strokeWidth={0} />
+                <rect
+                  fill="url(#83fd4e5a-9d52-42fc-97b6-718e5d7ee527)"
+                  width="100%"
+                  height="100%"
+                  strokeWidth={0}
+                />
               </svg>
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900">Get in touch</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+              Get in touch
+            </h2>
             <pre className="mt-6 text-lg leading-8 text-gray-600">
               {props.text}
             </pre>
@@ -108,18 +124,22 @@ export const ContactForm = (props: ContactFormProps) => {
               <div className="flex gap-x-4">
                 <dt className="flex-none">
                   <span className="sr-only">Address</span>
-                  <BuildingOffice2Icon aria-hidden="true" className="h-7 w-6 text-gray-400" />
+                  <BuildingOffice2Icon
+                    aria-hidden="true"
+                    className="h-7 w-6 text-gray-400"
+                  />
                 </dt>
                 <dd>
-                  <pre>
-                    {props.address}
-                  </pre>
+                  <pre>{props.address}</pre>
                 </dd>
               </div>
               <div className="flex gap-x-4">
                 <dt className="flex-none">
                   <span className="sr-only">Telephone</span>
-                  <PhoneIcon aria-hidden="true" className="h-7 w-6 text-gray-400" />
+                  <PhoneIcon
+                    aria-hidden="true"
+                    className="h-7 w-6 text-gray-400"
+                  />
                 </dt>
                 <dd>
                   <a href={numberLink} className="hover:text-gray-900">
@@ -130,7 +150,10 @@ export const ContactForm = (props: ContactFormProps) => {
               <div className="flex gap-x-4">
                 <dt className="flex-none">
                   <span className="sr-only">Email</span>
-                  <EnvelopeIcon aria-hidden="true" className="h-7 w-6 text-gray-400" />
+                  <EnvelopeIcon
+                    aria-hidden="true"
+                    className="h-7 w-6 text-gray-400"
+                  />
                 </dt>
                 <dd>
                   <a href={emailLink} className="hover:text-gray-900">
@@ -142,12 +165,19 @@ export const ContactForm = (props: ContactFormProps) => {
           </div>
         </div>
 
-        <form className="px-6 py-12 pt-20 lg:px-8" name="contact-us-form" onSubmit={handleFormSubmit}>
+        <form
+          className="px-6 py-12 pt-20 lg:px-8"
+          name="contact-us-form"
+          onSubmit={handleFormSubmit}
+        >
           <input type="hidden" name="form-name" value="contact-us-form" />
           <div className="mx-auto max-w-xl lg:mr-0 lg:max-w-lg">
             <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="first-name" className="block text-sm font-semibold leading-6 text-gray-900">
+                <label
+                  htmlFor="first-name"
+                  className="block text-sm font-semibold leading-6 text-gray-900"
+                >
                   First name
                 </label>
                 <div className="mt-2.5">
@@ -161,7 +191,10 @@ export const ContactForm = (props: ContactFormProps) => {
                 </div>
               </div>
               <div>
-                <label htmlFor="last-name" className="block text-sm font-semibold leading-6 text-gray-900">
+                <label
+                  htmlFor="last-name"
+                  className="block text-sm font-semibold leading-6 text-gray-900"
+                >
                   Last name
                 </label>
                 <div className="mt-2.5">
@@ -175,7 +208,10 @@ export const ContactForm = (props: ContactFormProps) => {
                 </div>
               </div>
               <div className="sm:col-span-2">
-                <label htmlFor="email" className="block text-sm font-semibold leading-6 text-gray-900">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold leading-6 text-gray-900"
+                >
                   Email
                 </label>
                 <div className="mt-2.5">
@@ -189,7 +225,10 @@ export const ContactForm = (props: ContactFormProps) => {
                 </div>
               </div>
               <div className="sm:col-span-2">
-                <label htmlFor="phone-number" className="block text-sm font-semibold leading-6 text-gray-900">
+                <label
+                  htmlFor="phone-number"
+                  className="block text-sm font-semibold leading-6 text-gray-900"
+                >
                   Phone number
                 </label>
                 <div className="mt-2.5">
@@ -203,7 +242,10 @@ export const ContactForm = (props: ContactFormProps) => {
                 </div>
               </div>
               <div className="sm:col-span-2">
-                <label htmlFor="message" className="block text-sm font-semibold leading-6 text-gray-900">
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-semibold leading-6 text-gray-900"
+                >
                   Message
                 </label>
                 <div className="mt-2.5">

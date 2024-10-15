@@ -9,7 +9,10 @@ export function Footer() {
       <div className="relative text-center text-sm text-slate-600">
         <p>Copyright &copy; {new Date().getFullYear()} Anthony Ladas</p>
         <p>All rights reserved.</p>
-        Socials icons by <a target="_blank" href="https://icons8.com">Icons8</a>
+        Socials icons by{' '}
+        <a target="_blank" href="https://icons8.com">
+          Icons8
+        </a>
       </div>
     </footer>
   )

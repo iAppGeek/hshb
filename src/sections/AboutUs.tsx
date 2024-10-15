@@ -1,5 +1,5 @@
 import { Container } from '@/components/Container'
-import {FaqAcordian} from "@/components/CenteredAccordion";
+import { FaqAcordian } from '@/components/CenteredAccordion'
 
 type Props = { text: string }
 export const AboutUs = (props: Props) => {
@@ -7,7 +7,7 @@ export const AboutUs = (props: Props) => {
     <section
       id="about-us"
       aria-labelledby="about-us-title"
-      className="py-8 m:py-10 lg:py-8"
+      className="m:py-10 py-8 lg:py-8"
     >
       <Container>
         <p className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">

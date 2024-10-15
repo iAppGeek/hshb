@@ -33,7 +33,7 @@ const testimonials = [
         role: 'Growth Marketer',
         image: avatarImage4,
       },
-    }
+    },
   ],
   [
     {
@@ -53,7 +53,7 @@ const testimonials = [
         role: 'Design Student',
         image: avatarImage11,
       },
-    }
+    },
   ],
   [
     {
@@ -73,7 +73,7 @@ const testimonials = [
         role: 'Startup Founder',
         image: avatarImage10,
       },
-    }
+    },
   ],
 ]
 
@@ -119,15 +119,10 @@ export function Testimonials() {
         <h2 className="font-display text-4xl font-bold tracking-tight text-slate-900">
           Some kind words from our Parents...
         </h2>
-        <p className="mt-4 text-lg tracking-tight text-slate-600">
-          ...
-        </p>
+        <p className="mt-4 text-lg tracking-tight text-slate-600">...</p>
       </Container>
       <Expandable className="group mt-4">
-        <ul
-          role="list"
-          className="mx-auto grid max-w-2xl grid-cols-1 gap-8 px-4 lg:max-w-7xl lg:grid-cols-3 lg:px-8"
-        >
+        <ul className="mx-auto grid max-w-2xl grid-cols-1 gap-8 px-4 lg:max-w-7xl lg:grid-cols-3 lg:px-8">
           {testimonials
             .map((column) => column[0])
             .map((testimonial, testimonialIndex) => (
@@ -142,13 +137,13 @@ export function Testimonials() {
               key={columnIndex}
               className="hidden group-data-[expanded]:list-item"
             >
-              <ul role="list">
+              <ul>
                 <ExpandableItems>
                   {column.map((testimonial, testimonialIndex) => (
                     <li
                       key={testimonialIndex}
                       className={clsx(
-                        testimonialIndex === 0 && 'hidden list-item',
+                        testimonialIndex === 0 && 'hidden lg:list-item', // list-item & hidden conflict with each other
                         testimonialIndex === 1 && 'lg:mt-8',
                         testimonialIndex > 1 && 'mt-8',
                       )}

@@ -3,7 +3,7 @@ import { useId } from 'react'
 export function GridPattern(
   props: Omit<React.ComponentPropsWithoutRef<'pattern'>, 'id'>,
 ) {
-  let patternId = useId()
+  const patternId = useId()
 
   return (
     <svg aria-hidden="true" className="absolute inset-0 h-full w-full">

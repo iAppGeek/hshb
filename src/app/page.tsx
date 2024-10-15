@@ -1,3 +1,5 @@
+import * as contentful from 'contentful'
+
 import { Contact } from '@/sections/Contact'
 import { Footer } from '@/sections/Footer'
 import { Hero } from '@/sections/Hero'
@@ -6,14 +8,15 @@ import { Navbar } from '@/sections/Navbar'
 import { Events } from '@/sections/Events'
 import { Community } from '@/sections/Community'
 import { AboutUs } from '@/sections/AboutUs'
-
 import avatarImage2 from '@/images/avatars/avatar-2.png'
-
 import { Testimonial } from '@/components/Testimonial'
 import { Testimonials } from '@/components/Testimonials'
-
-import * as contentful from 'contentful'
-import { getCommunityDirectory, getEvents, getFeaturedQuote, getTextSectionData } from '@/data/contentful'
+import {
+  getCommunityDirectory,
+  getEvents,
+  getFeaturedQuote,
+  getTextSectionData,
+} from '@/data/contentful'
 
 const client = contentful.createClient({
   space: process.env.CONTENTFUL_SPACE,
@@ -21,19 +24,19 @@ const client = contentful.createClient({
 })
 
 const Home = async () => {
-  const heroText = await getTextSectionData(client, "hero-section");
-  const quote = await getFeaturedQuote(client);
-  const introText = await getTextSectionData(client, "spotlight-section");
-  const aboutUsText = await getTextSectionData(client, "aboutUs-section");
+  const heroText = await getTextSectionData(client, 'hero-section')
+  const quote = await getFeaturedQuote(client)
+  const introText = await getTextSectionData(client, 'spotlight-section')
+  const aboutUsText = await getTextSectionData(client, 'aboutUs-section')
 
-  const contactText = await getTextSectionData(client, "contact-text");
-  const contactEmail = await getTextSectionData(client, "contact-email");
-  const contactNumber = await getTextSectionData(client, "contact-number");
-  const contactAddress = await getTextSectionData(client, "contact-address");
+  const contactText = await getTextSectionData(client, 'contact-text')
+  const contactEmail = await getTextSectionData(client, 'contact-email')
+  const contactNumber = await getTextSectionData(client, 'contact-number')
+  const contactAddress = await getTextSectionData(client, 'contact-address')
 
-  const directory = await getCommunityDirectory(client);
+  const directory = await getCommunityDirectory(client)
 
-  const events = await getEvents(client);
+  const events = await getEvents(client)
 
   return (
     <>
@@ -62,11 +65,16 @@ const Home = async () => {
       <Events events={events} />
       <Testimonials />
 
-      <Contact text={contactText} address={contactAddress} email={contactEmail} number={contactNumber} />
+      <Contact
+        text={contactText}
+        address={contactAddress}
+        email={contactEmail}
+        number={contactNumber}
+      />
 
       <Footer />
     </>
   )
 }
 
-export default Home;
+export default Home

@@ -1,4 +1,5 @@
 import Image, { type ImageProps } from 'next/image'
+
 import { Container } from '@/components/Container'
 import { GridPattern } from '@/components/GridPattern'
 

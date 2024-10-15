@@ -1,4 +1,5 @@
 import Link from 'next/link'
+
 import { Container } from '@/components/Container'
 import { GridPattern } from '@/components/GridPattern'
 
