@@ -44,6 +44,7 @@ export const getFeaturedQuote = async (
   client: ContentfulClientApi<undefined>,
 ) => {
   // get total count of quote entries
+  console.log('fetching Featured Quote')
   const entriesCount = await client.getEntries({
     content_type: 'quotes',
     limit: 0,
@@ -67,6 +68,7 @@ export const getFeaturedQuote = async (
 export const getCommunityDirectory = async (
   client: ContentfulClientApi<undefined>,
 ) => {
+  console.log('fetching Community Directory')
   const people = await client.getEntries({ content_type: 'people' })
   const grouped = people.items.reduce((prev, curr) => {
     const role = curr.fields['role'] as string
@@ -98,6 +100,7 @@ export type PastEvent = {
 export const getEvents = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<PastEvent[]> => {
+  console.log('fetching Events')
   const entries = await client.getEntries({ content_type: 'events', limit: 3 })
 
   const events = entries.items.map((entry) => ({

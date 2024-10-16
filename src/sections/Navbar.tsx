@@ -13,6 +13,7 @@ import clsx from 'clsx'
 import twitterIcon from '@/images/icons/twitter.svg'
 import facebookIcon from '@/images/icons/facebook.svg'
 import instagramIcon from '@/images/icons/instagram.svg'
+import classdojoSmall from '@/images/icons/classdojo-icon.svg'
 import logo from '@/images/logo.png'
 
 const sections = [
@@ -128,8 +129,24 @@ export function Navbar() {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <a
+              href="https://home.classdojo.com/"
+              target="_blank"
+              className="flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white"
+              title="Parents Login @ Class Dojo"
+            >
+              <Image
+                priority
+                src={classdojoSmall}
+                height={28}
+                alt="Parents Login"
+              />
+              <span className="hidden lg:inline">Parent Login</span>
+            </a>
+            <a
               href="https://www.instagram.com/eastbarnet_hellenic"
               target="_blank"
+              title="Instagram: eastbarnet_hellenic"
+              className="pl-1"
             >
               <Image
                 priority
@@ -142,6 +159,7 @@ export function Navbar() {
             <a
               href="https://www.facebook.com/eastbarnetgreekschool/"
               target="_blank"
+              title="Facebook: eastbarnetgreekschool"
             >
               <Image
                 priority
@@ -151,7 +169,11 @@ export function Navbar() {
                 alt="Like us on Facebook"
               />
             </a>
-            <a href="https://twitter.com/HSHBInfo" target="_blank">
+            <a
+              href="https://twitter.com/HSHBInfo"
+              target="_blank"
+              title="Twitter: HSHBInfo"
+            >
               <Image
                 priority
                 src={twitterIcon}
