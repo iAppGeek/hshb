@@ -1,6 +1,5 @@
 'use client'
-
-import { Children, createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 
 function ArrowDownIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -41,19 +40,16 @@ export function Expandable(props: React.ComponentPropsWithoutRef<'div'>) {
 
 export function ExpandableItems({
   children,
-  limit = 2,
 }: {
   children: React.ReactNode
   limit?: number
 }) {
   const { isExpanded } = useContext(ExpandableContext)
-
-  return Children.toArray(children).slice(0, isExpanded ? undefined : limit)
+  return isExpanded ? children : null
 }
 
 export function ExpandableButton({ children }: { children: React.ReactNode }) {
   const { isExpanded, expand } = useContext(ExpandableContext)
-
   return (
     !isExpanded && (
       <div className="mt-10 flex justify-center">

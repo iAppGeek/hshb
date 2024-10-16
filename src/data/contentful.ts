@@ -16,13 +16,8 @@ export type CommunityMemeber = {
 export type CommunityDirectory = { [key: string]: CommunityMemeber[] }
 
 const getLinkedAssetUrl = (parentNode: contentful.Asset) => {
-  return 'https:' + (parentNode['fields']!['file']!['url'] as string)
+  return 'https:' + parentNode?.fields?.file?.url
 }
-
-// Can be replaced with this?
-// const getLinkedAssetUrl = (asset: contentful.Asset) => {
-//   return asset?.fields?.file?.url
-// }
 
 let textCache: EntryCollection<EntrySkeletonType, undefined, string>
 export const getTextSectionData = async (
@@ -112,4 +107,50 @@ export const getEvents = async (
   }))
   // @ts-expect-error - events is an array?
   return events
+}
+
+export type AccordianData = { title: string; body: string }[]
+export const getAccordion = async (
+  client: ContentfulClientApi<undefined>,
+  name: string,
+): Promise<AccordianData> => {
+  console.log('fetching Accordian', name)
+  const entry = await client.getEntries({
+    content_type: 'accordion',
+    'fields.name[match]': name,
+    limit: 1,
+  })
+  const entries = entry.items[0].fields['entries'] as contentful.Entry<
+    EntrySkeletonType,
+    undefined,
+    string
+  >[]
+
+  const formatted = entries?.map((i) => ({
+    title: i.fields.title as string,
+    body: i.fields.body as string,
+  }))
+
+  return formatted!
+}
+
+export type Author = { name: string; role: string; image: string }
+export type Testimonial = { title: string; text: string; author: Author }
+//gets a single random entry from all quotes
+export const getTestimonials = async (
+  client: ContentfulClientApi<undefined>,
+): Promise<Testimonial[]> => {
+  // get total count of quote entries
+  console.log('fetching Testimonials')
+  const entries = await client.getEntries({ content_type: 'testimonials' })
+
+  return entries.items.map((e) => ({
+    title: e.fields['title'] as string,
+    text: e.fields['text'] as string,
+    author: {
+      name: e.fields['author'] as string,
+      role: e.fields['role'] as string,
+      image: getLinkedAssetUrl(e.fields['icon'] as contentful.Asset) as string,
+    },
+  }))
 }

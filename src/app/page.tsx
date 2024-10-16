@@ -8,13 +8,13 @@ import { Navbar } from '@/sections/Navbar'
 import { Events } from '@/sections/Events'
 import { Community } from '@/sections/Community'
 import { AboutUs } from '@/sections/AboutUs'
-import avatarImage2 from '@/images/avatars/avatar-2.png'
-import { Testimonial } from '@/components/Testimonial'
 import { Testimonials } from '@/components/Testimonials'
 import {
+  getAccordion,
   getCommunityDirectory,
   getEvents,
   getFeaturedQuote,
+  getTestimonials,
   getTextSectionData,
 } from '@/data/contentful'
 
@@ -27,7 +27,17 @@ const Home = async () => {
   const heroText = await getTextSectionData(client, 'hero-section')
   const quote = await getFeaturedQuote(client)
   const introText = await getTextSectionData(client, 'spotlight-section')
-  const aboutUsText = await getTextSectionData(client, 'aboutUs-section')
+
+  const aboutUsText = await getTextSectionData(client, 'aboutUs-blurb')
+  const aboutHighlight1 = await getTextSectionData(
+    client,
+    'aboutUs-highlighted-1',
+  )
+  const aboutHighlight2 = await getTextSectionData(
+    client,
+    'aboutUs-highlighted-2',
+  )
+  const aboutUsAcordian = await getAccordion(client, 'About Us')
 
   const contactText = await getTextSectionData(client, 'contact-text')
   const contactEmail = await getTextSectionData(client, 'contact-email')
@@ -38,6 +48,8 @@ const Home = async () => {
 
   const events = await getEvents(client)
 
+  const testimonials = await getTestimonials(client)
+
   return (
     <>
       <Navbar />
@@ -45,25 +57,16 @@ const Home = async () => {
       <Hero heroText={heroText} quote={quote} />
       <Introduction text={introText} />
 
-      <AboutUs text={aboutUsText} />
-      <Testimonial
-        id="testimonial-from-tommy-stroman"
-        author={{
-          name: 'Tommy Stroman',
-          role: 'Front-end developer',
-          image: avatarImage2,
-        }}
-      >
-        <p>
-          “I didn’t know a thing about icon design until I read this book. Now I
-          can create any icon I need in no time. Great resource!”
-        </p>
-      </Testimonial>
+      <AboutUs
+        text={aboutUsText}
+        highlightedTexts={[aboutHighlight1, aboutHighlight2]}
+        accordian={aboutUsAcordian}
+      />
 
       <Community directory={directory} />
 
       <Events events={events} />
-      <Testimonials />
+      <Testimonials testimonials={testimonials} />
 
       <Contact
         text={contactText}

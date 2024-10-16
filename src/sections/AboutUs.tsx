@@ -1,8 +1,14 @@
 import { Container } from '@/components/Container'
-import { FaqAcordian } from '@/components/CenteredAccordion'
+import { AboutUsAcordian } from '@/components/AboutUsAcordian'
+import { HighlightedTexts } from '@/components/HighlightedTexts'
+import type { AccordianData } from '@/data/contentful'
 
-type Props = { text: string }
-export const AboutUs = (props: Props) => {
+type Props = {
+  text: string
+  highlightedTexts: [string, string]
+  accordian: AccordianData
+}
+export const AboutUs = async (props: Props) => {
   return (
     <section
       id="about-us"
@@ -10,11 +16,16 @@ export const AboutUs = (props: Props) => {
       className="m:py-10 py-8 lg:py-8"
     >
       <Container>
-        <p className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
+        <pre className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
           {props.text}
-        </p>
+        </pre>
       </Container>
-      <FaqAcordian />
+      <AboutUsAcordian data={props.accordian} />
+      <HighlightedTexts
+        id="about-us-highlighted"
+        first={props.highlightedTexts[0]}
+        second={props.highlightedTexts[1]}
+      />
     </section>
   )
 }
