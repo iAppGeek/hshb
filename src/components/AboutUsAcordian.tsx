@@ -3,9 +3,11 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from '@headlessui/react'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 
 import { AccordianData } from '@/data/contentful'
+import { mdxComponents, mdxOptions } from '@/data/mdxConfig'
 
 type Props = { data: AccordianData }
 export const AboutUsAcordian = (props: Props) => {
@@ -41,9 +43,11 @@ export const AboutUsAcordian = (props: Props) => {
                   className="mt-2 origin-top pr-12 transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
                   transition
                 >
-                  <pre className="text-base leading-7 text-gray-600">
-                    {d.body}
-                  </pre>
+                  <MDXRemote
+                    options={mdxOptions}
+                    source={d.body}
+                    components={mdxComponents}
+                  />
                 </DisclosurePanel>
               </Disclosure>
             ))}
