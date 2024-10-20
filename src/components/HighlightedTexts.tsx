@@ -1,11 +1,16 @@
-import { ReactElement } from 'react'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { GridPattern } from '@/components/GridPattern'
+import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
 
-const TextSection = (props: { children: string | ReactElement }) => {
+const TextSection = (props: { text: string }) => {
   return (
-    <div className="col-span-2 p-3 md:col-span-1">
-      <pre className="text-center">{props.children}</pre>
+    <div className="prose col-span-2 max-w-full p-3 text-center md:col-span-1">
+      <MDXRemote
+        options={mdxOptions}
+        source={props.text}
+        components={mdxGridComponents}
+      />
     </div>
   )
 }
@@ -26,8 +31,8 @@ export const HighlightedTexts = async ({
       </div>
 
       <div className="m-4 grid grid-flow-row grid-cols-2">
-        <TextSection>{first}</TextSection>
-        <TextSection>{second}</TextSection>
+        <TextSection text={first} />
+        <TextSection text={second} />
       </div>
     </div>
   )
