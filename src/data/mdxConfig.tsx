@@ -7,26 +7,18 @@ export const mdxOptions = {
   },
 }
 
-export const mdxComponents = {
+export const mdxGridComponents = {
   table: (props: React.PropsWithChildren) => {
-    return (
-      <table className="table-auto border-collapse border-spacing-4 border border-slate-400">
-        {props.children}
-      </table>
-    )
+    return <table className="table-auto">{props.children}</table>
   },
   th: (props: React.PropsWithChildren) => {
     return (
-      <th className="text-nowrap border border-slate-300 p-4 font-semibold text-slate-900">
+      <th className="text-nowrap text-center font-semibold text-slate-900">
         {props.children}
       </th>
     )
   },
   td: (props: React.PropsWithChildren) => {
-    return (
-      <td className="border border-slate-300 p-4 text-slate-800">
-        {props.children}
-      </td>
-    )
+    return <td className="text-center text-slate-800">{props.children}</td>
   },
 }

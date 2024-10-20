@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Container } from '@/components/Container'
 import {
@@ -7,19 +8,18 @@ import {
   ExpandableItems,
 } from '@/components/Expandable'
 import { Testimonial, Author } from '@/data/contentful'
+import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
 
-function TestimonialItem({
-  author,
-  children,
-}: {
-  author: Author
-  children: React.ReactNode
-}) {
+function TestimonialItem({ author, text }: { author: Author; text: string }) {
   return (
     <figure className="rounded-4xl p-8 shadow-md ring-1 ring-slate-900/5">
       <blockquote>
-        <pre className="text-lg tracking-tight text-slate-900 before:content-['“'] after:content-['”']">
-          {children}
+        <pre className="prose text-lg tracking-tight text-slate-900 before:content-['“'] after:content-['”']">
+          <MDXRemote
+            options={mdxOptions}
+            source={text}
+            components={mdxGridComponents}
+          />
         </pre>
       </blockquote>
       <figcaption className="mt-6 flex items-center">
@@ -64,15 +64,16 @@ export function Testimonials(props: Props) {
         <ul className="mx-auto grid max-w-2xl grid-cols-1 gap-8 px-4 lg:max-w-7xl lg:grid-cols-3 lg:px-8">
           {testimonials.slice(0, 3).map((testimonial) => (
             <li key={testimonial.title}>
-              <TestimonialItem author={testimonial.author}>
-                {testimonial.text}
-              </TestimonialItem>
+              <TestimonialItem
+                author={testimonial.author}
+                text={testimonial.text}
+              />
             </li>
           ))}
           <ExpandableItems>
             {testimonials.slice(3).map((t) => (
               <li key={t.title}>
-                <TestimonialItem author={t.author}>{t.text}</TestimonialItem>
+                <TestimonialItem author={t.author} text={t.text} />
               </li>
             ))}
           </ExpandableItems>

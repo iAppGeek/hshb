@@ -7,7 +7,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 
 import { AccordianData } from '@/data/contentful'
-import { mdxComponents, mdxOptions } from '@/data/mdxConfig'
+import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
 
 type Props = { data: AccordianData }
 export const AboutUsAcordian = (props: Props) => {
@@ -40,13 +40,13 @@ export const AboutUsAcordian = (props: Props) => {
                 </dt>
                 <DisclosurePanel
                   as="dd"
-                  className="mt-2 origin-top pr-12 transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
+                  className="prose mt-2 origin-top overflow-y-auto pr-12 transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
                   transition
                 >
                   <MDXRemote
                     options={mdxOptions}
                     source={d.body}
-                    components={mdxComponents}
+                    components={mdxGridComponents}
                   />
                 </DisclosurePanel>
               </Disclosure>

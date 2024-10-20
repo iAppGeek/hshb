@@ -1,7 +1,10 @@
+import { MDXRemote } from 'next-mdx-remote/rsc'
+
 import { Container } from '@/components/Container'
 import { AboutUsAcordian } from '@/components/AboutUsAcordian'
 import { HighlightedTexts } from '@/components/HighlightedTexts'
 import type { AccordianData } from '@/data/contentful'
+import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
 
 type Props = {
   text: string
@@ -16,8 +19,12 @@ export const AboutUs = async (props: Props) => {
       className="m:py-10 py-8 lg:py-8"
     >
       <Container>
-        <pre className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
-          {props.text}
+        <pre className="prose mt-8 font-display text-xl tracking-tight text-slate-900">
+          <MDXRemote
+            options={mdxOptions}
+            source={props.text}
+            components={mdxGridComponents}
+          />
         </pre>
       </Container>
       <AboutUsAcordian data={props.accordian} />

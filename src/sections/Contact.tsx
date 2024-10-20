@@ -1,4 +1,5 @@
-import { ContactForm, type ContactFormProps } from '@/components/ContactForm'
+import { ContactDetails, ContactFormProps } from '@/components/ContactDetails'
+import { ContactForm } from '@/components/ContactForm'
 
 export const Contact = (props: ContactFormProps) => {
   return (
@@ -7,7 +8,13 @@ export const Contact = (props: ContactFormProps) => {
       aria-labelledby="contact-title"
       className="m:py-6 py-4 lg:py-10"
     >
-      <ContactForm {...props} />
+      <div className="relative isolate bg-white">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
+          <ContactDetails {...props} />
+          <ContactForm />
+        </div>
+      </div>
+
       <div>
         <iframe
           title="map-location"
