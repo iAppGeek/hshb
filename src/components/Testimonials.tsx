@@ -14,7 +14,7 @@ function TestimonialItem({ author, text }: { author: Author; text: string }) {
   return (
     <figure className="rounded-4xl p-8 shadow-md ring-1 ring-slate-900/5">
       <blockquote>
-        <pre className="prose text-lg tracking-tight text-slate-900 before:content-['“'] after:content-['”']">
+        <pre className="prose text-lg tracking-tight text-slate-900">
           <MDXRemote
             options={mdxOptions}
             source={text}

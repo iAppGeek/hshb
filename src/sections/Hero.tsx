@@ -12,7 +12,7 @@ const FeaturedQuote = (props: FeaturedQuote) => {
         </p>
       </blockquote>
       <figcaption className="mt-2 text-sm text-slate-500">
-        <strong className="font-semibold text-blue-600 before:content-['—_']">
+        <strong className="pr-1 font-semibold text-blue-600 before:content-['—_']">
           {props.author}
         </strong>
         {props.role}

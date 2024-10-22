@@ -146,7 +146,7 @@ export function Navbar() {
               href="https://www.instagram.com/eastbarnet_hellenic"
               target="_blank"
               title="Instagram: eastbarnet_hellenic"
-              className="pl-1"
+              className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
             >
               <Image
                 priority
@@ -160,6 +160,7 @@ export function Navbar() {
               href="https://www.facebook.com/eastbarnetgreekschool/"
               target="_blank"
               title="Facebook: eastbarnetgreekschool"
+              className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
             >
               <Image
                 priority
@@ -173,6 +174,7 @@ export function Navbar() {
               href="https://twitter.com/HSHBInfo"
               target="_blank"
               title="Twitter: HSHBInfo"
+              className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
             >
               <Image
                 priority

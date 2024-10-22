@@ -10,10 +10,11 @@ export const Introduction = (props: Props) => {
       className="py-4 sm:py-6 lg:py-10"
     >
       <Container className="text-lg tracking-tight text-slate-700">
-        <p className="font-display text-4xl font-bold tracking-tight text-slate-900">
-          &quot;{props.text}&quot;
-        </p>
-        <div></div>
+        <blockquote>
+          <pre className="prose font-display text-4xl font-bold tracking-tight text-slate-900">
+            <p>{props.text}</p>
+          </pre>
+        </blockquote>
       </Container>
       <HeroVideo
         space={process.env.CONTENTFUL_SPACE}
