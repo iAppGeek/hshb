@@ -87,25 +87,25 @@ export function Navbar() {
 
   return (
     <Disclosure as="nav" className="sticky top-0 z-50" ref={navBarRef}>
-      <div className="mx-auto border-b border-slate-200 bg-white/95 px-2 sm:px-6 lg:px-8 [@supports(backdrop-filter:blur(0))]:bg-white/80 [@supports(backdrop-filter:blur(0))]:backdrop-blur">
+      <div className="mx-auto border-b border-slate-200 bg-white/95 px-2 sm:px-6 lg:px-8 [@supports(backdrop-filter:blur(0))]:bg-white/80 [@supports(backdrop-filter:blur(0))]:backdrop-blur-sm">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             {/* Mobile menu button*/}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white">
               <span className="absolute -inset-0.5" />
               <span className="sr-only">Open main menu</span>
               <Bars3Icon
                 aria-hidden="true"
-                className="block h-6 w-6 group-data-[open]:hidden"
+                className="block h-6 w-6 group-data-open:hidden"
               />
               <XMarkIcon
                 aria-hidden="true"
-                className="hidden h-6 w-6 group-data-[open]:block"
+                className="hidden h-6 w-6 group-data-open:block"
               />
             </DisclosureButton>
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex flex-shrink-0 items-center">
+            <div className="flex shrink-0 items-center">
               <Image src={logo} alt="HSHB Logo" className="h-8 w-auto" />
             </div>
             <div className="hidden sm:ml-6 sm:block">
@@ -188,7 +188,7 @@ export function Navbar() {
         </div>
       </div>
 
-      <DisclosurePanel className="border-b border-slate-200 bg-white/95 sm:hidden [@supports(backdrop-filter:blur(0))]:bg-white/80 [@supports(backdrop-filter:blur(0))]:backdrop-blur">
+      <DisclosurePanel className="border-b border-slate-200 bg-white/95 sm:hidden [@supports(backdrop-filter:blur(0))]:bg-white/80 [@supports(backdrop-filter:blur(0))]:backdrop-blur-sm">
         <div className="space-y-1 px-2 pb-3 pt-2">
           {sections.map((section, sectionIndex) => (
             <DisclosureButton

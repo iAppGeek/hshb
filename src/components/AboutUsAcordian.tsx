@@ -29,7 +29,7 @@ export const AboutUsAcordian = (props: Props) => {
                     <span className="ml-6 flex h-7 items-center">
                       <PlusIcon
                         aria-hidden="true"
-                        className="h-6 w-6 group-data-[open]:hidden"
+                        className="h-6 w-6 group-data-open:hidden"
                       />
                       <MinusIcon
                         aria-hidden="true"
@@ -40,7 +40,7 @@ export const AboutUsAcordian = (props: Props) => {
                 </dt>
                 <DisclosurePanel
                   as="dd"
-                  className="prose mt-2 origin-top overflow-y-auto pr-12 transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
+                  className="prose mt-2 origin-top overflow-y-auto pr-12 transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0"
                   transition
                 >
                   <MDXRemote
