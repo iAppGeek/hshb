@@ -5,7 +5,7 @@ import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
 
 const TextSection = (props: { text: string }) => {
   return (
-    <div className="prose col-span-2 max-w-full p-3 text-center md:col-span-1">
+    <div className="prose col-span-2 max-w-full object-center p-3 text-center md:col-span-1">
       <MDXRemote
         options={mdxOptions}
         source={props.text}

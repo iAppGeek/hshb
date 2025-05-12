@@ -37,6 +37,7 @@ const sections = [
     ),
   },
   { id: 'events', title: 'Events' },
+  { id: 'enrolment', title: 'Enrolment' },
   { id: 'contact', title: 'Contact' },
 ]
 
@@ -129,7 +130,7 @@ export function Navbar() {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <a
-              href="https://home.classdojo.com/"
+              href="https://dojo.hshb.org.uk/"
               target="_blank"
               className="flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white"
               title="Parents Login @ Class Dojo"
@@ -143,9 +144,9 @@ export function Navbar() {
               <span className="hidden lg:inline">Parent Login</span>
             </a>
             <a
-              href="https://www.instagram.com/eastbarnet_hellenic"
+              href="https://instagram.hshb.org.uk/"
               target="_blank"
-              title="Instagram: eastbarnet_hellenic"
+              title="Instagram: @hshb1977"
               className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
             >
               <Image
@@ -157,7 +158,7 @@ export function Navbar() {
               />
             </a>
             <a
-              href="https://www.facebook.com/eastbarnetgreekschool/"
+              href="https://facebook.hshb.org.uk/"
               target="_blank"
               title="Facebook: eastbarnetgreekschool"
               className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
@@ -171,7 +172,7 @@ export function Navbar() {
               />
             </a>
             <a
-              href="https://twitter.com/HSHBInfo"
+              href="https://x.hshb.org.uk/"
               target="_blank"
               title="Twitter: HSHBInfo"
               className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"

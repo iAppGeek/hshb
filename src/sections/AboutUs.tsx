@@ -27,6 +27,18 @@ export const AboutUs = async (props: Props) => {
           />
         </pre>
       </Container>
+      <Container className="mt-6">
+        <div className="flex">
+          <pre className="prose font-display flex-1 text-center">
+            <h2>Average Class Size</h2>
+            <h1 className="font-bold text-blue-500">8</h1>
+          </pre>
+          <pre className="prose font-display flex-1 text-center">
+            <h2>Exam Pass Rate</h2>
+            <h1 className="font-bold text-green-600">95%</h1>
+          </pre>
+        </div>
+      </Container>
       <AboutUsAcordian data={props.accordian} />
       <HighlightedTexts
         id="about-us-highlighted"

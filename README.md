@@ -16,6 +16,12 @@ Next, run the development server:
 npm run dev
 ```
 
+Due to some OS version issue with the Sharp library, you may need to run the below command to update node modules so build can pass on Netlify [Reference](http://localhost:3000)
+
+```bash
+npm install --cpu=x64 --os=linux sharp
+```
+
 Finally, open [http://localhost:3000](http://localhost:3000) in your browser to view the website.
 
 ## Customizing

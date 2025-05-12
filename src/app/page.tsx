@@ -17,6 +17,7 @@ import {
   getTestimonials,
   getTextSectionData,
 } from '@/data/contentful'
+import { Enrolement } from '@/sections/Enrolment'
 
 const client = contentful.createClient({
   space: process.env.CONTENTFUL_SPACE,
@@ -38,6 +39,8 @@ const Home = async () => {
     'aboutUs-highlighted-2',
   )
   const aboutUsAcordian = await getAccordion(client, 'About Us')
+
+  const admissionsText = await getTextSectionData(client, 'admissions-blurb')
 
   const contactText = await getTextSectionData(client, 'contact-text')
   const contactEmail = await getTextSectionData(client, 'contact-email')
@@ -66,6 +69,8 @@ const Home = async () => {
       <Community directory={directory} />
 
       <Events events={events} />
+
+      <Enrolement text={admissionsText} />
       <Testimonials testimonials={testimonials} />
 
       <Contact

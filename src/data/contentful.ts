@@ -88,7 +88,7 @@ export const getCommunityDirectory = async (
 
 export type PastEvent = {
   name: string
-  date: string
+  date: Date
   description: string
   media: string[]
 }
@@ -98,14 +98,17 @@ export const getEvents = async (
   console.log('fetching Events')
   const entries = await client.getEntries({ content_type: 'events', limit: 3 })
 
-  const events = entries.items.map((entry) => ({
-    name: entry.fields['name'],
-    date: entry.fields['date'],
-    description: entry.fields['description'],
-    // @ts-expect-error - media is an array of assets?
-    media: entry.fields['media']?.map(getLinkedAssetUrl),
-  }))
-  // @ts-expect-error - events is an array?
+  const events = entries.items.map(
+    (entry) =>
+      ({
+        name: entry.fields['name'] as string,
+        date: new Date(entry.fields['date'] as string),
+        description: entry.fields['description'] as string,
+        // @ts-expect-error - media is an array of assets?
+        media: entry.fields['media']?.map(getLinkedAssetUrl),
+      }) satisfies PastEvent,
+  )
+
   return events
 }
 
