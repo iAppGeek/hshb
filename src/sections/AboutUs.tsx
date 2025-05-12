@@ -19,7 +19,7 @@ export const AboutUs = async (props: Props) => {
       className="m:py-10 py-8 lg:py-8"
     >
       <Container>
-        <pre className="prose mt-8 font-display text-xl tracking-tight text-slate-900">
+        <pre className="prose font-display mt-8 text-xl tracking-tight text-slate-900">
           <MDXRemote
             options={mdxOptions}
             source={props.text}

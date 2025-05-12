@@ -33,7 +33,7 @@ function TestimonialItem({ author, text }: { author: Author; text: string }) {
           />
         </div>
         <div className="ml-4">
-          <div className="text-base font-medium leading-6 tracking-tight text-slate-900">
+          <div className="text-base leading-6 font-medium tracking-tight text-slate-900">
             {author.name}
           </div>
           <div className="mt-1 text-sm text-slate-600">{author.role}</div>

@@ -13,7 +13,7 @@ export const mdxGridComponents = {
   },
   th: (props: React.PropsWithChildren) => {
     return (
-      <th className="text-nowrap text-center font-semibold text-slate-900">
+      <th className="text-center font-semibold text-nowrap text-slate-900">
         {props.children}
       </th>
     )

@@ -5,8 +5,8 @@ import github from '@/images/icons/github-mark.svg'
 
 export function Footer() {
   return (
-    <footer className="relative pb-20 pt-5 sm:pb-32 sm:pt-14">
-      <div className="absolute inset-x-0 top-0 h-32 text-slate-900/10 [mask-image:linear-gradient(white,transparent)]">
+    <footer className="relative pt-5 pb-20 sm:pt-14 sm:pb-32">
+      <div className="absolute inset-x-0 top-0 h-32 [mask-image:linear-gradient(white,transparent)] text-slate-900/10">
         <GridPattern x="50%" />
       </div>
       <div className="relative flex flex-col items-center justify-center text-sm text-slate-600">

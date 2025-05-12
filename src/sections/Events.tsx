@@ -24,7 +24,7 @@ export function Events(props: Props) {
       className="m:py-10 py-8 lg:py-8"
     >
       <Container>
-        <p className="mt-8 font-display text-4xl font-bold tracking-tight text-slate-900">
+        <p className="font-display mt-8 text-4xl font-bold tracking-tight text-slate-900">
           Some of our recent events
         </p>
         <p className="mt-4 text-lg tracking-tight text-slate-700">

@@ -91,7 +91,7 @@ export function Navbar() {
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             {/* Mobile menu button*/}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white">
+            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
               <span className="absolute -inset-0.5" />
               <span className="sr-only">Open main menu</span>
               <Bars3Icon
@@ -189,7 +189,7 @@ export function Navbar() {
       </div>
 
       <DisclosurePanel className="border-b border-slate-200 bg-white/95 sm:hidden [@supports(backdrop-filter:blur(0))]:bg-white/80 [@supports(backdrop-filter:blur(0))]:backdrop-blur-sm">
-        <div className="space-y-1 px-2 pb-3 pt-2">
+        <div className="space-y-1 px-2 pt-2 pb-3">
           {sections.map((section, sectionIndex) => (
             <DisclosureButton
               key={section.id}

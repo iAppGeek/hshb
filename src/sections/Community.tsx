@@ -59,11 +59,11 @@ export const Community = (props: Props) => {
     >
       <ImageClipPaths id={id} />
       <Container>
-        <p className="mt-8 font-display text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
+        <p className="font-display mt-8 text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
           The School Community
         </p>
         <div className="mx-auto max-w-2xl lg:mx-0">
-          <p className="mt-4 font-display text-2xl tracking-tight text-blue-900">
+          <p className="font-display mt-4 text-2xl tracking-tight text-blue-900">
             Get to know the individuals that help keep the school running
             smoothly
           </p>
@@ -73,15 +73,15 @@ export const Community = (props: Props) => {
           vertical={tabOrientation === 'vertical'}
         >
           <div className="relative -mx-4 flex overflow-x-auto pb-4 sm:mx-0 sm:block sm:overflow-visible sm:pb-0">
-            <div className="absolute bottom-0 left-0.5 top-2 hidden w-px bg-slate-200 lg:block" />
-            <TabList className="grid auto-cols-auto grid-flow-col justify-start gap-x-8 gap-y-10 whitespace-nowrap px-4 sm:mx-auto sm:max-w-2xl sm:grid-cols-3 sm:px-0 sm:text-center lg:grid-flow-row lg:grid-cols-1 lg:text-left">
+            <div className="absolute top-2 bottom-0 left-0.5 hidden w-px bg-slate-200 lg:block" />
+            <TabList className="grid auto-cols-auto grid-flow-col justify-start gap-x-8 gap-y-10 px-4 whitespace-nowrap sm:mx-auto sm:max-w-2xl sm:grid-cols-3 sm:px-0 sm:text-center lg:grid-flow-row lg:grid-cols-1 lg:text-left">
               {({ selectedIndex }) => (
                 <>
                   {Object.keys(directory).map((group, groupIndex) => (
                     <div key={group + groupIndex} className="relative lg:pl-8">
                       <DiamondIcon
                         className={clsx(
-                          'absolute left-[-0.5px] top-[0.5625rem] hidden h-1.5 w-1.5 overflow-visible lg:block',
+                          'absolute top-[0.5625rem] left-[-0.5px] hidden h-1.5 w-1.5 overflow-visible lg:block',
                           groupIndex === selectedIndex
                             ? 'fill-blue-600 stroke-blue-600'
                             : 'fill-transparent stroke-slate-400',
@@ -125,7 +125,7 @@ export const Community = (props: Props) => {
                       <div className="group relative h-[17.5rem] transform overflow-hidden rounded-4xl">
                         <div
                           className={clsx(
-                            'absolute bottom-6 left-0 right-4 top-0 rounded-4xl border transition duration-300 group-hover:scale-95 xl:right-6',
+                            'absolute top-0 right-4 bottom-6 left-0 rounded-4xl border transition duration-300 group-hover:scale-95 xl:right-6',
                             [
                               'border-blue-300',
                               'border-indigo-300',
@@ -147,7 +147,7 @@ export const Community = (props: Props) => {
                           />
                         </div>
                       </div>
-                      <h3 className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
+                      <h3 className="font-display mt-8 text-xl font-bold tracking-tight text-slate-900">
                         {person.name}
                       </h3>
                       <p className="mt-1 text-base tracking-tight text-slate-500">
