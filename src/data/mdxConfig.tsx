@@ -8,6 +8,9 @@ export const mdxOptions = {
 }
 
 export const mdxGridComponents = {
+  p: (props: React.PropsWithChildren) => {
+    return <p className="mb-0">{props.children}</p>
+  },
   table: (props: React.PropsWithChildren) => {
     return <table className="table-auto">{props.children}</table>
   },

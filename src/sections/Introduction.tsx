@@ -10,10 +10,10 @@ export const Introduction = (props: Props) => {
       className="py-4 sm:py-6 lg:py-10"
     >
       <Container className="text-lg tracking-tight text-slate-700">
-        <blockquote>
-          <pre className="prose font-display text-4xl font-bold tracking-tight text-slate-900">
-            <p>{props.text}</p>
-          </pre>
+        <blockquote className="my-6">
+          <p className="font-display text-4xl font-bold tracking-tight text-slate-900">
+            <q>{props.text}</q>
+          </p>
         </blockquote>
       </Container>
       <HeroVideo

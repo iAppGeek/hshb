@@ -19,7 +19,7 @@ export const Enrolement = async (props: Props) => {
         </h2>
       </Container>
       <Container>
-        <pre className="prose font-display mt-8 text-xl tracking-tight text-slate-900">
+        <pre className="prose font-display mt-8 flex flex-col text-xl tracking-tight text-slate-900">
           <MDXRemote
             options={mdxOptions}
             source={props.text}

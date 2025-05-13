@@ -18,7 +18,7 @@ export const AboutUsAcordian = (props: Props) => {
           <h2 className="text-2xl leading-10 font-bold tracking-tight text-gray-900">
             Want to know more?
           </h2>
-          <dl className="mt-10 space-y-6 divide-y divide-gray-900/10">
+          <dl className="mt-6 space-y-3 divide-y divide-gray-900/10">
             {props.data.map((d) => (
               <Disclosure key={d.title} as="div" className="pt-6">
                 <dt>
