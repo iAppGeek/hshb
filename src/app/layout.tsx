@@ -1,6 +1,6 @@
 import { type Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import clsx from 'clsx'
 
 import '@/styles/tailwind.css'

@@ -15,6 +15,7 @@ import facebookIcon from '@/images/icons/facebook.svg'
 import instagramIcon from '@/images/icons/instagram.svg'
 import classdojoSmall from '@/images/icons/classdojo-icon.svg'
 import logo from '@/images/logo.png'
+import { sendEvent } from '@/data/events'
 
 const sections = [
   { id: '', title: 'Home' },
@@ -86,6 +87,10 @@ export function Navbar() {
     }
   }, [])
 
+  function onLinkClick(name: string): void {
+    sendEvent('click', 'navigation', name)
+  }
+
   return (
     <Disclosure as="nav" className="sticky top-0 z-50" ref={navBarRef}>
       <div className="mx-auto border-b border-slate-200 bg-white/95 px-2 sm:px-6 lg:px-8 [@supports(backdrop-filter:blur(0))]:bg-white/80 [@supports(backdrop-filter:blur(0))]:backdrop-blur-sm">
@@ -115,6 +120,7 @@ export function Navbar() {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
+                    onClick={() => onLinkClick(section.id)}
                     className={clsx(
                       sectionIndex === activeIndex
                         ? 'bg-gray-900 text-white'
@@ -134,6 +140,7 @@ export function Navbar() {
               target="_blank"
               className="flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white"
               title="Parents Login @ Class Dojo"
+              onClick={() => onLinkClick('dojo')}
             >
               <Image
                 priority
@@ -148,6 +155,7 @@ export function Navbar() {
               target="_blank"
               title="Instagram: @hshb1977"
               className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
+              onClick={() => onLinkClick('instagram')}
             >
               <Image
                 priority
@@ -162,6 +170,7 @@ export function Navbar() {
               target="_blank"
               title="Facebook: eastbarnetgreekschool"
               className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
+              onClick={() => onLinkClick('facebook')}
             >
               <Image
                 priority
@@ -176,6 +185,7 @@ export function Navbar() {
               target="_blank"
               title="Twitter: HSHBInfo"
               className="rounded-md px-1 py-2 hover:bg-gray-700 hover:text-white"
+              onClick={() => onLinkClick('twitter')}
             >
               <Image
                 priority

@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { Container } from '@/components/Container'
 import { DiamondIcon } from '@/components/DiamondIcon'
 import type { CommunityDirectory } from '@/data/contentful'
+import { sendEvent } from '@/data/events'
 
 function ImageClipPaths({
   id,
@@ -78,7 +79,15 @@ export const Community = (props: Props) => {
               {({ selectedIndex }) => (
                 <>
                   {Object.keys(directory).map((group, groupIndex) => (
-                    <div key={group + groupIndex} className="relative lg:pl-8">
+                    // disable rule, onClick is being used for event tracking only
+                    // eslint-disable-next-line
+                    <div
+                      key={group + groupIndex}
+                      className="relative lg:pl-8"
+                      onClick={() =>
+                        sendEvent('click', 'community-category-click', group)
+                      }
+                    >
                       <DiamondIcon
                         className={clsx(
                           'absolute top-[0.5625rem] left-[-0.5px] hidden h-1.5 w-1.5 overflow-visible lg:block',

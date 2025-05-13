@@ -1,6 +1,8 @@
 'use client'
 
 import { FormEventHandler, useState } from 'react'
+
+import { sendEvent } from '@/data/events'
 const SuccessIcon = () => {
   return (
     <svg
@@ -48,6 +50,7 @@ export const ContactForm = () => {
       const myForm = event.target
       // @ts-expect-error - update event.target as HTMLFormElement ?
       const formData = new FormData(myForm)
+      sendEvent('click', 'contact-form-submit', formData)
       const res = await fetch('/__forms.html', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -56,9 +59,11 @@ export const ContactForm = () => {
       })
       if (res.status === 200) {
         setStatus('ok')
+        sendEvent('click', 'contact-form-submit-success', formData)
       } else {
         setStatus('error')
         setError(`${res.status} ${res.statusText}`)
+        sendEvent('click', 'contact-form-submit-error', res)
       }
     } catch (e) {
       setStatus('error')
