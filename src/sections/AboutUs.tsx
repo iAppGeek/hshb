@@ -31,7 +31,7 @@ export const AboutUs = async (props: Props) => {
         <div className="flex">
           <pre className="prose font-display flex-1 text-center">
             <h2>Average Class Size</h2>
-            <h1 className="font-bold text-blue-500">8</h1>
+            <h1 className="font-bold text-blue-500">12</h1>
           </pre>
           <pre className="prose font-display flex-1 text-center">
             <h2>Exam Pass Rate</h2>

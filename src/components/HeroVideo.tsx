@@ -20,7 +20,7 @@ export const HeroVideo: React.FC<Props> = (props) => {
 
   useEffect(() => {
     // spefic ID for the video in contentful
-    client.getAsset('772l5OashVngRRR1AzXL2r').then((entry) => {
+    client.getAsset('4thhwbtIQVSSwI1LDbONsJ').then((entry) => {
       setVideoUrl(entry.fields.file?.url)
     })
   })
