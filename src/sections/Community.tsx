@@ -10,10 +10,10 @@ import { DiamondIcon } from '@/components/DiamondIcon'
 import type { CommunityDirectory } from '@/data/contentful'
 import { sendEvent } from '@/data/events'
 
-function ImageClipPaths({
+const ImageClipPaths = ({
   id,
   ...props
-}: React.ComponentPropsWithoutRef<'svg'> & { id: string }) {
+}: React.ComponentPropsWithoutRef<'svg'> & { id: string }) => {
   return (
     <svg aria-hidden="true" width={0} height={0} {...props}>
       <defs>

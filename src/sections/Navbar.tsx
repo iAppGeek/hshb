@@ -42,7 +42,7 @@ const sections = [
   { id: 'contact', title: 'Contact' },
 ]
 
-export function Navbar() {
+export const Navbar = () => {
   const navBarRef = useRef<React.ElementRef<'div'>>(null)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 

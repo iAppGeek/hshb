@@ -1,11 +1,10 @@
-'use client'
 import Image from 'next/image'
 
 import { Container } from '@/components/Container'
 import discordImage from '@/images/resources/discord.svg'
 import { PastEvent } from '@/data/contentful'
 
-function PlaceholderImage() {
+const PlaceholderImage = () => {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="absolute inset-0 flex items-center justify-center bg-[#6366F1]">
@@ -16,7 +15,7 @@ function PlaceholderImage() {
 }
 
 type Props = { events: PastEvent[] }
-export function Events(props: Props) {
+export const Events = (props: Props) => {
   return (
     <section
       id="events"

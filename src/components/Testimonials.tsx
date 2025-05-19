@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
@@ -6,11 +8,17 @@ import {
   Expandable,
   ExpandableButton,
   ExpandableItems,
-} from '@/components/Expandable'
+} from '@/clientComponents/Expandable'
 import { Testimonial, Author } from '@/data/contentful'
 import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
 
-function TestimonialItem({ author, text }: { author: Author; text: string }) {
+const TestimonialItem = ({
+  author,
+  text,
+}: {
+  author: Author
+  text: string
+}) => {
   return (
     <figure className="rounded-4xl p-8 shadow-md ring-1 ring-slate-900/5">
       <blockquote>
@@ -44,7 +52,7 @@ function TestimonialItem({ author, text }: { author: Author; text: string }) {
 }
 
 type Props = { testimonials: Testimonial[] }
-export function Testimonials(props: Props) {
+export const Testimonials = (props: Props) => {
   // testimonials are the only props, so no reason to memo this now
   // if more things cause render, would need to add memo to stop moving around
   const testimonials = props.testimonials

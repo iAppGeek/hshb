@@ -1,8 +1,10 @@
-import { Container } from '@/components/Container'
-import { HeroVideo } from '@/components/HeroVideo'
+import { FC } from 'react'
 
-type Props = { text: string }
-export const Introduction = (props: Props) => {
+import { Container } from '@/components/Container'
+import { HeroVideo } from '@/clientComponents/HeroVideo'
+
+type Props = { text: string; videoUrl: string | undefined }
+export const Introduction: FC<Props> = ({ text, videoUrl }) => {
   return (
     <section
       id="introduction"
@@ -12,14 +14,11 @@ export const Introduction = (props: Props) => {
       <Container className="text-lg tracking-tight text-slate-700">
         <blockquote className="my-6">
           <p className="font-display text-4xl font-bold tracking-tight text-slate-900">
-            <q>{props.text}</q>
+            <q>{text}</q>
           </p>
         </blockquote>
       </Container>
-      <HeroVideo
-        space={process.env.CONTENTFUL_SPACE}
-        token={process.env.CONTENTFUL_TOKEN}
-      />
+      <HeroVideo videoUrl={videoUrl} />
     </section>
   )
 }

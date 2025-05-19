@@ -13,7 +13,8 @@ import {
   getAccordion,
   getCommunityDirectory,
   getEvents,
-  getFeaturedQuote,
+  getFeaturedQuotes,
+  getHeroVideo,
   getTestimonials,
   getTextSectionData,
 } from '@/data/contentful'
@@ -26,7 +27,9 @@ const client = contentful.createClient({
 
 const Home = async () => {
   const heroText = await getTextSectionData(client, 'hero-section')
-  const quote = await getFeaturedQuote(client)
+  const heroVideoUrl = await getHeroVideo(client)
+
+  const quotes = await getFeaturedQuotes(client)
   const introText = await getTextSectionData(client, 'spotlight-section')
 
   const aboutUsText = await getTextSectionData(client, 'aboutUs-blurb')
@@ -57,8 +60,8 @@ const Home = async () => {
     <>
       <Navbar />
 
-      <Hero heroText={heroText} quote={quote} />
-      <Introduction text={introText} />
+      <Hero heroText={heroText} quotes={quotes} />
+      <Introduction text={introText} videoUrl={heroVideoUrl} />
 
       <AboutUs
         text={aboutUsText}

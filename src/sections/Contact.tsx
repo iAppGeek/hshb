@@ -1,5 +1,5 @@
 import { ContactDetails, ContactFormProps } from '@/components/ContactDetails'
-import { ContactForm } from '@/components/ContactForm'
+import { ContactForm } from '@/clientComponents/ContactForm'
 
 export const Contact = (props: ContactFormProps) => {
   return (

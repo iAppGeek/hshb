@@ -1,27 +1,10 @@
 import Image from 'next/image'
 
 import logo from '@/images/logo.png'
+import { FeaturedQuote } from '@/data/contentful'
+import { FeaturedQuoteSelector } from '@/clientComponents/FeaturedQuoteSelector'
 
-type FeaturedQuote = { text: string; author: string; role: string }
-const FeaturedQuote = (props: FeaturedQuote) => {
-  return (
-    <figure className="relative mx-auto max-w-md text-center lg:mx-0 lg:text-left">
-      <blockquote className="mt-2">
-        <p className="font-display text-xl font-medium text-slate-900">
-          {props.text}
-        </p>
-      </blockquote>
-      <figcaption className="mt-2 text-sm text-slate-500">
-        <strong className="pr-1 font-semibold text-blue-600 before:content-['—_']">
-          {props.author}
-        </strong>
-        {props.role}
-      </figcaption>
-    </figure>
-  )
-}
-
-type Props = { heroText: string; quote: FeaturedQuote }
+type Props = { heroText: string; quotes: FeaturedQuote[] }
 export const Hero = (props: Props) => {
   return (
     <header className="overflow-hidden bg-slate-100 lg:bg-transparent">
@@ -34,7 +17,7 @@ export const Hero = (props: Props) => {
         </div>
         <div className="relative px-4 py-6 pb-0 sm:px-6 md:py-0 lg:col-span-7 lg:pt-0 lg:pr-0 lg:pb-8 lg:pl-16">
           <div className="hidden lg:absolute lg:-top-32 lg:right-[-100vw] lg:bottom-0 lg:left-[-100vw] lg:block lg:bg-slate-100" />
-          <FeaturedQuote {...props.quote} />
+          <FeaturedQuoteSelector items={props.quotes} />
         </div>
         <div className="bg-white pt-16 lg:col-span-7 lg:bg-transparent lg:pt-0 lg:pl-16 xl:pl-20">
           <div className="mx-auto px-4 sm:px-6 md:max-w-2xl md:px-4 lg:px-0">

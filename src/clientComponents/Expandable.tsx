@@ -1,7 +1,7 @@
 'use client'
 import { createContext, useContext, useState } from 'react'
 
-function ArrowDownIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+const ArrowDownIcon = (props: React.ComponentPropsWithoutRef<'svg'>) => {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" {...props}>
       <path
@@ -21,7 +21,7 @@ const ExpandableContext = createContext({
   expand: () => {},
 })
 
-export function Expandable(props: React.ComponentPropsWithoutRef<'div'>) {
+export const Expandable = (props: React.ComponentPropsWithoutRef<'div'>) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
@@ -38,17 +38,21 @@ export function Expandable(props: React.ComponentPropsWithoutRef<'div'>) {
   )
 }
 
-export function ExpandableItems({
+export const ExpandableItems = ({
   children,
 }: {
   children: React.ReactNode
   limit?: number
-}) {
+}) => {
   const { isExpanded } = useContext(ExpandableContext)
   return isExpanded ? children : null
 }
 
-export function ExpandableButton({ children }: { children: React.ReactNode }) {
+export const ExpandableButton = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
   const { isExpanded, expand } = useContext(ExpandableContext)
   return (
     !isExpanded && (

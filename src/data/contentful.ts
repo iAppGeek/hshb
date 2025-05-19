@@ -5,8 +5,6 @@ import type {
 } from 'contentful'
 import * as contentful from 'contentful'
 
-import { getRandomInt } from './numbers'
-
 export type CommunityMemeber = {
   priorityOrder: number
   name: string
@@ -34,29 +32,22 @@ export const getTextSectionData = async (
   return item ? (item.fields['text'] as string) : ''
 }
 
+export type FeaturedQuote = { text: string; author: string; role: string }
 //gets a single random entry from all quotes
-export const getFeaturedQuote = async (
+export const getFeaturedQuotes = async (
   client: ContentfulClientApi<undefined>,
-) => {
+): Promise<FeaturedQuote[]> => {
   // get total count of quote entries
-  console.log('fetching Featured Quote')
-  const entriesCount = await client.getEntries({
+  console.log('Fetching Featured Quotes')
+  const entries = await client.getEntries({
     content_type: 'quotes',
-    limit: 0,
   })
-  // get random number in range of total entry count
-  const rdm = getRandomInt(entriesCount.total)
-  // get the one entry
-  const entry = await client.getEntries({
-    content_type: 'quotes',
-    limit: 1,
-    skip: rdm,
-  })
-  return {
-    author: entry.items[0].fields['author'] as string,
-    role: entry.items[0].fields['role'] as string,
-    text: entry.items[0].fields['text'] as string,
-  }
+  console.log(`Fetched ${entries.items.length} Featured Quotes`)
+  return entries.items.map((entry) => ({
+    author: entry.fields['author'] as string,
+    role: entry.fields['role'] as string,
+    text: entry.fields['text'] as string,
+  }))
 }
 
 // gets all the people and groups by role (teacher or commitee)
@@ -156,4 +147,11 @@ export const getTestimonials = async (
       image: getLinkedAssetUrl(e.fields['icon'] as contentful.Asset) as string,
     },
   }))
+}
+
+export const getHeroVideo = async (
+  client: ContentfulClientApi<undefined>,
+): Promise<string | undefined> => {
+  const entry = await client.getAsset('4thhwbtIQVSSwI1LDbONsJ')
+  return entry.fields.file?.url
 }
