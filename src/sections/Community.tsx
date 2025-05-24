@@ -110,7 +110,7 @@ export const Community = (props: Props) => {
                             Get to know
                           </Tab>
                         </div>
-                        <span className="mt-1.5 block text-2xl font-semibold tracking-tight text-blue-900">
+                        <span className="mt-1.5 block text-xl font-semibold tracking-tight text-blue-900">
                           {group}
                         </span>
                       </div>
@@ -130,7 +130,13 @@ export const Community = (props: Props) => {
                 {directory[group]
                   .sort((a, b) => a.priorityOrder - b.priorityOrder)
                   .map((person, personIndex) => (
-                    <div key={personIndex}>
+                    <div
+                      key={personIndex}
+                      className={clsx(
+                        person.largeView &&
+                          'col-span-1 sm:col-span-2 md:col-span-3',
+                      )}
+                    >
                       <div className="group relative h-[17.5rem] transform overflow-hidden rounded-4xl">
                         <div
                           className={clsx(
@@ -146,14 +152,28 @@ export const Community = (props: Props) => {
                           className="absolute inset-0 bg-indigo-50"
                           style={{ clipPath: `url(#${id}-${personIndex % 3})` }}
                         >
-                          <Image
-                            className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                            src={person.photo}
-                            alt={person.name + ' avatar'}
-                            width={300}
-                            height={300}
-                            sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
-                          />
+                          {person.largeView ? (
+                            <>
+                              <br />
+                              <Image
+                                className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
+                                src={person.photo}
+                                alt={person.name + ' avatar'}
+                                width={1000}
+                                height={660}
+                                sizes="100vw"
+                              />{' '}
+                            </>
+                          ) : (
+                            <Image
+                              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
+                              src={person.photo}
+                              alt={person.name + ' avatar'}
+                              width={300}
+                              height={300}
+                              sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                            />
+                          )}
                         </div>
                       </div>
                       <h3 className="font-display mt-8 text-xl font-bold tracking-tight text-slate-900">

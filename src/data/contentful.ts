@@ -10,6 +10,7 @@ export type CommunityMemeber = {
   name: string
   blurb: string
   photo: string
+  largeView: boolean
 }
 export type CommunityDirectory = { [key: string]: CommunityMemeber[] }
 
@@ -65,6 +66,7 @@ export const getCommunityDirectory = async (
       photo: getLinkedAssetUrl(
         curr.fields['photo'] as contentful.Asset,
       ) as string,
+      largeView: !!curr.fields['largeView'],
     }
 
     if (prev[role]) {
