@@ -9,6 +9,7 @@ export type CommunityMemeber = {
   priorityOrder: number
   name: string
   blurb: string
+  extendedBlurb: string | undefined
   photo: string
   largeView: boolean
 }
@@ -62,6 +63,7 @@ export const getCommunityDirectory = async (
     const member: CommunityMemeber = {
       priorityOrder: curr.fields['priorityOrder'] as number,
       blurb: curr.fields['blurb'] as string,
+      extendedBlurb: curr.fields['extendedBlurb'] as string | undefined,
       name: `${curr.fields['firstName']} ${curr.fields['lastName']}`,
       photo: getLinkedAssetUrl(
         curr.fields['photo'] as contentful.Asset,

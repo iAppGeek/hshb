@@ -133,7 +133,7 @@ export const Community = (props: Props) => {
                     <div
                       key={personIndex}
                       className={clsx(
-                        person.largeView &&
+                        (person.largeView || person.extendedBlurb) &&
                           'col-span-1 sm:col-span-2 md:col-span-3',
                       )}
                     >
@@ -181,6 +181,7 @@ export const Community = (props: Props) => {
                       </h3>
                       <p className="mt-1 text-base tracking-tight text-slate-500">
                         {person.blurb}
+                        <pre className="prose">{person.extendedBlurb}</pre>
                       </p>
                     </div>
                   ))}
