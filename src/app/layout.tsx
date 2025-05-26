@@ -11,10 +11,35 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+const baseTitle = 'HSHB'
+const description =
+  'The Hellenic School of High Barnet. Located in Cockfosters, North London Based in East Barnet Secondary School'
+
 export const metadata: Metadata = {
-  title: 'HSHB',
-  description:
-    'The Hellenic School of High Barnet. Located in Cockfosters North London, based in East Barnet Secondary School',
+  title: {
+    template: `%s | ${baseTitle}`,
+    default: baseTitle,
+  },
+  description,
+  authors: { name: 'HSHB', url: 'www.hshb.org.uk' },
+  category: 'Greek School',
+  classification: 'Greek School in Cockfosters, Enfield, Barnet, North London',
+  keywords: ['greek school', 'greekschool', 'enfield', 'barnet', 'cockfosters'],
+  openGraph: {
+    type: 'website',
+    title: baseTitle,
+    description,
+    emails: ['info@hshb.org.uk', 'head@hshb.org.uk'],
+    phoneNumbers: '+44 (0) 7753 829 692',
+  },
+  twitter: { site: '@HSHBInfo' },
+  formatDetection: {
+    address: true,
+    date: true,
+    email: true,
+    telephone: true,
+    url: true,
+  },
 }
 
 export default function RootLayout({
