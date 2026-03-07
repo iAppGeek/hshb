@@ -30,8 +30,8 @@ export default async function DashboardPage() {
     {
       label: isTeacher ? 'My Students' : 'Total Students',
       value: isTeacher // TODO fix the types here
-        ? (students as any).filter((s: any) =>
-            (classes as any).some((c: any) => c.id === s.class_id),
+        ? (students ).filter((s) =>
+            (classes ).some((c) => c.id === s.class_id),
           ).length
         : students.length,
       icon: UsersIcon,

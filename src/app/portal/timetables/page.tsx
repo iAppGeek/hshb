@@ -19,7 +19,7 @@ export default async function TimetablesPage() {
     isTeacher
       ? (async () => {
           const myClasses = await getClassesByTeacher(staffId!)
-          const perClass = await Promise.all(myClasses.map((c: any) => getTimetableByClass(c.id)))
+          const perClass = await Promise.all(myClasses.map((c) => getTimetableByClass(c.id)))
           return perClass.flat()
         })()
       : getAllTimetableSlots(),
@@ -27,7 +27,7 @@ export default async function TimetablesPage() {
 
   const slotsByDay = DAYS.map((day) => ({
     day,
-    slots: slots.filter((s: any) => s.day_of_week === day),
+    slots: slots.filter((s) => s.day_of_week === day),
   })).filter((d) => d.slots.length > 0)
 
   return (
@@ -62,8 +62,8 @@ export default async function TimetablesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {daySlots.map((slot: any) => {
-                    const cls: any = classes.find((c: any) => c.id === slot.class_id)
+                  {daySlots.map((slot) => {
+                    const cls = classes.find((c) => c.id === slot.class_id)
                     return (
                       <tr key={slot.id} className="hover:bg-gray-50">
                         <td className="px-6 py-3 text-sm text-gray-900">
