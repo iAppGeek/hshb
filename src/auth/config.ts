@@ -2,6 +2,7 @@ import NextAuth from 'next-auth'
 import MicrosoftEntraID from 'next-auth/providers/microsoft-entra-id'
 
 import { getStaffByEmail } from '@/db'
+import { StaffRole } from '@/types/next-auth'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -14,13 +15,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async signIn({ user }) {
       if (!user.email) return false
-      const staff = await getStaffByEmail(user.email)
+      const staff: any = await getStaffByEmail(user.email) // TODO fix types here
       return !!staff
     },
     async jwt({ token, user }) {
       // user is only present on first sign-in
       if (user?.email) {
-        const staff = await getStaffByEmail(user.email)
+        const staff: any = await getStaffByEmail(user.email)
         if (staff) {
           token.role = staff.role
           token.staffId = staff.id
@@ -30,7 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role as string
+        session.user.role = token.role as StaffRole // TODO fix the types here
         session.user.staffId = token.staffId as string
       }
       return session

@@ -6,19 +6,19 @@ export const metadata: Metadata = { title: 'Reports' }
 
 export default async function ReportsPage() {
   const [students, classes, staff] = await Promise.all([
-    getAllStudents(),
-    getAllClasses(),
-    getAllStaff(),
+    getAllStudents() as any, // TODO fix the types here
+    getAllClasses() as any,
+    getAllStaff() as any,
   ])
 
-  const activeStudents = students.filter((s) => s.active)
-  const studentsWithAllergies = students.filter((s) => s.allergies)
-  const teachers = staff.filter((s) => s.role === 'teacher')
+  const activeStudents = students.filter((s: any) => s.active)
+  const studentsWithAllergies = students.filter((s: any) => s.allergies)
+  const teachers = staff.filter((s: any) => s.role === 'teacher')
 
-  const enrolmentByClass = classes.map((cls) => ({
+  const enrolmentByClass = classes.map((cls: any) => ({
     name: cls.name,
     yearGroup: cls.year_group,
-    count: activeStudents.filter((s) => s.class_id === cls.id).length,
+    count: activeStudents.filter((s: any) => s.class_id === cls.id).length,
   }))
 
   const stats = [
@@ -65,7 +65,7 @@ export default async function ReportsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {enrolmentByClass.map((row) => (
+            {enrolmentByClass.map((row: any) => (
               <tr key={row.name} className="hover:bg-gray-50">
                 <td className="px-6 py-3 text-sm font-medium text-gray-900">{row.name}</td>
                 <td className="px-6 py-3 text-sm text-gray-600">{row.yearGroup}</td>

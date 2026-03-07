@@ -29,9 +29,9 @@ export default async function DashboardPage() {
   const stats = [
     {
       label: isTeacher ? 'My Students' : 'Total Students',
-      value: isTeacher
-        ? students.filter((s) =>
-            classes.some((c) => c.id === s.class_id),
+      value: isTeacher // TODO fix the types here
+        ? (students as any).filter((s: any) =>
+            (classes as any).some((c: any) => c.id === s.class_id),
           ).length
         : students.length,
       icon: UsersIcon,
