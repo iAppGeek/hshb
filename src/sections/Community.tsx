@@ -179,10 +179,10 @@ export const Community = (props: Props) => {
                       <h3 className="font-display mt-8 text-xl font-bold tracking-tight text-slate-900">
                         {person.name}
                       </h3>
-                      <p className="mt-1 text-base tracking-tight text-slate-500">
+                      <div className="mt-1 text-base tracking-tight text-slate-500">
                         {person.blurb}
                         <pre className="prose">{person.extendedBlurb}</pre>
-                      </p>
+                      </div>
                     </div>
                   ))}
               </TabPanel>
