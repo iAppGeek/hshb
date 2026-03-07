@@ -1,0 +1,5 @@
+export { supabase } from './client'
+export { getStaffByEmail, getAllStaff } from './staff'
+export { getAllStudents, getStudentsByClass, getStudentById } from './students'
+export { getAllClasses, getClassesByTeacher } from './classes'
+export { getAllTimetableSlots, getTimetableByClass } from './timetable'

@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon, XMarkIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 import {
   Disclosure,
   DisclosureButton,
@@ -149,6 +149,15 @@ export const Navbar = () => {
                 alt="Parents Login"
               />
               <span className="hidden lg:inline">Parent Login</span>
+            </a>
+            <a
+              href="/portal/login"
+              title="Staff Portal"
+              className="flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white"
+              onClick={() => onLinkClick('staff-portal')}
+            >
+              <LockClosedIcon className="h-5 w-5" aria-hidden="true" />
+              <span className="hidden lg:inline">Staff</span>
             </a>
             <a
               href="https://instagram.hshb.org.uk/"
