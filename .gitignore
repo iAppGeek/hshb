@@ -4,6 +4,15 @@ node_modules/
 .*.env
 .env.local
 
+# Claude
+.claude/settings.local.json
+
+# VSCode
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
 # OS generated files #
 ######################
 .DS_Store
