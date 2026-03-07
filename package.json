@@ -15,10 +15,10 @@
   "dependencies": {
     "@headlessui/react": "2.2.9",
     "@heroicons/react": "2.2.0",
-    "@next/third-parties": "15.3.2",
+    "@next/third-parties": "16.1.6",
     "clsx": "2.1.1",
     "contentful": "11.10.5",
-    "next": "15.5.12",
+    "next": "16.1.6",
     "next-mdx-remote": "6.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -36,7 +36,7 @@
     "@typescript-eslint/eslint-plugin": "8.56.1",
     "autoprefixer": "10.4.27",
     "eslint": "9.39.4",
-    "eslint-config-next": "15.2.4",
+    "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-jsx-a11y": "6.10.2",
@@ -67,8 +67,12 @@
       "prettier --write"
     ]
   },
-  "engines" : { 
-    "npm" : ">=11.11.0",
-    "node" : ">=25.8.0"
+  "engines": {
+    "npm": ">=11.11.0",
+    "node": ">=24.14.0"
+  },
+  "overrides": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3"
   }
 }
