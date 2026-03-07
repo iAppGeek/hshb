@@ -18,7 +18,7 @@ export default async function StudentsPage() {
   if (isTeacher) {
     const classes = await getClassesByTeacher(staffId!)
     const classIds = classes.map((c) => c.id)
-    const perClass = await Promise.all(classIds.map(getStudentsByClass))
+    const perClass = await Promise.all(classIds.map((id) => getStudentsByClass(id)))
     students = perClass.flat()
   } else {
     students = await getAllStudents()
