@@ -9,7 +9,10 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
@@ -30,10 +33,14 @@
     "@tailwindcss/forms": "0.5.11",
     "@tailwindcss/postcss": "4.2.1",
     "@tailwindcss/typography": "0.5.19",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.1",
     "@types/node": "25.3.5",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.56.1",
+    "@vitejs/plugin-react": "5.1.4",
     "autoprefixer": "10.4.27",
     "eslint": "9.39.4",
     "eslint-config-next": "16.1.6",
@@ -43,13 +50,15 @@
     "eslint-plugin-prettier": "5.5.5",
     "eslint-plugin-react": "7.37.5",
     "husky": "9.1.7",
+    "jsdom": "27.0.1",
     "lint-staged": "16.3.2",
     "postcss": "8.5.8",
     "prettier": "3.8.1",
     "prettier-plugin-tailwindcss": "0.7.2",
     "sharp": "0.34.5",
     "tailwindcss": "4.2.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
   },
   "optionalDependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "^4.2.1",
