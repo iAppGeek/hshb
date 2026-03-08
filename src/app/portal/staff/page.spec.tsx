@@ -15,7 +15,9 @@ beforeEach(() => {
 const mockStaff = [
   {
     id: 'staff-1',
-    name: 'Jane Smith',
+    first_name: 'Jane',
+    last_name: 'Smith',
+    display_name: 'Jane Smith',
     role: 'teacher',
     email: 'jane@school.com',
     contact_number: '07700 900001',
@@ -23,7 +25,9 @@ const mockStaff = [
   },
   {
     id: 'staff-2',
-    name: 'Bob Jones',
+    first_name: 'Bob',
+    last_name: 'Jones',
+    display_name: null,
     role: 'admin',
     email: 'bob@school.com',
     contact_number: null,
@@ -46,13 +50,16 @@ describe('StaffPage', () => {
     expect(screen.getByText('No staff found.')).toBeTruthy()
   })
 
-  it('renders staff names and roles', async () => {
+  it('renders staff first/last names, display name, and roles', async () => {
     vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
 
     render(await StaffPage())
+    expect(screen.getByText('Jane')).toBeTruthy()
+    expect(screen.getByText('Smith')).toBeTruthy()
     expect(screen.getByText('Jane Smith')).toBeTruthy()
     expect(screen.getByText('Teacher')).toBeTruthy()
-    expect(screen.getByText('Bob Jones')).toBeTruthy()
+    expect(screen.getByText('Bob')).toBeTruthy()
+    expect(screen.getByText('Jones')).toBeTruthy()
     expect(screen.getByText('Admin')).toBeTruthy()
   })
 

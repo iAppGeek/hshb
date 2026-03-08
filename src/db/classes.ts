@@ -3,7 +3,7 @@ import { supabase } from './client'
 export async function getAllClasses() {
   const { data } = await supabase
     .from('classes')
-    .select('*, teacher:staff(id, name, email)')
+    .select('*, teacher:staff(id, first_name, last_name, display_name, email)')
     .order('year_group')
   return data ?? []
 }
@@ -11,7 +11,7 @@ export async function getAllClasses() {
 export async function getClassesByTeacher(teacherId: string) {
   const { data } = await supabase
     .from('classes')
-    .select('*, teacher:staff(id, name, email)')
+    .select('*, teacher:staff(id, first_name, last_name, display_name, email)')
     .eq('teacher_id', teacherId)
     .order('year_group')
   return data ?? []

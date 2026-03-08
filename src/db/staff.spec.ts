@@ -14,7 +14,7 @@ beforeEach(() => {
 
 describe('getStaffByEmail', () => {
   it('returns staff when email matches', async () => {
-    const mockStaff = { id: 'staff-1', email: 'teacher@school.com', name: 'Jane Smith', role: 'teacher' }
+    const mockStaff = { id: 'staff-1', email: 'teacher@school.com', first_name: 'Jane', last_name: 'Smith', display_name: null, role: 'teacher' }
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
@@ -57,8 +57,8 @@ describe('getStaffByEmail', () => {
 describe('getAllStaff', () => {
   it('returns all staff ordered by name', async () => {
     const mockStaff = [
-      { id: 'staff-1', name: 'Alice', role: 'teacher' },
-      { id: 'staff-2', name: 'Bob', role: 'admin' },
+      { id: 'staff-1', first_name: 'Alice', last_name: 'Papadopoulos', display_name: null, role: 'teacher' },
+      { id: 'staff-2', first_name: 'Bob', last_name: 'Jones', display_name: 'Mr Jones', role: 'admin' },
     ]
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
@@ -87,7 +87,9 @@ describe('getAllStaffWithClasses', () => {
     const mockData = [
       {
         id: 'staff-1',
-        name: 'Jane Smith',
+        first_name: 'Jane',
+        last_name: 'Smith',
+        display_name: null,
         role: 'teacher',
         classes: [{ id: 'class-1', name: 'Year 3A', room_number: 'R12', year_group: '3' }],
       },

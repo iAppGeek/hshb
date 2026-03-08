@@ -4,7 +4,9 @@
 CREATE TABLE staff (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email           TEXT UNIQUE NOT NULL,
-  name            TEXT NOT NULL,
+  first_name      TEXT NOT NULL,
+  last_name       TEXT NOT NULL,
+  display_name    TEXT,                -- optional override; if null, use first_name || ' ' || last_name
   role            TEXT NOT NULL CHECK (role IN ('teacher', 'admin', 'headteacher')),
   contact_number  TEXT,
   created_at      TIMESTAMPTZ DEFAULT NOW()

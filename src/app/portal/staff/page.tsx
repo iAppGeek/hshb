@@ -29,7 +29,13 @@ export default async function StaffPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Name
+                  First name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Last name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Display name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                   Role
@@ -51,7 +57,13 @@ export default async function StaffPage() {
                 return (
                   <tr key={member.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {member.name}
+                      {member.first_name}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {member.last_name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {member.display_name ?? '—'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {roleLabels[member.role] ?? member.role}

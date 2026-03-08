@@ -117,25 +117,31 @@ export type Database = {
         Row: {
           contact_number: string | null
           created_at: string | null
+          display_name: string | null
           email: string
+          first_name: string
           id: string
-          name: string
+          last_name: string
           role: string
         }
         Insert: {
           contact_number?: string | null
           created_at?: string | null
+          display_name?: string | null
           email: string
+          first_name: string
           id?: string
-          name: string
+          last_name: string
           role: string
         }
         Update: {
           contact_number?: string | null
           created_at?: string | null
+          display_name?: string | null
           email?: string
+          first_name?: string
           id?: string
-          name?: string
+          last_name?: string
           role?: string
         }
         Relationships: []

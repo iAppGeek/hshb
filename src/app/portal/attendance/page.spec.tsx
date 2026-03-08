@@ -17,6 +17,7 @@ vi.mock('./AttendanceForm', () => ({
 }))
 
 import AttendancePage from './page'
+import AttendanceForm from './AttendanceForm'
 import { auth } from '@/auth'
 import {
   getAllClasses,
@@ -101,5 +102,69 @@ describe('AttendancePage', () => {
       }),
     )
     expect(screen.getByText('(register already taken)')).toBeTruthy()
+  })
+
+  it('queries attendance for the specific date from searchParams', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
+    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
+
+    await AttendancePage({
+      searchParams: Promise.resolve({ classId: 'class-1', date: '2024-06-15' }),
+    })
+
+    expect(getAttendanceByClassAndDate).toHaveBeenCalledWith('class-1', '2024-06-15')
+  })
+
+  it('passes existing attendance statuses to AttendanceForm for the given date', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
+    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
+      { id: 'att-1', student_id: 'student-1', status: 'absent', class_id: 'class-1', date: '2024-06-15' },
+    ] as any)
+
+    render(
+      await AttendancePage({
+        searchParams: Promise.resolve({ classId: 'class-1', date: '2024-06-15' }),
+      }),
+    )
+
+    expect(vi.mocked(AttendanceForm)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        date: '2024-06-15',
+        existing: { 'student-1': 'absent' },
+      }),
+      undefined,
+    )
+  })
+
+  it('shows the selected date in the class/date summary line', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
+    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
+
+    render(
+      await AttendancePage({
+        searchParams: Promise.resolve({ classId: 'class-1', date: '2024-06-15' }),
+      }),
+    )
+
+    expect(screen.getByText(/2024-06-15/)).toBeTruthy()
+  })
+
+  it('defaults to today when no date is provided in searchParams', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
+    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
+
+    const today = new Date().toISOString().split('T')[0]
+
+    await AttendancePage({ searchParams: Promise.resolve({ classId: 'class-1' }) })
+
+    expect(getAttendanceByClassAndDate).toHaveBeenCalledWith('class-1', today)
   })
 })

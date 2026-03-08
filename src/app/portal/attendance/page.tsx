@@ -96,14 +96,21 @@ export default async function AttendancePage({
                 {selectedClassId && (
                   <input type="hidden" name="classId" value={selectedClassId} />
                 )}
-                <input
-                  id="date-picker"
-                  type="date"
-                  name="date"
-                  defaultValue={selectedDate}
-                  onChange={(e) => (e.currentTarget.form as HTMLFormElement).submit()}
-                  className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="flex gap-2">
+                  <input
+                    id="date-picker"
+                    type="date"
+                    name="date"
+                    defaultValue={selectedDate}
+                    className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-700 ring-1 ring-gray-200 shadow-sm transition hover:bg-gray-50"
+                  >
+                    Load
+                  </button>
+                </div>
               </form>
             </div>
           </div>

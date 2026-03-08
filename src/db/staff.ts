@@ -13,7 +13,7 @@ export async function getAllStaff() {
   const { data } = await supabase
     .from('staff')
     .select('*')
-    .order('name')
+    .order('last_name')
   return data ?? []
 }
 
@@ -21,6 +21,6 @@ export async function getAllStaffWithClasses() {
   const { data } = await supabase
     .from('staff')
     .select('*, classes(id, name, room_number, year_group)')
-    .order('name')
+    .order('last_name')
   return data ?? []
 }
