@@ -54,7 +54,7 @@ describe('AttendanceForm', () => {
     expect(screen.getByText('1 absent')).toBeTruthy()
   })
 
-  it('defaults to present when no existing status', () => {
+  it('shows no selection by default when no existing status', () => {
     render(
       <AttendanceForm
         classId="class-1"
@@ -63,8 +63,8 @@ describe('AttendanceForm', () => {
         existing={{}}
       />,
     )
-    expect(screen.getByText('2 present')).toBeTruthy()
-    expect(screen.getByText('0 absent')).toBeTruthy()
+    expect(screen.getByText('0 present')).toBeTruthy()
+    expect(screen.getByText('2 unmarked')).toBeTruthy()
   })
 
   it('updates summary counts when status is toggled', () => {
@@ -77,10 +77,10 @@ describe('AttendanceForm', () => {
       />,
     )
 
-    // Initially 1 present
-    expect(screen.getByText('1 present')).toBeTruthy()
+    // Initially unmarked
+    expect(screen.getByText('1 unmarked')).toBeTruthy()
 
-    // Click Absent button for this student (first one in the row)
+    // Click Absent button for this student
     const absentButtons = screen.getAllByText('Absent')
     fireEvent.click(absentButtons[0])
 

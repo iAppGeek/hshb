@@ -27,11 +27,11 @@ const STATUS_OPTIONS: { value: AttendanceStatus; label: string; colour: string }
 ]
 
 export default function AttendanceForm({ classId, date, students, existing }: Props) {
-  const [statuses, setStatuses] = useState<Record<string, AttendanceStatus>>(
+  const [statuses, setStatuses] = useState<Record<string, AttendanceStatus | null>>(
     () => {
-      const initial: Record<string, AttendanceStatus> = {}
+      const initial: Record<string, AttendanceStatus | null> = {}
       students.forEach((s) => {
-        initial[s.id] = existing[s.id] ?? 'present'
+        initial[s.id] = existing[s.id] ?? null
       })
       return initial
     },
@@ -53,10 +53,13 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
     })
   }
 
+  const allSelected = students.every((s) => statuses[s.id] !== null)
+
   const counts = {
     present: Object.values(statuses).filter((s) => s === 'present').length,
     late:    Object.values(statuses).filter((s) => s === 'late').length,
     absent:  Object.values(statuses).filter((s) => s === 'absent').length,
+    unset:   Object.values(statuses).filter((s) => s === null).length,
   }
 
   return (
@@ -81,6 +84,11 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
             <span className="rounded-full bg-red-100 px-3 py-1 font-medium text-red-800">
               {counts.absent} absent
             </span>
+            {counts.unset > 0 && (
+              <span className="rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-500">
+                {counts.unset} unmarked
+              </span>
+            )}
           </div>
 
           <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
@@ -103,11 +111,12 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
                   const current = statuses[student.id]
                   return (
                     <tr key={student.id}>
-                      {/* Hidden inputs carry the data for the server action */}
-                      <input type="hidden" name="studentId" value={student.id} />
-                      <input type="hidden" name={`status_${student.id}`} value={current} />
-
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {/* Hidden inputs carry the data for the server action */}
+                        <input type="hidden" name="studentId" value={student.id} />
+                        {current !== null && (
+                          <input type="hidden" name={`status_${student.id}`} value={current} />
+                        )}
                         {student.last_name}, {student.first_name}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
@@ -139,13 +148,18 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
           </div>
 
           <div className="mt-4 flex items-center gap-4">
-            <button
-              type="submit"
-              disabled={isPending}
-              className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
+            <span
+              title={!allSelected ? `${counts.unset} student${counts.unset === 1 ? '' : 's'} still unmarked` : undefined}
+              className={!allSelected ? 'cursor-not-allowed' : undefined}
             >
-              {isPending ? 'Saving…' : 'Save register'}
-            </button>
+              <button
+                type="submit"
+                disabled={isPending || !allSelected}
+                className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50"
+              >
+                {isPending ? 'Saving…' : 'Save register'}
+              </button>
+            </span>
             {saved && (
               <span className="text-sm text-green-600">Register saved.</span>
             )}
