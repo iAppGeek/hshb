@@ -5,6 +5,7 @@ import {
   HomeIcon,
   UsersIcon,
   CalendarDaysIcon,
+  ClipboardDocumentCheckIcon,
   ChartBarIcon,
   ArrowRightStartOnRectangleIcon,
 } from '@heroicons/react/24/outline'
@@ -19,6 +20,7 @@ const navItems = [
   { href: '/portal/dashboard', label: 'Dashboard', icon: HomeIcon },
   { href: '/portal/students', label: 'Students', icon: UsersIcon },
   { href: '/portal/timetables', label: 'Timetables', icon: CalendarDaysIcon },
+  { href: '/portal/attendance', label: 'Attendance', icon: ClipboardDocumentCheckIcon },
   {
     href: '/portal/reports',
     label: 'Reports',

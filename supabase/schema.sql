@@ -81,6 +81,27 @@ CREATE TABLE timetable_slots (
   created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ─── Attendance ───────────────────────────────────────────────────────────────
+-- One record per student per date. status: present | absent | late
+-- UNIQUE(student_id, date) means upsert on conflict updates the existing row.
+
+CREATE TABLE attendance (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  class_id     UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+  student_id   UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  date         DATE NOT NULL,
+  status       TEXT NOT NULL CHECK (status IN ('present', 'absent', 'late')),
+  notes        TEXT,
+  recorded_by  UUID REFERENCES staff(id) ON DELETE SET NULL,
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (student_id, date)
+);
+
+CREATE TRIGGER attendance_updated_at
+  BEFORE UPDATE ON attendance
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- ─── Row Level Security ───────────────────────────────────────────────────────
 -- Access is enforced in the application layer (Next.js) using the service role
 -- key, so RLS is enabled but permissive for the service role.
@@ -89,6 +110,7 @@ ALTER TABLE staff            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE classes          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE timetable_slots  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE attendance       ENABLE ROW LEVEL SECURITY;
 
 -- Service role bypasses RLS automatically — no policy needed for server-side queries.
 -- Add restrictive policies here if you ever expose these tables via the anon key.
@@ -101,3 +123,5 @@ CREATE INDEX ON students (active);
 CREATE INDEX ON classes (teacher_id);
 CREATE INDEX ON timetable_slots (class_id);
 CREATE INDEX ON timetable_slots (day_of_week);
+CREATE INDEX ON attendance (class_id, date);
+CREATE INDEX ON attendance (student_id);

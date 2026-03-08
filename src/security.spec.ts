@@ -27,7 +27,19 @@ const SECRET_VARS = [
 
 // These modules run database queries and auth checks using the secret keys above.
 // They must never be imported into a 'use client' file, which runs in the browser.
+// Note: `import type` lines are erased by TypeScript before bundling and create
+// no runtime dependency, so we strip them before scanning.
 const SERVER_ONLY_IMPORTS = ["from '@/db'", "from '@/auth'"]
+
+// Remove type-only import lines so they don't trigger false positives.
+// `import type { Foo } from '@/db'` compiles away to nothing — only value
+// imports create a real dependency that Next.js would bundle for the browser.
+function stripTypeImports(content: string): string {
+  return content
+    .split('\n')
+    .filter((line) => !line.trimStart().startsWith('import type'))
+    .join('\n')
+}
 
 // Recursively collect all non-test TypeScript source files under src/
 function walkSrc(dir: string): string[] {
@@ -97,7 +109,7 @@ describe('Client components', () => {
     // Importing either into a 'use client' file would cause Next.js to bundle
     // those modules — and the secrets they depend on — into the browser build.
     for (const file of clientFiles) {
-      const content = readFileSync(file, 'utf-8')
+      const content = stripTypeImports(readFileSync(file, 'utf-8'))
       for (const imp of SERVER_ONLY_IMPORTS) {
         expect(
           content,
@@ -112,7 +124,7 @@ describe('Client components', () => {
     // would cause Next.js to inline the value at build time, exposing it in
     // the browser bundle even without a NEXT_PUBLIC_ prefix.
     for (const file of clientFiles) {
-      const content = readFileSync(file, 'utf-8')
+      const content = stripTypeImports(readFileSync(file, 'utf-8'))
       for (const varName of SECRET_VARS) {
         expect(
           content,
@@ -142,7 +154,7 @@ describe('Supabase client', () => {
     // imports @/db would pull that initialisation — and the key — into the
     // browser bundle.
     for (const file of clientFiles) {
-      const content = readFileSync(file, 'utf-8')
+      const content = stripTypeImports(readFileSync(file, 'utf-8'))
       expect(
         content,
         `${file} is a client component but imports from @/db`,

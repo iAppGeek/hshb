@@ -26,7 +26,7 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-describe('middleware', () => {
+describe('proxy', () => {
   it('redirects unauthenticated user from portal to login', () => {
     middleware(...makeReq('/portal/dashboard'))
     expect(mockRedirect).toHaveBeenCalledWith(
