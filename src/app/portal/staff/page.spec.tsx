@@ -1,15 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
+vi.mock('@/auth', () => ({
+  auth: vi.fn(),
+}))
+
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn().mockImplementation((url: string) => {
+    throw new Error(`NEXT_REDIRECT:${url}`)
+  }),
+}))
+
 vi.mock('@/db', () => ({
   getAllStaffWithClasses: vi.fn(),
 }))
 
 import StaffPage from './page'
+import { auth } from '@/auth'
 import { getAllStaffWithClasses } from '@/db'
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher' } } as any)
 })
 
 const mockStaff = [
@@ -36,6 +48,12 @@ const mockStaff = [
 ]
 
 describe('StaffPage', () => {
+  it('redirects to login when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValue(null as any)
+
+    await expect(StaffPage()).rejects.toThrow('NEXT_REDIRECT:/portal/login')
+  })
+
   it('renders the Staff heading', async () => {
     vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
 

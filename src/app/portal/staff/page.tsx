@@ -1,5 +1,7 @@
 import { type Metadata } from 'next'
+import { redirect } from 'next/navigation'
 
+import { auth } from '@/auth'
 import { getAllStaffWithClasses } from '@/db'
 
 export const metadata: Metadata = { title: 'Staff' }
@@ -11,6 +13,11 @@ const roleLabels: Record<string, string> = {
 }
 
 export default async function StaffPage() {
+  const session = await auth()
+  if (!session) {
+    redirect('/portal/login')
+  }
+
   const staff = await getAllStaffWithClasses()
 
   return (

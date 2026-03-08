@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
+vi.mock('@/auth', () => ({
+  auth: vi.fn(),
+}))
+
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn().mockImplementation((url: string) => {
+    throw new Error(`NEXT_REDIRECT:${url}`)
+  }),
+}))
+
 vi.mock('@/db', () => ({
   getAllStudents: vi.fn(),
   getAllClasses: vi.fn(),
@@ -8,10 +18,13 @@ vi.mock('@/db', () => ({
 }))
 
 import ReportsPage from './page'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 import { getAllStudents, getAllClasses, getAllStaff } from '@/db'
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
 })
 
 const makeStudents = (count: number, active = true) =>
@@ -23,6 +36,18 @@ const makeStudents = (count: number, active = true) =>
   }))
 
 describe('ReportsPage', () => {
+  it('redirects to dashboard when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValue(null as any)
+
+    await expect(ReportsPage()).rejects.toThrow('NEXT_REDIRECT:/portal/dashboard')
+  })
+
+  it('redirects to dashboard when role is teacher', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher' } } as any)
+
+    await expect(ReportsPage()).rejects.toThrow('NEXT_REDIRECT:/portal/dashboard')
+  })
+
   it('renders the Reports & Analytics heading', async () => {
     vi.mocked(getAllStudents).mockResolvedValue([])
     vi.mocked(getAllClasses).mockResolvedValue([])

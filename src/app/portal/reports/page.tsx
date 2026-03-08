@@ -1,10 +1,18 @@
 import { type Metadata } from 'next'
+import { redirect } from 'next/navigation'
 
+import { auth } from '@/auth'
 import { getAllStudents, getAllClasses, getAllStaff } from '@/db'
 
 export const metadata: Metadata = { title: 'Reports' }
 
 export default async function ReportsPage() {
+  const session = await auth()
+  const role = session?.user?.role
+  if (!session || (role !== 'admin' && role !== 'headteacher')) {
+    redirect('/portal/dashboard')
+  }
+
   const [students, classes, staff] = await Promise.all([
     getAllStudents(), // TODO fix the types here
     getAllClasses(),
