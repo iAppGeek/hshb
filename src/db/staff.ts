@@ -16,3 +16,11 @@ export async function getAllStaff() {
     .order('name')
   return data ?? []
 }
+
+export async function getAllStaffWithClasses() {
+  const { data } = await supabase
+    .from('staff')
+    .select('*, classes(id, name, room_number, year_group)')
+    .order('name')
+  return data ?? []
+}

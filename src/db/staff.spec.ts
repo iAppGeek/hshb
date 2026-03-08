@@ -6,7 +6,7 @@ vi.mock('./client', () => ({
   supabase: { from: mockFrom },
 }))
 
-import { getStaffByEmail, getAllStaff } from './staff'
+import { getStaffByEmail, getAllStaff, getAllStaffWithClasses } from './staff'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -78,6 +78,39 @@ describe('getAllStaff', () => {
     })
 
     const result = await getAllStaff()
+    expect(result).toEqual([])
+  })
+})
+
+describe('getAllStaffWithClasses', () => {
+  it('returns staff with their associated classes', async () => {
+    const mockData = [
+      {
+        id: 'staff-1',
+        name: 'Jane Smith',
+        role: 'teacher',
+        classes: [{ id: 'class-1', name: 'Year 3A', room_number: 'R12', year_group: '3' }],
+      },
+    ]
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({ data: mockData }),
+      }),
+    })
+
+    const result = await getAllStaffWithClasses()
+    expect(result).toEqual(mockData)
+    expect(mockFrom).toHaveBeenCalledWith('staff')
+  })
+
+  it('returns empty array when no staff exist', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({ data: null }),
+      }),
+    })
+
+    const result = await getAllStaffWithClasses()
     expect(result).toEqual([])
   })
 })

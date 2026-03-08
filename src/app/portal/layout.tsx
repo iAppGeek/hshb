@@ -4,6 +4,7 @@ import Link from 'next/link'
 import {
   HomeIcon,
   UsersIcon,
+  UserGroupIcon,
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
@@ -21,6 +22,7 @@ const navItems = [
   { href: '/portal/students', label: 'Students', icon: UsersIcon },
   { href: '/portal/timetables', label: 'Timetables', icon: CalendarDaysIcon },
   { href: '/portal/attendance', label: 'Attendance', icon: ClipboardDocumentCheckIcon },
+  { href: '/portal/staff', label: 'Staff', icon: UserGroupIcon },
   {
     href: '/portal/reports',
     label: 'Reports',
