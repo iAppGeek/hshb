@@ -2,14 +2,12 @@
 
 import { useState, useTransition } from 'react'
 
+import StudentDetailsModal, { type StudentForModal } from '@/components/StudentDetailsModal'
 import { saveAttendanceAction } from './actions'
 
 type AttendanceStatus = 'present' | 'absent' | 'late'
 
-type Student = {
-  id: string
-  first_name: string
-  last_name: string
+type Student = StudentForModal & {
   student_code: string | null
 }
 
@@ -27,6 +25,7 @@ const STATUS_OPTIONS: { value: AttendanceStatus; label: string; colour: string }
 ]
 
 export default function AttendanceForm({ classId, date, students, existing }: Props) {
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [statuses, setStatuses] = useState<Record<string, AttendanceStatus | null>>(
     () => {
       const initial: Record<string, AttendanceStatus | null> = {}
@@ -98,9 +97,11 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                     Student
                   </th>
-
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                     Status
+                  </th>
+                  <th className="relative px-6 py-3">
+                    <span className="sr-only">Details</span>
                   </th>
                 </tr>
               </thead>
@@ -136,6 +137,15 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
                           ))}
                         </div>
                       </td>
+                      <td className="px-6 py-4 text-right text-sm font-medium">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedStudent(student)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          Details
+                        </button>
+                      </td>
                     </tr>
                   )
                 })}
@@ -161,6 +171,12 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
             )}
           </div>
         </>
+      )}
+      {selectedStudent && (
+        <StudentDetailsModal
+          student={selectedStudent}
+          onClose={() => setSelectedStudent(null)}
+        />
       )}
     </form>
   )
