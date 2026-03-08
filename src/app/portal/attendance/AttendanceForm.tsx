@@ -98,9 +98,7 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                     Student
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                    Code
-                  </th>
+
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                     Status
                   </th>
@@ -119,9 +117,7 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
                         )}
                         {student.last_name}, {student.first_name}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {student.student_code ?? '—'}
-                      </td>
+
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           {STATUS_OPTIONS.map(({ value, label, colour }) => (

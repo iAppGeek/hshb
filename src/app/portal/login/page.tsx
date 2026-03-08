@@ -17,7 +17,7 @@ export default async function LoginPage({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg ring-1 ring-gray-200 sm:p-8">
         <div className="mb-8 flex flex-col items-center gap-3">
           <Image src={logo} alt="HSHB Logo" className="h-12 w-auto" />
           <div className="text-center">

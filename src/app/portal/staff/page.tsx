@@ -25,6 +25,7 @@ export default async function StaffPage() {
         </div>
       ) : (
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
+          <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -86,6 +87,7 @@ export default async function StaffPage() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>
