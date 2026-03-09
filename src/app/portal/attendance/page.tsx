@@ -1,18 +1,48 @@
+import { Suspense } from 'react'
 import { type Metadata } from 'next'
-import Link from 'next/link'
 
 import { auth } from '@/auth'
-import {
-  getAllClasses,
-  getClassesByTeacher,
-  getStudentsByClass,
-  getAttendanceByClassAndDate,
-} from '@/db'
+import { getAllClasses, getClassesByTeacher } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
-import type { AttendanceStatus } from '@/db'
-import AttendanceForm from './AttendanceForm'
+import AttendanceFilters from './AttendanceFilters'
+import AttendanceRegister from './AttendanceRegister'
 
 export const metadata: Metadata = { title: 'Attendance' }
+
+function RegisterSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="mb-4 h-4 w-48 rounded bg-gray-200" />
+      <div className="mb-4 flex gap-4">
+        <div className="h-7 w-24 rounded-full bg-gray-200" />
+        <div className="h-7 w-20 rounded-full bg-gray-200" />
+        <div className="h-7 w-20 rounded-full bg-gray-200" />
+      </div>
+      <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
+        <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
+          <div className="flex gap-4">
+            <div className="h-3 w-20 rounded bg-gray-200" />
+            <div className="h-3 w-14 rounded bg-gray-200" />
+          </div>
+        </div>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between border-b border-gray-100 px-6 py-4 last:border-0"
+          >
+            <div className="h-4 w-40 rounded bg-gray-200" />
+            <div className="flex gap-2">
+              <div className="h-7 w-20 rounded-full bg-gray-200" />
+              <div className="h-7 w-14 rounded-full bg-gray-200" />
+              <div className="h-7 w-20 rounded-full bg-gray-200" />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 h-9 w-32 rounded-lg bg-gray-200" />
+    </div>
+  )
+}
 
 export default async function AttendancePage({
   searchParams,
@@ -34,18 +64,6 @@ export default async function AttendancePage({
       : await getAllClasses()
 
   const selectedClassId = qClassId ?? classes[0]?.id ?? null
-
-  const students = selectedClassId ? await getStudentsByClass(selectedClassId) : []
-
-  const existingRows = selectedClassId
-    ? await getAttendanceByClassAndDate(selectedClassId, selectedDate)
-    : []
-
-  const existing: Record<string, AttendanceStatus> = {}
-  for (const row of existingRows) {
-    existing[row.student_id] = row.status as AttendanceStatus
-  }
-
   const selectedClass = classes.find((c) => c.id === selectedClassId)
 
   return (
@@ -60,77 +78,20 @@ export default async function AttendancePage({
         </div>
       ) : (
         <>
-          {/* Filters */}
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-            {/* Class selector */}
-            <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500 uppercase tracking-wide">
-                Class
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {classes.map((cls) => (
-                  <Link
-                    key={cls.id}
-                    href={`/portal/attendance?classId=${cls.id}&date=${selectedDate}`}
-                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-                      cls.id === selectedClassId
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    {cls.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Date picker */}
-            <div>
-              <label
-                htmlFor="date-picker"
-                className="mb-1 block text-xs font-medium text-gray-500 uppercase tracking-wide"
-              >
-                Date
-              </label>
-              <form method="get" action="/portal/attendance">
-                {selectedClassId && (
-                  <input type="hidden" name="classId" value={selectedClassId} />
-                )}
-                <div className="flex gap-2">
-                  <input
-                    id="date-picker"
-                    type="date"
-                    name="date"
-                    defaultValue={selectedDate}
-                    className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    type="submit"
-                    className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-700 ring-1 ring-gray-200 shadow-sm transition hover:bg-gray-50"
-                  >
-                    Load
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          {selectedClass && (
-            <p className="mb-4 text-sm text-gray-500">
-              {selectedClass.name} &mdash; {selectedDate}
-              {existingRows.length > 0 && (
-                <span className="ml-2 text-green-600">(register already taken)</span>
-              )}
-            </p>
-          )}
+          <AttendanceFilters
+            classes={classes}
+            selectedClassId={selectedClassId}
+            selectedDate={selectedDate}
+          />
 
           {selectedClassId && (
-            <AttendanceForm
-              classId={selectedClassId}
-              date={selectedDate}
-              students={students}
-              existing={existing}
-            />
+            <Suspense key={`${selectedClassId}-${selectedDate}`} fallback={<RegisterSkeleton />}>
+              <AttendanceRegister
+                classId={selectedClassId}
+                date={selectedDate}
+                className={selectedClass?.name ?? selectedClassId}
+              />
+            </Suspense>
           )}
         </>
       )}

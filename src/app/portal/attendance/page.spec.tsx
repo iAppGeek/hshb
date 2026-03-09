@@ -8,37 +8,44 @@ vi.mock('@/auth', () => ({
 vi.mock('@/db', () => ({
   getAllClasses: vi.fn(),
   getClassesByTeacher: vi.fn(),
-  getStudentsByClass: vi.fn(),
-  getAttendanceByClassAndDate: vi.fn(),
 }))
 
-vi.mock('./AttendanceForm', () => ({
-  default: vi.fn(() => <div>AttendanceForm</div>),
+vi.mock('./AttendanceFilters', () => ({
+  default: vi.fn(({ classes, selectedClassId, selectedDate }) => (
+    <div data-testid="attendance-filters">
+      {classes.map((c: { id: string; name: string }) => (
+        <span key={c.id}>{c.name}</span>
+      ))}
+      <span>{selectedClassId}</span>
+      <span>{selectedDate}</span>
+    </div>
+  )),
+}))
+
+vi.mock('./AttendanceRegister', () => ({
+  default: vi.fn(({ classId, date, className }) => (
+    <div data-testid="attendance-register">
+      {classId} {date} {className}
+    </div>
+  )),
 }))
 
 import AttendancePage from './page'
-import AttendanceForm from './AttendanceForm'
+import AttendanceFilters from './AttendanceFilters'
+import AttendanceRegister from './AttendanceRegister'
 import { auth } from '@/auth'
-import {
-  getAllClasses,
-  getClassesByTeacher,
-  getStudentsByClass,
-  getAttendanceByClassAndDate,
-} from '@/db'
+import { getAllClasses, getClassesByTeacher } from '@/db'
 
 beforeEach(() => {
   vi.clearAllMocks()
 })
 
 const mockClass = { id: 'class-1', name: 'Year 3A', year_group: '3', academic_year: '2025-26' }
-const mockStudent = { id: 'student-1', first_name: 'Anna', last_name: 'Papadopoulos', student_code: 'S001' }
 
 describe('AttendancePage', () => {
   it('renders the Attendance Register heading', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
     vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     render(await AttendancePage({ searchParams: Promise.resolve({}) }))
     expect(screen.getByText('Attendance Register')).toBeTruthy()
@@ -55,8 +62,6 @@ describe('AttendancePage', () => {
   it('fetches all classes for admin', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
     vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([])
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     await AttendancePage({ searchParams: Promise.resolve({}) })
     expect(getAllClasses).toHaveBeenCalled()
@@ -66,64 +71,15 @@ describe('AttendancePage', () => {
   it('fetches only teacher classes for teacher role', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher', staffId: 'staff-2' } } as any)
     vi.mocked(getClassesByTeacher).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([])
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     await AttendancePage({ searchParams: Promise.resolve({}) })
     expect(getClassesByTeacher).toHaveBeenCalledWith('staff-2')
     expect(getAllClasses).not.toHaveBeenCalled()
   })
 
-  it('renders AttendanceForm when a class is selected', async () => {
+  it('passes classes, selectedClassId, and selectedDate to AttendanceFilters', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
     vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
-
-    render(
-      await AttendancePage({
-        searchParams: Promise.resolve({ classId: 'class-1', date: '2024-03-08' }),
-      }),
-    )
-    expect(screen.getByText('AttendanceForm')).toBeTruthy()
-  })
-
-  it('shows already-taken notice when existing attendance exists', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
-    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
-      { id: 'att-1', student_id: 'student-1', status: 'present' },
-    ] as any)
-
-    render(
-      await AttendancePage({
-        searchParams: Promise.resolve({ classId: 'class-1', date: '2024-03-08' }),
-      }),
-    )
-    expect(screen.getByText('(register already taken)')).toBeTruthy()
-  })
-
-  it('queries attendance for the specific date from searchParams', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
-    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
-
-    await AttendancePage({
-      searchParams: Promise.resolve({ classId: 'class-1', date: '2024-06-15' }),
-    })
-
-    expect(getAttendanceByClassAndDate).toHaveBeenCalledWith('class-1', '2024-06-15')
-  })
-
-  it('passes existing attendance statuses to AttendanceForm for the given date', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
-    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
-      { id: 'att-1', student_id: 'student-1', status: 'absent', class_id: 'class-1', date: '2024-06-15' },
-    ] as any)
 
     render(
       await AttendancePage({
@@ -131,20 +87,19 @@ describe('AttendancePage', () => {
       }),
     )
 
-    expect(vi.mocked(AttendanceForm)).toHaveBeenCalledWith(
+    expect(vi.mocked(AttendanceFilters)).toHaveBeenCalledWith(
       expect.objectContaining({
-        date: '2024-06-15',
-        existing: { 'student-1': 'absent' },
+        classes: [mockClass],
+        selectedClassId: 'class-1',
+        selectedDate: '2024-06-15',
       }),
       undefined,
     )
   })
 
-  it('shows the selected date in the class/date summary line', async () => {
+  it('renders AttendanceRegister with correct classId, date, and className', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
     vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     render(
       await AttendancePage({
@@ -152,19 +107,64 @@ describe('AttendancePage', () => {
       }),
     )
 
-    expect(screen.getByText(/2024-06-15/)).toBeTruthy()
+    expect(vi.mocked(AttendanceRegister)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        classId: 'class-1',
+        date: '2024-06-15',
+        className: 'Year 3A',
+      }),
+      undefined,
+    )
   })
 
-  it('defaults to today when no date is provided in searchParams', async () => {
+  it('defaults to today when no date is provided', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
     vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
-    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     const today = new Date().toISOString().split('T')[0]
 
-    await AttendancePage({ searchParams: Promise.resolve({ classId: 'class-1' }) })
+    render(await AttendancePage({ searchParams: Promise.resolve({ classId: 'class-1' }) }))
 
-    expect(getAttendanceByClassAndDate).toHaveBeenCalledWith('class-1', today)
+    expect(vi.mocked(AttendanceRegister)).toHaveBeenCalledWith(
+      expect.objectContaining({ date: today }),
+      undefined,
+    )
+  })
+
+  it('defaults to the first class when no classId is in searchParams', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
+
+    render(await AttendancePage({ searchParams: Promise.resolve({}) }))
+
+    expect(vi.mocked(AttendanceRegister)).toHaveBeenCalledWith(
+      expect.objectContaining({ classId: 'class-1' }),
+      undefined,
+    )
+  })
+
+  it('keeps filters visible and hides register content while AttendanceRegister is loading', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
+
+    // Use mockImplementation (not Once) so React's internal Suspense retries also suspend.
+    // React retries suspended components within act(), consuming a mockImplementationOnce.
+    const neverResolves = new Promise<void>(() => {})
+    vi.mocked(AttendanceRegister).mockImplementation((): never => {
+      throw neverResolves
+    })
+
+    const { container } = render(
+      await AttendancePage({
+        searchParams: Promise.resolve({ classId: 'class-1', date: '2024-06-15' }),
+      }),
+    )
+
+    // Filters remain visible while the register loads — the key UX requirement
+    expect(screen.getByTestId('attendance-filters')).toBeTruthy()
+    // Register content is not shown while suspended
+    expect(screen.queryByTestId('attendance-register')).toBeNull()
+    // The Suspense fallback skeleton is shown in place of the register
+    expect(container.querySelector('.animate-pulse')).toBeTruthy()
   })
 })
