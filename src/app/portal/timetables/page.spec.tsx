@@ -12,9 +12,15 @@ vi.mock('@/db', () => ({
   getAllClasses: vi.fn(),
 }))
 
-import TimetablesPage from './page'
 import { auth } from '@/auth'
-import { getAllTimetableSlots, getClassesByTeacher, getTimetableByClass, getAllClasses } from '@/db'
+import {
+  getAllTimetableSlots,
+  getClassesByTeacher,
+  getTimetableByClass,
+  getAllClasses,
+} from '@/db'
+
+import TimetablesPage from './page'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -32,7 +38,9 @@ const mockSlot = {
 
 describe('TimetablesPage', () => {
   it('renders the Timetables heading', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllTimetableSlots).mockResolvedValue([])
     vi.mocked(getAllClasses).mockResolvedValue([])
 
@@ -41,7 +49,9 @@ describe('TimetablesPage', () => {
   })
 
   it('shows empty state when no slots exist', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllTimetableSlots).mockResolvedValue([])
     vi.mocked(getAllClasses).mockResolvedValue([])
 
@@ -50,9 +60,13 @@ describe('TimetablesPage', () => {
   })
 
   it('groups slots by day of week', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllTimetableSlots).mockResolvedValue([mockSlot] as any)
-    vi.mocked(getAllClasses).mockResolvedValue([{ id: 'class-1', name: 'Year 3A', room_number: 'R12' }] as any)
+    vi.mocked(getAllClasses).mockResolvedValue([
+      { id: 'class-1', name: 'Year 3A', room_number: 'R12' },
+    ] as any)
 
     render(await TimetablesPage())
     expect(screen.getByText('Saturday')).toBeTruthy()
@@ -60,7 +74,9 @@ describe('TimetablesPage', () => {
   })
 
   it('fetches teacher-specific timetable for teacher role', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher', staffId: 'staff-2' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'teacher', staffId: 'staff-2' },
+    } as any)
     vi.mocked(getClassesByTeacher).mockResolvedValue([{ id: 'class-1' }] as any)
     vi.mocked(getTimetableByClass).mockResolvedValue([])
 

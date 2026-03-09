@@ -1,6 +1,10 @@
 import { type Metadata } from 'next'
 import Link from 'next/link'
-import { UsersIcon, CalendarDaysIcon, ChartBarIcon } from '@heroicons/react/24/outline'
+import {
+  UsersIcon,
+  CalendarDaysIcon,
+  ChartBarIcon,
+} from '@heroicons/react/24/outline'
 
 import { auth } from '@/auth'
 import { getAllStudents, getAllClasses, getClassesByTeacher } from '@/db'
@@ -30,9 +34,8 @@ export default async function DashboardPage() {
     {
       label: isTeacher ? 'My Students' : 'Total Students',
       value: isTeacher // TODO fix the types here
-        ? (students ).filter((s) =>
-            (classes ).some((c) => c.id === s.class_id),
-          ).length
+        ? students.filter((s) => classes.some((c) => c.id === s.class_id))
+            .length
         : students.length,
       icon: UsersIcon,
       href: '/portal/students',

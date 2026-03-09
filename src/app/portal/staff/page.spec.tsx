@@ -15,9 +15,10 @@ vi.mock('@/db', () => ({
   getAllStaffWithClasses: vi.fn(),
 }))
 
-import StaffPage from './page'
 import { auth } from '@/auth'
 import { getAllStaffWithClasses } from '@/db'
+
+import StaffPage from './page'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -33,7 +34,9 @@ const mockStaff = [
     role: 'teacher',
     email: 'jane@school.com',
     contact_number: '07700 900001',
-    classes: [{ id: 'class-1', name: 'Year 3A', room_number: 'R12', year_group: '3' }],
+    classes: [
+      { id: 'class-1', name: 'Year 3A', room_number: 'R12', year_group: '3' },
+    ],
   },
   {
     id: 'staff-2',

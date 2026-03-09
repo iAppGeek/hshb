@@ -38,7 +38,9 @@ export default async function ReportsPage() {
 
   return (
     <div>
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">Reports & Analytics</h1>
+      <h1 className="mb-8 text-2xl font-bold text-gray-900">
+        Reports & Analytics
+      </h1>
 
       {/* Summary stats */}
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -56,7 +58,9 @@ export default async function ReportsPage() {
       {/* Enrolment by class */}
       <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
-          <h2 className="text-sm font-semibold text-gray-700">Enrolment by Class</h2>
+          <h2 className="text-sm font-semibold text-gray-700">
+            Enrolment by Class
+          </h2>
         </div>
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
@@ -75,8 +79,12 @@ export default async function ReportsPage() {
           <tbody className="divide-y divide-gray-200">
             {enrolmentByClass.map((row) => (
               <tr key={row.name} className="hover:bg-gray-50">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{row.name}</td>
-                <td className="px-6 py-3 text-sm text-gray-600">{row.yearGroup}</td>
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">
+                  {row.name}
+                </td>
+                <td className="px-6 py-3 text-sm text-gray-600">
+                  {row.yearGroup}
+                </td>
                 <td className="px-6 py-3 text-sm text-gray-600">{row.count}</td>
               </tr>
             ))}

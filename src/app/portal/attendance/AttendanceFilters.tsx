@@ -11,7 +11,11 @@ type Props = {
   selectedDate: string
 }
 
-export default function AttendanceFilters({ classes, selectedClassId, selectedDate }: Props) {
+export default function AttendanceFilters({
+  classes,
+  selectedClassId,
+  selectedDate,
+}: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -26,7 +30,8 @@ export default function AttendanceFilters({ classes, selectedClassId, selectedDa
 
   function handleDateSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const date = (new FormData(e.currentTarget).get('date') as string) ?? selectedDate
+    const date =
+      (new FormData(e.currentTarget).get('date') as string) ?? selectedDate
     navigate(selectedClassId, date)
   }
 
@@ -71,12 +76,12 @@ export default function AttendanceFilters({ classes, selectedClassId, selectedDa
               type="date"
               name="date"
               defaultValue={selectedDate}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-700 ring-1 ring-gray-200 shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
+              className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 transition hover:bg-gray-50 disabled:opacity-60"
             >
               {isPending ? 'Loading…' : 'Load'}
             </button>

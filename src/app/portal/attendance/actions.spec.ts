@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { revalidatePath } from 'next/cache'
 
+import { auth } from '@/auth'
+import { saveAttendance } from '@/db'
+
+import { saveAttendanceAction } from './actions'
 vi.mock('@/auth', () => ({
   auth: vi.fn(),
 }))
@@ -11,11 +16,6 @@ vi.mock('@/db', () => ({
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }))
-
-import { saveAttendanceAction } from './actions'
-import { auth } from '@/auth'
-import { saveAttendance } from '@/db'
-import { revalidatePath } from 'next/cache'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -49,8 +49,16 @@ describe('saveAttendanceAction', () => {
     await saveAttendanceAction(fd)
 
     expect(saveAttendance).toHaveBeenCalledWith([
-      expect.objectContaining({ class_id: 'class-1', date: '2024-03-08', recorded_by: 'staff-1' }),
-      expect.objectContaining({ class_id: 'class-1', date: '2024-03-08', recorded_by: 'staff-1' }),
+      expect.objectContaining({
+        class_id: 'class-1',
+        date: '2024-03-08',
+        recorded_by: 'staff-1',
+      }),
+      expect.objectContaining({
+        class_id: 'class-1',
+        date: '2024-03-08',
+        recorded_by: 'staff-1',
+      }),
     ])
     expect(revalidatePath).toHaveBeenCalledWith('/portal/attendance')
   })

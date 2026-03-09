@@ -14,7 +14,9 @@ vi.mock('@/components/StudentDetailsModal', () => ({
     onClose: () => void
   }) => (
     <div data-testid="student-modal">
-      <span>{student.last_name}, {student.first_name}</span>
+      <span>
+        {student.last_name}, {student.first_name}
+      </span>
       <button onClick={onClose}>Close modal</button>
     </div>
   ),
@@ -73,7 +75,12 @@ describe('AttendanceForm', () => {
 
   it('shows empty state when no students', () => {
     render(
-      <AttendanceForm classId="class-1" date="2024-03-08" students={[]} existing={{}} />,
+      <AttendanceForm
+        classId="class-1"
+        date="2024-03-08"
+        students={[]}
+        existing={{}}
+      />,
     )
     expect(screen.getByText('No students in this class.')).toBeTruthy()
   })
@@ -178,7 +185,11 @@ describe('AttendanceForm', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])
 
-    expect(within(screen.getByTestId('student-modal')).getByText('Papadopoulos, Anna')).toBeTruthy()
+    expect(
+      within(screen.getByTestId('student-modal')).getByText(
+        'Papadopoulos, Anna',
+      ),
+    ).toBeTruthy()
   })
 
   it('closes the modal when onClose is called', () => {

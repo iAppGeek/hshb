@@ -12,11 +12,16 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # NextAuth requires a secret even in test/build
-      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-      # Add other env vars your build/tests need:
-      # NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      # NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      # Dummy values — only needed to satisfy NextAuth/Supabase init, not called at build time
+      AUTH_SECRET: ci-build-secret
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ci-placeholder
+      AZURE_AD_CLIENT_ID: ci-placeholder
+      AZURE_AD_CLIENT_SECRET: ci-placeholder
+      AZURE_AD_TENANT_ID: ci-placeholder
+      # Real values required — home page fetches Contentful at build time (SSG)
+      CONTENTFUL_SPACE: ${{ secrets.CONTENTFUL_SPACE }}
+      CONTENTFUL_TOKEN: ${{ secrets.CONTENTFUL_TOKEN }}
 
     steps:
       - name: Checkout
@@ -34,6 +39,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Format check
+        run: npm run format:check
+
       - name: Type-check
         run: npm run type-check
 
@@ -42,3 +50,13 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  deploy:
+    name: Deploy to Netlify
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+      - name: Trigger Netlify deploy
+        run: curl -s -X POST ${{ secrets.NETLIFY_BUILD_HOOK }}

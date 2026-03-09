@@ -5,8 +5,9 @@ vi.mock('@/data/events', () => ({
   sendEvent: vi.fn(),
 }))
 
-import { ContactForm } from './ContactForm'
 import { sendEvent } from '@/data/events'
+
+import { ContactForm } from './ContactForm'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -34,7 +35,9 @@ describe('ContactForm', () => {
     )
 
     render(<ContactForm />)
-    fireEvent.submit(screen.getByRole('button', { name: 'Send message' }).closest('form')!)
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Send message' }).closest('form')!,
+    )
 
     await waitFor(() => {
       expect(screen.getByText('Submitted!')).toBeTruthy()
@@ -50,11 +53,16 @@ describe('ContactForm', () => {
   it('shows error state when fetch returns non-200 status', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ status: 500, statusText: 'Internal Server Error' }),
+      vi.fn().mockResolvedValue({
+        status: 500,
+        statusText: 'Internal Server Error',
+      }),
     )
 
     render(<ContactForm />)
-    fireEvent.submit(screen.getByRole('button', { name: 'Send message' }).closest('form')!)
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Send message' }).closest('form')!,
+    )
 
     await waitFor(() => {
       expect(screen.getByText('500 Internal Server Error')).toBeTruthy()
@@ -74,7 +82,9 @@ describe('ContactForm', () => {
     )
 
     render(<ContactForm />)
-    fireEvent.submit(screen.getByRole('button', { name: 'Send message' }).closest('form')!)
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Send message' }).closest('form')!,
+    )
 
     await waitFor(() => {
       expect(screen.getByText(/Error: Network error/)).toBeTruthy()
@@ -88,7 +98,9 @@ describe('ContactForm', () => {
     )
 
     render(<ContactForm />)
-    fireEvent.submit(screen.getByRole('button', { name: 'Send message' }).closest('form')!)
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Send message' }).closest('form')!,
+    )
 
     await waitFor(() => {
       expect(sendEvent).toHaveBeenCalledWith(

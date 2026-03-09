@@ -18,7 +18,13 @@ const mockClass = {
   year_group: '3',
   room_number: 'R12',
   teacher_id: 'staff-1',
-  teacher: { id: 'staff-1', first_name: 'Jane', last_name: 'Smith', display_name: null, email: 'jane@school.com' },
+  teacher: {
+    id: 'staff-1',
+    first_name: 'Jane',
+    last_name: 'Smith',
+    display_name: null,
+    email: 'jane@school.com',
+  },
 }
 
 describe('getAllClasses', () => {

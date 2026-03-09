@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 vi.mock('contentful')
 
@@ -58,7 +58,9 @@ describe('getTextSectionData', () => {
 
     // cache is module-level, so this may have been primed by earlier tests —
     // just verify no error is thrown and valid text is returned
-    expect(typeof (await getTextSectionData(client, 'cached-id'))).toBe('string')
+    expect(typeof (await getTextSectionData(client, 'cached-id'))).toBe(
+      'string',
+    )
   })
 })
 
@@ -69,7 +71,9 @@ describe('getFeaturedQuotes', () => {
     const client = makeClient({
       getEntries: vi.fn().mockResolvedValue({
         items: [
-          { fields: { author: 'Alice', role: 'Parent', text: 'Great school!' } },
+          {
+            fields: { author: 'Alice', role: 'Parent', text: 'Great school!' },
+          },
           { fields: { author: 'Bob', role: 'Teacher', text: 'Amazing kids!' } },
         ],
       }),

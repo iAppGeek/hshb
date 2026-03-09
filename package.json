@@ -6,8 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
     "type-check": "tsc --noEmit",
     "prepare": "husky || true",
     "test": "vitest run",
@@ -68,7 +70,7 @@
     "lightningcss-linux-x64-gnu": "^1.31.1"
   },
   "lint-staged": {
-    "*.{js,jsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
     ],
@@ -80,7 +82,7 @@
     ]
   },
   "engines": {
-    "npm": ">=11.11.0",
+    "npm": ">=11.9.0",
     "node": ">=24.14.0"
   },
   "overrides": {

@@ -56,12 +56,16 @@ describe('getAttendanceByClassAndDate', () => {
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+          eq: vi
+            .fn()
+            .mockResolvedValue({ data: null, error: { message: 'DB error' } }),
         }),
       }),
     })
 
-    await expect(getAttendanceByClassAndDate('class-1', '2024-03-08')).rejects.toEqual({
+    await expect(
+      getAttendanceByClassAndDate('class-1', '2024-03-08'),
+    ).rejects.toEqual({
       message: 'DB error',
     })
   })
@@ -93,10 +97,15 @@ describe('saveAttendance', () => {
   it('throws on database error', async () => {
     mockFrom.mockReturnValue({
       upsert: vi.fn().mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: null, error: { message: 'Upsert failed' } }),
+        select: vi.fn().mockResolvedValue({
+          data: null,
+          error: { message: 'Upsert failed' },
+        }),
       }),
     })
 
-    await expect(saveAttendance([])).rejects.toEqual({ message: 'Upsert failed' })
+    await expect(saveAttendance([])).rejects.toEqual({
+      message: 'Upsert failed',
+    })
   })
 })

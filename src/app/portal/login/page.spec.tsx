@@ -21,7 +21,9 @@ beforeEach(() => {
 describe('LoginPage', () => {
   it('renders the sign in button', async () => {
     render(await LoginPage({ searchParams: Promise.resolve({}) }))
-    expect(screen.getByRole('button', { name: /sign in with microsoft/i })).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: /sign in with microsoft/i }),
+    ).toBeTruthy()
   })
 
   it('renders the staff portal heading', async () => {
@@ -35,7 +37,11 @@ describe('LoginPage', () => {
   })
 
   it('shows unauthorised message when error is AccessDenied', async () => {
-    render(await LoginPage({ searchParams: Promise.resolve({ error: 'AccessDenied' }) }))
+    render(
+      await LoginPage({
+        searchParams: Promise.resolve({ error: 'AccessDenied' }),
+      }),
+    )
     expect(screen.getByText(/not authorised for this portal/i)).toBeTruthy()
   })
 

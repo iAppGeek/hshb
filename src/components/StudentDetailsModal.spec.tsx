@@ -91,7 +91,11 @@ describe('StudentDetailsModal', () => {
           ...baseStudent,
           emergency_contacts: [
             { name: 'Aunt Sue', relationship: 'Aunt', phone: '07700 111111' },
-            { name: 'Grandpa John', relationship: 'Grandfather', phone: '07700 222222' },
+            {
+              name: 'Grandpa John',
+              relationship: 'Grandfather',
+              phone: '07700 222222',
+            },
           ],
         }}
         onClose={onClose}

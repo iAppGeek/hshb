@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import React from 'react'
-
-vi.mock('remark-gfm', () => ({ default: vi.fn(() => ({})) }))
+import remarkGfm from 'remark-gfm'
 
 import { mdxOptions, mdxGridComponents } from './mdxConfig'
-import remarkGfm from 'remark-gfm'
+
+vi.mock('remark-gfm', () => ({ default: vi.fn(() => ({})) }))
 
 describe('mdxOptions', () => {
   it('includes remarkGfm in remarkPlugins', () => {

@@ -54,6 +54,7 @@ export const Testimonials = (props: Props) => {
   // testimonials are the only props, so no reason to memo this now
   // if more things cause render, would need to add memo to stop moving around
   const testimonials = props.testimonials
+    // eslint-disable-next-line react-hooks/purity
     .map((value) => ({ value, index: Math.random() }))
     .sort((a, b) => a.index - b.index)
     .map(({ value }) => value)

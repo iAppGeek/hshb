@@ -18,7 +18,8 @@ export async function saveAttendanceAction(formData: FormData) {
     class_id: classId,
     student_id: studentId,
     date,
-    status: (formData.get(`status_${studentId}`) ?? 'absent') as AttendanceStatus,
+    status: (formData.get(`status_${studentId}`) ??
+      'absent') as AttendanceStatus,
     notes: (formData.get(`notes_${studentId}`) as string) || null,
     recorded_by: staffId,
   }))

@@ -4,6 +4,7 @@ import { type Metadata } from 'next'
 import { auth } from '@/auth'
 import { getAllClasses, getClassesByTeacher } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
+
 import AttendanceFilters from './AttendanceFilters'
 import AttendanceRegister from './AttendanceRegister'
 
@@ -51,7 +52,7 @@ export default async function AttendancePage({
 }) {
   const session = await auth()
   const role = session?.user?.role as StaffRole
-  const staffId = session?.user?.staffId!
+  const staffId = session?.user?.staffId ?? ''
 
   const { classId: qClassId, date: qDate } = await searchParams
 
@@ -69,7 +70,9 @@ export default async function AttendancePage({
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Attendance Register</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Attendance Register
+        </h1>
       </div>
 
       {classes.length === 0 ? (
@@ -85,7 +88,10 @@ export default async function AttendancePage({
           />
 
           {selectedClassId && (
-            <Suspense key={`${selectedClassId}-${selectedDate}`} fallback={<RegisterSkeleton />}>
+            <Suspense
+              key={`${selectedClassId}-${selectedDate}`}
+              fallback={<RegisterSkeleton />}
+            >
               <AttendanceRegister
                 classId={selectedClassId}
                 date={selectedDate}

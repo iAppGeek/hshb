@@ -6,8 +6,9 @@ vi.mock('@/data/numbers', () => ({
   getRandomInt: vi.fn(() => 0),
 }))
 
-import { FeaturedQuoteSelector } from './FeaturedQuoteSelector'
 import { getRandomInt } from '@/data/numbers'
+
+import { FeaturedQuoteSelector } from './FeaturedQuoteSelector'
 
 const mockQuotes = [
   { text: 'First quote', author: 'Alice', role: 'Parent' },

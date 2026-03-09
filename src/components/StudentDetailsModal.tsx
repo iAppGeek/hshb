@@ -37,7 +37,8 @@ export default function StudentDetailsModal({ student, onClose }: Props) {
     return () => document.removeEventListener('keydown', handleKey)
   }, [onClose])
 
-  const emergencyContacts = (student.emergency_contacts as EmergencyContact[] | null) ?? []
+  const emergencyContacts =
+    (student.emergency_contacts as EmergencyContact[] | null) ?? []
 
   return (
     <div
@@ -57,15 +58,25 @@ export default function StudentDetailsModal({ student, onClose }: Props) {
             className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
             aria-label="Close"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         <div className="px-6 py-4">
           <section>
-            <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">
+            <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
               Primary Parent / Guardian
             </h3>
             {student.primary_parent_name ? (
@@ -81,7 +92,7 @@ export default function StudentDetailsModal({ student, onClose }: Props) {
 
           {student.secondary_parent_name && (
             <section className="mt-4 border-t border-gray-100 pt-4">
-              <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
                 Secondary Parent / Guardian
               </h3>
               <ContactCard
@@ -94,7 +105,7 @@ export default function StudentDetailsModal({ student, onClose }: Props) {
 
           {emergencyContacts.length > 0 && (
             <section className="mt-4 border-t border-gray-100 pt-4">
-              <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
                 Emergency Contacts
               </h3>
               <div className="space-y-3">
@@ -102,7 +113,9 @@ export default function StudentDetailsModal({ student, onClose }: Props) {
                   <div key={i}>
                     <p className="text-sm font-medium text-gray-900">
                       {ec.name}{' '}
-                      <span className="font-normal text-gray-500">({ec.relationship})</span>
+                      <span className="font-normal text-gray-500">
+                        ({ec.relationship})
+                      </span>
                     </p>
                     <p className="text-sm text-gray-600">{ec.phone}</p>
                   </div>

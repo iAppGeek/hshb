@@ -1,10 +1,14 @@
-import { supabase } from './client'
 import type { TablesInsert } from '@/types/database'
+
+import { supabase } from './client'
 
 export type AttendanceStatus = 'present' | 'absent' | 'late'
 export type AttendanceInsert = TablesInsert<'attendance'>
 
-export async function getAttendanceByClassAndDate(classId: string, date: string) {
+export async function getAttendanceByClassAndDate(
+  classId: string,
+  date: string,
+) {
   const { data, error } = await supabase
     .from('attendance')
     .select('*')

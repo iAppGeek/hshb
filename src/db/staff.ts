@@ -10,10 +10,7 @@ export async function getStaffByEmail(email: string) {
 }
 
 export async function getAllStaff() {
-  const { data } = await supabase
-    .from('staff')
-    .select('*')
-    .order('last_name')
+  const { data } = await supabase.from('staff').select('*').order('last_name')
   return data ?? []
 }
 

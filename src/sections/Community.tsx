@@ -79,8 +79,6 @@ export const Community = (props: Props) => {
               {({ selectedIndex }) => (
                 <>
                   {Object.keys(directory).map((group, groupIndex) => (
-                    // disable rule, onClick is being used for event tracking only
-                    // eslint-disable-next-line
                     <div
                       key={group + groupIndex}
                       className="relative lg:pl-8"

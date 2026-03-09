@@ -38,7 +38,12 @@ type Props = {
   signOutAction: () => Promise<void>
 }
 
-export default function PortalSidebar({ navItems, userName, roleLabel, signOutAction }: Props) {
+export default function PortalSidebar({
+  navItems,
+  userName,
+  roleLabel,
+  signOutAction,
+}: Props) {
   const [open, setOpen] = useState(false)
 
   const navLinks = navItems.map(({ href, label }) => {
@@ -104,7 +109,9 @@ export default function PortalSidebar({ navItems, userName, roleLabel, signOutAc
         <div className="flex items-center justify-between border-b border-gray-700 px-4 py-3">
           <div className="flex items-center gap-2">
             <Image src={logo} alt="HSHB Logo" className="h-7 w-auto" />
-            <span className="text-sm font-semibold text-white">Staff Portal</span>
+            <span className="text-sm font-semibold text-white">
+              Staff Portal
+            </span>
           </div>
           <button
             onClick={() => setOpen(false)}

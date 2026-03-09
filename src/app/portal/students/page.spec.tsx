@@ -12,14 +12,19 @@ vi.mock('@/db', () => ({
 }))
 
 vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode
+    href: string
+  }) => <a href={href}>{children}</a>,
 }))
 
-import StudentsPage from './page'
 import { auth } from '@/auth'
 import { getAllStudents, getStudentsByClass, getClassesByTeacher } from '@/db'
+
+import StudentsPage from './page'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -38,7 +43,9 @@ const mockStudent = {
 
 describe('StudentsPage', () => {
   it('renders the Students heading', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllStudents).mockResolvedValue([])
 
     render(await StudentsPage())
@@ -46,7 +53,9 @@ describe('StudentsPage', () => {
   })
 
   it('shows Add student button for admin', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllStudents).mockResolvedValue([])
 
     render(await StudentsPage())
@@ -54,7 +63,9 @@ describe('StudentsPage', () => {
   })
 
   it('hides Add student button for teacher', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher', staffId: 'staff-2' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'teacher', staffId: 'staff-2' },
+    } as any)
     vi.mocked(getClassesByTeacher).mockResolvedValue([])
     vi.mocked(getStudentsByClass).mockResolvedValue([])
 
@@ -63,7 +74,9 @@ describe('StudentsPage', () => {
   })
 
   it('renders student rows in the table', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllStudents).mockResolvedValue([mockStudent] as any)
 
     render(await StudentsPage())
@@ -72,7 +85,9 @@ describe('StudentsPage', () => {
   })
 
   it('shows empty state when no students exist', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllStudents).mockResolvedValue([])
 
     render(await StudentsPage())
@@ -80,7 +95,9 @@ describe('StudentsPage', () => {
   })
 
   it('fetches only teacher classes and their students for teacher role', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher', staffId: 'staff-2' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'teacher', staffId: 'staff-2' },
+    } as any)
     vi.mocked(getClassesByTeacher).mockResolvedValue([{ id: 'class-1' }] as any)
     vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
 

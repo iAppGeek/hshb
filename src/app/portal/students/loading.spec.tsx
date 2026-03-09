@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
+
 import StudentsLoading from './loading'
 
 describe('StudentsLoading', () => {
@@ -23,7 +24,9 @@ describe('StudentsLoading', () => {
   it('renders a heading and action button skeleton', () => {
     const { container } = render(<StudentsLoading />)
     // Heading skeleton + Add button skeleton side by side
-    const headerRow = container.querySelector('.flex.items-center.justify-between')
+    const headerRow = container.querySelector(
+      '.flex.items-center.justify-between',
+    )
     expect(headerRow).toBeTruthy()
   })
 })

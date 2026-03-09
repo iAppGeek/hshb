@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { sendGAEvent } from '@next/third-parties/google'
 
+import { sendEvent } from './events'
 vi.mock('@next/third-parties/google', () => ({
   sendGAEvent: vi.fn(),
 }))
-
-import { sendEvent } from './events'
-import { sendGAEvent } from '@next/third-parties/google'
 
 beforeEach(() => {
   vi.clearAllMocks()

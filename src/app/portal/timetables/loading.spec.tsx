@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
+
 import TimetablesLoading from './loading'
 
 describe('TimetablesLoading', () => {

@@ -52,14 +52,21 @@ describe('signIn callback', () => {
   })
 
   it('returns true when user email exists in staff table', async () => {
-    vi.mocked(getStaffByEmail).mockResolvedValue({ id: 'staff-1', role: 'teacher' } as any)
-    const result = await capturedConfig.callbacks.signIn({ user: { email: 'teacher@school.com' } })
+    vi.mocked(getStaffByEmail).mockResolvedValue({
+      id: 'staff-1',
+      role: 'teacher',
+    } as any)
+    const result = await capturedConfig.callbacks.signIn({
+      user: { email: 'teacher@school.com' },
+    })
     expect(result).toBe(true)
   })
 
   it('returns false when user email is not in staff table', async () => {
     vi.mocked(getStaffByEmail).mockResolvedValue(null)
-    const result = await capturedConfig.callbacks.signIn({ user: { email: 'unknown@gmail.com' } })
+    const result = await capturedConfig.callbacks.signIn({
+      user: { email: 'unknown@gmail.com' },
+    })
     expect(result).toBe(false)
   })
 })
@@ -70,7 +77,10 @@ describe('jwt callback', () => {
   })
 
   it('attaches role and staffId to token on first sign-in', async () => {
-    vi.mocked(getStaffByEmail).mockResolvedValue({ id: 'staff-1', role: 'admin' } as any)
+    vi.mocked(getStaffByEmail).mockResolvedValue({
+      id: 'staff-1',
+      role: 'admin',
+    } as any)
     const result = await capturedConfig.callbacks.jwt({
       token: {},
       user: { email: 'admin@school.com' },

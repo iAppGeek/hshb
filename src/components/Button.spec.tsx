@@ -2,7 +2,12 @@ import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 
 vi.mock('next/link', () => ({
-  default: ({ href, className, children, ...props }: React.ComponentPropsWithoutRef<'a'> & { href: string }) => (
+  default: ({
+    href,
+    className,
+    children,
+    ...props
+  }: React.ComponentPropsWithoutRef<'a'> & { href: string }) => (
     <a href={href} className={className} {...props}>
       {children}
     </a>

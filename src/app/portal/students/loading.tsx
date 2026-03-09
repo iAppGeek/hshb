@@ -11,11 +11,13 @@ export default function StudentsLoading() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {['Name', 'Class', 'Year Group', 'DOB', 'Allergies'].map((h) => (
-                  <th key={h} className="px-6 py-3">
-                    <div className="h-3 w-16 rounded bg-gray-200" />
-                  </th>
-                ))}
+                {['Name', 'Class', 'Year Group', 'DOB', 'Allergies'].map(
+                  (h) => (
+                    <th key={h} className="px-6 py-3">
+                      <div className="h-3 w-16 rounded bg-gray-200" />
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">

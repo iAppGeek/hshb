@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const mockRedirect = vi.hoisted(() => vi.fn((url: URL) => ({ redirected: true, url })))
+const mockRedirect = vi.hoisted(() =>
+  vi.fn((url: URL) => ({ redirected: true, url })),
+)
 
 vi.mock('@/auth', () => ({
   auth: vi.fn((handler: any) => handler),

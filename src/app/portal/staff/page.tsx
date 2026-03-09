@@ -33,67 +33,74 @@ export default async function StaffPage() {
       ) : (
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
           <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  First name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Last name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Display name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Class
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Room
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {staff.map((member) => {
-                const classes = (member.classes as { id: string; name: string; room_number: string | null }[] | null) ?? []
-                return (
-                  <tr key={member.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {member.first_name}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {member.last_name}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {member.display_name ?? '—'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {roleLabels[member.role] ?? member.role}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {member.contact_number ?? '—'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {classes.length > 0
-                        ? classes.map((c) => c.name).join(', ')
-                        : '—'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {classes.length > 0
-                        ? classes.map((c) => c.room_number ?? '—').join(', ')
-                        : '—'}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    First name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    Last name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    Display name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    Role
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    Class
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    Room
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {staff.map((member) => {
+                  const classes =
+                    (member.classes as
+                      | {
+                          id: string
+                          name: string
+                          room_number: string | null
+                        }[]
+                      | null) ?? []
+                  return (
+                    <tr key={member.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {member.first_name}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {member.last_name}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {member.display_name ?? '—'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {roleLabels[member.role] ?? member.role}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {member.contact_number ?? '—'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {classes.length > 0
+                          ? classes.map((c) => c.name).join(', ')
+                          : '—'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {classes.length > 0
+                          ? classes.map((c) => c.room_number ?? '—').join(', ')
+                          : '—'}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

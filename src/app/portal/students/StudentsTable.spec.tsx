@@ -10,7 +10,9 @@ vi.mock('@/components/StudentDetailsModal', () => ({
     onClose: () => void
   }) => (
     <div data-testid="student-modal">
-      <span>{student.last_name}, {student.first_name}</span>
+      <span>
+        {student.last_name}, {student.first_name}
+      </span>
       <button onClick={onClose}>Close modal</button>
     </div>
   ),
@@ -77,7 +79,9 @@ describe('StudentsTable', () => {
   })
 
   it('shows dash when student code is null', () => {
-    render(<StudentsTable students={[{ ...students[0], student_code: null }]} />)
+    render(
+      <StudentsTable students={[{ ...students[0], student_code: null }]} />,
+    )
     expect(screen.getAllByText('—').length).toBeGreaterThan(0)
   })
 
@@ -104,7 +108,9 @@ describe('StudentsTable', () => {
   it('opens modal for the correct student when second row is clicked', () => {
     render(<StudentsTable students={students} />)
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[1])
-    expect(within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick')).toBeTruthy()
+    expect(
+      within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick'),
+    ).toBeTruthy()
   })
 
   it('closes the modal when onClose is called', () => {
@@ -121,6 +127,8 @@ describe('StudentsTable', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[1])
     expect(screen.getAllByTestId('student-modal')).toHaveLength(1)
-    expect(within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick')).toBeTruthy()
+    expect(
+      within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick'),
+    ).toBeTruthy()
   })
 })

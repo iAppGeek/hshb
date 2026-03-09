@@ -27,6 +27,8 @@ describe('HeroVideo', () => {
     const { container } = render(
       <HeroVideo videoUrl="https://example.com/video.mp4" />,
     )
-    expect(container.querySelector('.video_container')).toHaveClass('overflow-hidden')
+    expect(container.querySelector('.video_container')).toHaveClass(
+      'overflow-hidden',
+    )
   })
 })

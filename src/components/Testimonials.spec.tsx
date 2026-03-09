@@ -12,13 +12,19 @@ vi.mock('next-mdx-remote/rsc', () => ({
 }))
 
 vi.mock('@/components/Container', () => ({
-  Container: ({ children, className }: React.ComponentPropsWithoutRef<'div'>) => (
+  Container: ({
+    children,
+    className,
+  }: React.ComponentPropsWithoutRef<'div'>) => (
     <div className={className}>{children}</div>
   ),
 }))
 
 vi.mock('@/clientComponents/Expandable', () => ({
-  Expandable: ({ children, className }: React.ComponentPropsWithoutRef<'div'>) => (
+  Expandable: ({
+    children,
+    className,
+  }: React.ComponentPropsWithoutRef<'div'>) => (
     <div className={className}>{children}</div>
   ),
   ExpandableItems: ({ children }: { children: React.ReactNode }) => (
@@ -35,8 +41,9 @@ vi.mock('@/data/mdxConfig', () => ({
   mdxGridComponents: {},
 }))
 
-import { Testimonials } from './Testimonials'
 import type { Testimonial } from '@/data/contentful'
+
+import { Testimonials } from './Testimonials'
 
 const makeTestimonial = (n: number): Testimonial => ({
   title: `Testimonial ${n}`,
@@ -51,9 +58,7 @@ const makeTestimonial = (n: number): Testimonial => ({
 describe('Testimonials', () => {
   it('renders the section heading', () => {
     render(<Testimonials testimonials={[makeTestimonial(1)]} />)
-    expect(
-      screen.getByText(/Some kind words from our Parents/),
-    ).toBeTruthy()
+    expect(screen.getByText(/Some kind words from our Parents/)).toBeTruthy()
   })
 
   it('renders first 3 testimonials directly', () => {
@@ -79,7 +84,9 @@ describe('Testimonials', () => {
   })
 
   it('renders author image with correct src', () => {
-    const { container } = render(<Testimonials testimonials={[makeTestimonial(1)]} />)
+    const { container } = render(
+      <Testimonials testimonials={[makeTestimonial(1)]} />,
+    )
     const img = container.querySelector('img')
     expect(img).toHaveAttribute('src', 'https://example.com/img1.jpg')
   })

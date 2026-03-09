@@ -30,6 +30,7 @@ export const FeaturedQuoteSelector = ({ items }: Props) => {
   const [selectedQuoteIndex, setSelectedQuoteIndex] = useState<number>(0)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedQuoteIndex(getRandomInt(items.length))
 
     const interval = setInterval(() => {

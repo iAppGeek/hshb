@@ -15,13 +15,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async signIn({ user }) {
       if (!user.email) return false
-      const staff: any = await getStaffByEmail(user.email) // TODO fix types here
+      const staff = await getStaffByEmail(user.email) // TODO fix types here
       return !!staff
     },
     async jwt({ token, user }) {
       // user is only present on first sign-in
       if (user?.email) {
-        const staff: any = await getStaffByEmail(user.email)
+        const staff = await getStaffByEmail(user.email)
         if (staff) {
           token.role = staff.role
           token.staffId = staff.id

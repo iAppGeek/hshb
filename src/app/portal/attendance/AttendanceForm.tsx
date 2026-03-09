@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from 'react'
 
-import StudentDetailsModal, { type StudentForModal } from '@/components/StudentDetailsModal'
+import StudentDetailsModal, {
+  type StudentForModal,
+} from '@/components/StudentDetailsModal'
+
 import { saveAttendanceAction } from './actions'
 
 type AttendanceStatus = 'present' | 'absent' | 'late'
@@ -18,23 +21,44 @@ type Props = {
   existing: Record<string, AttendanceStatus>
 }
 
-const STATUS_OPTIONS: { value: AttendanceStatus; label: string; colour: string }[] = [
-  { value: 'present', label: 'Present', colour: 'bg-green-100 text-green-800 ring-green-300' },
-  { value: 'late',    label: 'Late',    colour: 'bg-yellow-100 text-yellow-800 ring-yellow-300' },
-  { value: 'absent',  label: 'Absent',  colour: 'bg-red-100 text-red-800 ring-red-300' },
+const STATUS_OPTIONS: {
+  value: AttendanceStatus
+  label: string
+  colour: string
+}[] = [
+  {
+    value: 'present',
+    label: 'Present',
+    colour: 'bg-green-100 text-green-800 ring-green-300',
+  },
+  {
+    value: 'late',
+    label: 'Late',
+    colour: 'bg-yellow-100 text-yellow-800 ring-yellow-300',
+  },
+  {
+    value: 'absent',
+    label: 'Absent',
+    colour: 'bg-red-100 text-red-800 ring-red-300',
+  },
 ]
 
-export default function AttendanceForm({ classId, date, students, existing }: Props) {
+export default function AttendanceForm({
+  classId,
+  date,
+  students,
+  existing,
+}: Props) {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-  const [statuses, setStatuses] = useState<Record<string, AttendanceStatus | null>>(
-    () => {
-      const initial: Record<string, AttendanceStatus | null> = {}
-      students.forEach((s) => {
-        initial[s.id] = existing[s.id] ?? null
-      })
-      return initial
-    },
-  )
+  const [statuses, setStatuses] = useState<
+    Record<string, AttendanceStatus | null>
+  >(() => {
+    const initial: Record<string, AttendanceStatus | null> = {}
+    students.forEach((s) => {
+      initial[s.id] = existing[s.id] ?? null
+    })
+    return initial
+  })
   const [saved, setSaved] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -56,9 +80,9 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
 
   const counts = {
     present: Object.values(statuses).filter((s) => s === 'present').length,
-    late:    Object.values(statuses).filter((s) => s === 'late').length,
-    absent:  Object.values(statuses).filter((s) => s === 'absent').length,
-    unset:   Object.values(statuses).filter((s) => s === null).length,
+    late: Object.values(statuses).filter((s) => s === 'late').length,
+    absent: Object.values(statuses).filter((s) => s === 'absent').length,
+    unset: Object.values(statuses).filter((s) => s === null).length,
   }
 
   return (
@@ -112,9 +136,17 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
                     <tr key={student.id}>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {/* Hidden inputs carry the data for the server action */}
-                        <input type="hidden" name="studentId" value={student.id} />
+                        <input
+                          type="hidden"
+                          name="studentId"
+                          value={student.id}
+                        />
                         {current !== null && (
-                          <input type="hidden" name={`status_${student.id}`} value={current} />
+                          <input
+                            type="hidden"
+                            name={`status_${student.id}`}
+                            value={current}
+                          />
                         )}
                         {student.last_name}, {student.first_name}
                       </td>
@@ -126,7 +158,7 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
                               key={value}
                               type="button"
                               onClick={() => toggle(student.id, value)}
-                              className={`rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset transition ${
+                              className={`rounded-full px-3 py-1 text-xs font-medium ring-1 transition ring-inset ${
                                 current === value
                                   ? colour
                                   : 'bg-white text-gray-500 ring-gray-200 hover:bg-gray-50'
@@ -155,7 +187,11 @@ export default function AttendanceForm({ classId, date, students, existing }: Pr
 
           <div className="mt-4 flex items-center gap-4">
             <span
-              title={!allSelected ? `${counts.unset} student${counts.unset === 1 ? '' : 's'} still unmarked` : undefined}
+              title={
+                !allSelected
+                  ? `${counts.unset} student${counts.unset === 1 ? '' : 's'} still unmarked`
+                  : undefined
+              }
               className={!allSelected ? 'cursor-not-allowed' : undefined}
             >
               <button

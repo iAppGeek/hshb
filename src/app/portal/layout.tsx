@@ -2,9 +2,12 @@ import { type Metadata } from 'next'
 
 import { auth, signOut } from '@/auth'
 import type { StaffRole } from '@/types/next-auth'
+
 import PortalSidebar from './PortalSidebar'
 
-export const metadata: Metadata = { title: { template: '%s | Staff Portal', default: 'Staff Portal' } }
+export const metadata: Metadata = {
+  title: { template: '%s | Staff Portal', default: 'Staff Portal' },
+}
 
 const navItems = [
   { href: '/portal/dashboard', label: 'Dashboard' },
@@ -25,7 +28,11 @@ const roleLabels: Record<StaffRole, string> = {
   headteacher: 'Headteacher',
 }
 
-export default async function PortalLayout({ children }: { children: React.ReactNode }) {
+export default async function PortalLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const session = await auth()
   const role = session?.user?.role
   const visibleNav = navItems

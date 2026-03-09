@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 
-import StudentDetailsModal, { type StudentForModal } from '@/components/StudentDetailsModal'
+import StudentDetailsModal, {
+  type StudentForModal,
+} from '@/components/StudentDetailsModal'
 
 type Student = StudentForModal & {
   student_code: string | null
@@ -69,7 +71,10 @@ export default function StudentsTable({ students }: Props) {
       </div>
 
       {selected && (
-        <StudentDetailsModal student={selected} onClose={() => setSelected(null)} />
+        <StudentDetailsModal
+          student={selected}
+          onClose={() => setSelected(null)}
+        />
       )}
     </>
   )

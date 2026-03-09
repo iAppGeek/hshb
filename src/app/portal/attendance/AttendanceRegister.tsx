@@ -1,5 +1,6 @@
 import { getStudentsByClass, getAttendanceByClassAndDate } from '@/db'
 import type { AttendanceStatus } from '@/db'
+
 import AttendanceForm from './AttendanceForm'
 
 type Props = {
@@ -8,7 +9,11 @@ type Props = {
   className: string
 }
 
-export default async function AttendanceRegister({ classId, date, className }: Props) {
+export default async function AttendanceRegister({
+  classId,
+  date,
+  className,
+}: Props) {
   const [students, existingRows] = await Promise.all([
     getStudentsByClass(classId),
     getAttendanceByClassAndDate(classId, date),

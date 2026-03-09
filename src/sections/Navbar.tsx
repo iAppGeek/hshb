@@ -1,7 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { Bars3Icon, XMarkIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import {
+  Bars3Icon,
+  XMarkIcon,
+  LockClosedIcon,
+} from '@heroicons/react/24/outline'
 import {
   Disclosure,
   DisclosureButton,

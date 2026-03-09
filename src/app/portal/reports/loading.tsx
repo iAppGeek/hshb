@@ -6,7 +6,10 @@ export default function ReportsLoading() {
       {/* Summary stats skeleton */}
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+          <div
+            key={i}
+            className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200"
+          >
             <div className="h-4 w-32 rounded bg-gray-200" />
             <div className="mt-3 h-9 w-16 rounded bg-gray-200" />
           </div>

@@ -24,7 +24,7 @@ export const mdxGridComponents = {
   td: (props: React.PropsWithChildren) => {
     return <td className="text-center text-slate-800">{props.children}</td>
   },
-  img: (props: React.PropsWithChildren) => {
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return <img className="mx-auto" alt="" {...props} />
   },
 }

@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
 import { readFileSync, readdirSync, statSync } from 'fs'
 import { join } from 'path'
+
+import { describe, it, expect } from 'vitest'
 
 // ─── What these tests guard against ──────────────────────────────────────────
 //
@@ -19,10 +20,10 @@ import { join } from 'path'
 // Credentials that must only ever exist on the server.
 // Adding NEXT_PUBLIC_ to any of these would broadcast them to every visitor.
 const SECRET_VARS = [
-  'AUTH_SECRET',             // signs and verifies session tokens — anyone with this can forge logins
-  'AZURE_AD_CLIENT_SECRET',  // authenticates the app with Microsoft — leaking this allows impersonation
+  'AUTH_SECRET', // signs and verifies session tokens — anyone with this can forge logins
+  'AZURE_AD_CLIENT_SECRET', // authenticates the app with Microsoft — leaking this allows impersonation
   'SUPABASE_SERVICE_ROLE_KEY', // bypasses all database row-level security — full read/write access to all data
-  'CONTENTFUL_TOKEN',        // read access to Contentful CMS content delivery API
+  'CONTENTFUL_TOKEN', // read access to Contentful CMS content delivery API
 ]
 
 // These modules run database queries and auth checks using the secret keys above.
@@ -90,7 +91,10 @@ describe('Secret environment variables', () => {
     // The example file is committed to the repo and used as a setup guide.
     // If someone copy-pastes a variable name from it and accidentally adds
     // NEXT_PUBLIC_, that secret leaks to the browser in production.
-    const example = readFileSync(join(process.cwd(), '.env.local.example'), 'utf-8')
+    const example = readFileSync(
+      join(process.cwd(), '.env.local.example'),
+      'utf-8',
+    )
     for (const varName of SECRET_VARS) {
       expect(
         example,

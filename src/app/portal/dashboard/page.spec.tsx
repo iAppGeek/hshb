@@ -12,9 +12,13 @@ vi.mock('@/db', () => ({
 }))
 
 vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode
+    href: string
+  }) => <a href={href}>{children}</a>,
 }))
 
 vi.mock('@heroicons/react/24/outline', () => ({
@@ -23,9 +27,10 @@ vi.mock('@heroicons/react/24/outline', () => ({
   ChartBarIcon: () => <svg />,
 }))
 
-import DashboardPage from './page'
 import { auth } from '@/auth'
 import { getAllStudents, getAllClasses, getClassesByTeacher } from '@/db'
+
+import DashboardPage from './page'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -33,7 +38,9 @@ beforeEach(() => {
 
 describe('DashboardPage', () => {
   it('renders welcome message with user first name', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { name: 'Jane Smith', role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { name: 'Jane Smith', role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllStudents).mockResolvedValue([])
     vi.mocked(getAllClasses).mockResolvedValue([])
 
@@ -42,7 +49,9 @@ describe('DashboardPage', () => {
   })
 
   it('shows admin role label for admin user', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { name: 'Admin User', role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { name: 'Admin User', role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllStudents).mockResolvedValue([])
     vi.mocked(getAllClasses).mockResolvedValue([])
 
@@ -51,7 +60,9 @@ describe('DashboardPage', () => {
   })
 
   it('shows reports stat card for admin', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { name: 'Admin', role: 'admin', staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { name: 'Admin', role: 'admin', staffId: 'staff-1' },
+    } as any)
     vi.mocked(getAllStudents).mockResolvedValue([])
     vi.mocked(getAllClasses).mockResolvedValue([])
 
@@ -60,7 +71,9 @@ describe('DashboardPage', () => {
   })
 
   it('does not show reports stat card for teacher', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { name: 'Teacher', role: 'teacher', staffId: 'staff-2' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { name: 'Teacher', role: 'teacher', staffId: 'staff-2' },
+    } as any)
     vi.mocked(getClassesByTeacher).mockResolvedValue([])
     vi.mocked(getAllStudents).mockResolvedValue([])
 
@@ -69,7 +82,9 @@ describe('DashboardPage', () => {
   })
 
   it('calls getClassesByTeacher for teacher role', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { name: 'Teacher', role: 'teacher', staffId: 'staff-2' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { name: 'Teacher', role: 'teacher', staffId: 'staff-2' },
+    } as any)
     vi.mocked(getClassesByTeacher).mockResolvedValue([])
     vi.mocked(getAllStudents).mockResolvedValue([])
 

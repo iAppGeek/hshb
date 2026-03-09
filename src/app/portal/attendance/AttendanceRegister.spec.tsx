@@ -10,9 +10,10 @@ vi.mock('./AttendanceForm', () => ({
   default: vi.fn(() => <div>AttendanceForm</div>),
 }))
 
+import { getStudentsByClass, getAttendanceByClassAndDate } from '@/db'
+
 import AttendanceRegister from './AttendanceRegister'
 import AttendanceForm from './AttendanceForm'
-import { getStudentsByClass, getAttendanceByClassAndDate } from '@/db'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -31,21 +32,38 @@ describe('AttendanceRegister', () => {
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     render(
-      await AttendanceRegister({ classId: 'class-1', date: '2024-06-15', className: 'Year 3A' }),
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: '2024-06-15',
+        className: 'Year 3A',
+      }),
     )
 
     expect(getStudentsByClass).toHaveBeenCalledWith('class-1')
-    expect(getAttendanceByClassAndDate).toHaveBeenCalledWith('class-1', '2024-06-15')
+    expect(getAttendanceByClassAndDate).toHaveBeenCalledWith(
+      'class-1',
+      '2024-06-15',
+    )
   })
 
   it('renders AttendanceForm with students and existing attendance', async () => {
     vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
-      { id: 'att-1', student_id: 'student-1', status: 'absent', class_id: 'class-1', date: '2024-06-15' },
+      {
+        id: 'att-1',
+        student_id: 'student-1',
+        status: 'absent',
+        class_id: 'class-1',
+        date: '2024-06-15',
+      },
     ] as any)
 
     render(
-      await AttendanceRegister({ classId: 'class-1', date: '2024-06-15', className: 'Year 3A' }),
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: '2024-06-15',
+        className: 'Year 3A',
+      }),
     )
 
     expect(vi.mocked(AttendanceForm)).toHaveBeenCalledWith(
@@ -64,7 +82,11 @@ describe('AttendanceRegister', () => {
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     render(
-      await AttendanceRegister({ classId: 'class-1', date: '2024-06-15', className: 'Year 3A' }),
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: '2024-06-15',
+        className: 'Year 3A',
+      }),
     )
 
     expect(screen.getByText(/Year 3A/)).toBeTruthy()
@@ -74,11 +96,21 @@ describe('AttendanceRegister', () => {
   it('shows already-taken notice when existing attendance exists', async () => {
     vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
-      { id: 'att-1', student_id: 'student-1', status: 'present', class_id: 'class-1', date: '2024-06-15' },
+      {
+        id: 'att-1',
+        student_id: 'student-1',
+        status: 'present',
+        class_id: 'class-1',
+        date: '2024-06-15',
+      },
     ] as any)
 
     render(
-      await AttendanceRegister({ classId: 'class-1', date: '2024-06-15', className: 'Year 3A' }),
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: '2024-06-15',
+        className: 'Year 3A',
+      }),
     )
 
     expect(screen.getByText('(register already taken)')).toBeTruthy()
@@ -89,7 +121,11 @@ describe('AttendanceRegister', () => {
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
 
     render(
-      await AttendanceRegister({ classId: 'class-1', date: '2024-06-15', className: 'Year 3A' }),
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: '2024-06-15',
+        className: 'Year 3A',
+      }),
     )
 
     expect(screen.queryByText('(register already taken)')).toBeNull()
