@@ -10,9 +10,6 @@ import type { StaffRole } from '@/types/next-auth'
 
 type Student = StudentForModal & {
   student_code: string | null
-  student_classes: Array<{
-    class: { id: string; name: string; year_group: string } | null
-  }>
 }
 
 type Props = {

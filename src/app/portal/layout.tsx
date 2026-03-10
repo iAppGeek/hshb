@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 const navItems = [
   { href: '/portal/dashboard', label: 'Dashboard' },
   { href: '/portal/students', label: 'Students' },
+  { href: '/portal/classes', label: 'Classes' },
   { href: '/portal/timetables', label: 'Timetables' },
   { href: '/portal/attendance', label: 'Attendance' },
   { href: '/portal/staff', label: 'Staff' },

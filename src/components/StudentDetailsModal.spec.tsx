@@ -54,6 +54,14 @@ const baseStudent = {
   additional_contact_2_id: null,
   additional_contact_2: null,
   additional_contact_2_relationship: null,
+  student_classes: [] as Array<{
+    class: {
+      id: string
+      name: string
+      year_group: string
+      academic_year: string | null
+    } | null
+  }>,
 }
 
 describe('StudentDetailsModal', () => {
@@ -468,5 +476,63 @@ describe('StudentDetailsModal', () => {
     const hrefs = editLinks.map((l) => l.getAttribute('href'))
     expect(hrefs).toContain('/portal/guardians/guardian-1/edit')
     expect(hrefs).toContain('/portal/guardians/guardian-2/edit')
+  })
+
+  it('shows "None" in the Classes section when student has no classes', () => {
+    render(
+      <StudentDetailsModal
+        student={baseStudent}
+        role="teacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.getByText(/Classes/i)).toBeTruthy()
+    expect(screen.getByText('None')).toBeTruthy()
+  })
+
+  it('shows class name with academic year when enrolled', () => {
+    render(
+      <StudentDetailsModal
+        student={{
+          ...baseStudent,
+          student_classes: [
+            {
+              class: {
+                id: 'class-1',
+                name: 'Year 1A',
+                year_group: '1',
+                academic_year: '2024/25',
+              },
+            },
+          ],
+        }}
+        role="teacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.getByText('Year 1A (2024/25)')).toBeTruthy()
+  })
+
+  it('shows class name without brackets when academic_year is null', () => {
+    render(
+      <StudentDetailsModal
+        student={{
+          ...baseStudent,
+          student_classes: [
+            {
+              class: {
+                id: 'class-1',
+                name: 'Year 1A',
+                year_group: '1',
+                academic_year: null,
+              },
+            },
+          ],
+        }}
+        role="teacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.getByText('Year 1A')).toBeTruthy()
   })
 })

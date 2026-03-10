@@ -48,6 +48,15 @@ export async function createStaff(input: {
   return data
 }
 
+export async function getTeachers() {
+  const { data } = await supabase
+    .from('staff')
+    .select('id, first_name, last_name, display_name')
+    .in('role', ['teacher', 'headteacher'])
+    .order('last_name')
+  return data ?? []
+}
+
 export async function updateStaff(
   id: string,
   input: {

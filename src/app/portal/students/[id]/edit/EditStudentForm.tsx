@@ -7,12 +7,6 @@ import type { GuardianSummary } from '@/db'
 
 import { updateStudentAction } from './actions'
 
-type Class = {
-  id: string
-  name: string
-  year_group: string
-}
-
 type StudentData = {
   id: string
   first_name: string
@@ -34,24 +28,14 @@ type StudentData = {
   additional_contact_1_relationship: string | null
   additional_contact_2_id: string | null
   additional_contact_2_relationship: string | null
-  student_classes: Array<{ class: { id: string } | null }>
 }
 
 type Props = {
   student: StudentData
-  classes: Class[]
   guardians: GuardianSummary[]
 }
 
-export default function EditStudentForm({
-  student,
-  classes,
-  guardians,
-}: Props) {
-  const enrolledClassIds = new Set(
-    student.student_classes.map((sc) => sc.class?.id).filter(Boolean),
-  )
-
+export default function EditStudentForm({ student, guardians }: Props) {
   const [showSecondary, setShowSecondary] = useState(
     Boolean(student.secondary_guardian_id),
   )
@@ -107,33 +91,6 @@ export default function EditStudentForm({
             defaultValue={student.student_code ?? undefined}
           />
         </div>
-
-        {classes.length > 0 && (
-          <div className="mt-4">
-            <fieldset>
-              <legend className="block text-sm font-medium text-gray-700">
-                Classes
-              </legend>
-              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {classes.map((c) => (
-                  <label
-                    key={c.id}
-                    className="flex items-center gap-2 text-sm text-gray-700"
-                  >
-                    <input
-                      type="checkbox"
-                      name="student_class_ids"
-                      value={c.id}
-                      defaultChecked={enrolledClassIds.has(c.id)}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    {c.name} (Year {c.year_group})
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          </div>
-        )}
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field

@@ -46,6 +46,14 @@ export type StudentForModal = {
   additional_contact_2: AdditionalContact | null
   additional_contact_2_relationship: string | null
   medical_details: string | null
+  student_classes: Array<{
+    class: {
+      id: string
+      name: string
+      year_group: string
+      academic_year: string | null
+    } | null
+  }>
 }
 
 type Props = {
@@ -176,6 +184,25 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
               />
             </section>
           )}
+
+          <section className="border-t border-gray-100 pt-4">
+            <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
+              Classes
+            </h3>
+            <p className="text-sm text-gray-600">
+              {student.student_classes.length > 0
+                ? student.student_classes
+                    .map((sc) => {
+                      if (!sc.class) return null
+                      return sc.class.academic_year
+                        ? `${sc.class.name} (${sc.class.academic_year})`
+                        : sc.class.name
+                    })
+                    .filter(Boolean)
+                    .join(', ')
+                : 'None'}
+            </p>
+          </section>
 
           <section className="border-t border-gray-100 pt-4">
             <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">

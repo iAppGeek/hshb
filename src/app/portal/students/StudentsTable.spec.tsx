@@ -41,7 +41,14 @@ const students = [
     last_name: 'Papadopoulos',
     student_code: 'S001',
     student_classes: [
-      { class: { id: 'class-1', name: 'Year 1A', year_group: '1' } },
+      {
+        class: {
+          id: 'class-1',
+          name: 'Year 1A',
+          year_group: '1',
+          academic_year: null,
+        },
+      },
     ],
     address_line_1: null,
     address_line_2: null,
@@ -79,7 +86,14 @@ const students = [
     last_name: 'Georgiou',
     student_code: 'S002',
     student_classes: [
-      { class: { id: 'class-1', name: 'Year 1A', year_group: '1' } },
+      {
+        class: {
+          id: 'class-1',
+          name: 'Year 1A',
+          year_group: '1',
+          academic_year: null,
+        },
+      },
     ],
     address_line_1: null,
     address_line_2: null,

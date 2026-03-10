@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
-import { createGuardian, updateStudent, updateStudentClasses } from '@/db'
+import { createGuardian, updateStudent } from '@/db'
 
 function str(formData: FormData, key: string): string | null {
   const v = (formData.get(key) as string | null)?.trim()
@@ -90,11 +90,6 @@ export async function updateStudentAction(
         ? str(formData, 'contact2_relationship')
         : null,
     })
-
-    const classIds = (formData.getAll('student_class_ids') as string[]).filter(
-      Boolean,
-    )
-    await updateStudentClasses(id, classIds)
 
     revalidatePath('/portal/students')
   } catch {

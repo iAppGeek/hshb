@@ -11,6 +11,7 @@ import {
   getStaffById,
   getAllStaff,
   getAllStaffWithClasses,
+  getTeachers,
   createStaff,
   updateStaff,
 } from './staff'
@@ -267,5 +268,48 @@ describe('updateStaff', () => {
         role: 'teacher',
       }),
     ).rejects.toThrow('DB error')
+  })
+})
+
+describe('getTeachers', () => {
+  it('returns staff with teacher or headteacher role', async () => {
+    const mockData = [
+      {
+        id: 'staff-1',
+        first_name: 'Jane',
+        last_name: 'Smith',
+        display_name: null,
+      },
+      {
+        id: 'staff-2',
+        first_name: 'Bob',
+        last_name: 'Jones',
+        display_name: 'Mr Jones',
+      },
+    ]
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        in: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({ data: mockData }),
+        }),
+      }),
+    })
+
+    const result = await getTeachers()
+    expect(result).toEqual(mockData)
+    expect(mockFrom).toHaveBeenCalledWith('staff')
+  })
+
+  it('returns empty array when no teachers exist', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        in: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({ data: null }),
+        }),
+      }),
+    })
+
+    const result = await getTeachers()
+    expect(result).toEqual([])
   })
 })

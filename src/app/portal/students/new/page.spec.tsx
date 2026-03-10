@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getAllClasses, getAllGuardians } from '@/db'
+import { getAllGuardians } from '@/db'
 
 import AddStudentPage from './page'
 
@@ -12,7 +12,6 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  getAllClasses: vi.fn(),
   getAllGuardians: vi.fn(),
 }))
 
@@ -21,46 +20,32 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('./AddStudentForm', () => ({
-  default: ({ classes }: { classes: { id: string; name: string }[] }) => (
-    <div data-testid="add-student-form">
-      {classes.map((c) => (
-        <span key={c.id}>{c.name}</span>
-      ))}
-    </div>
-  ),
+  default: () => <div data-testid="add-student-form" />,
 }))
 
 beforeEach(() => {
   vi.clearAllMocks()
 })
 
-const mockClasses = [
-  { id: 'class-1', name: 'Year 1A', year_group: '1' },
-  { id: 'class-2', name: 'Year 2B', year_group: '2' },
-]
-
 describe('AddStudentPage', () => {
   it('renders the Add Student heading for admin', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
-    vi.mocked(getAllClasses).mockResolvedValue(mockClasses as any)
     vi.mocked(getAllGuardians).mockResolvedValue([])
 
     render(await AddStudentPage())
     expect(screen.getByText('Add Student')).toBeTruthy()
   })
 
-  it('passes classes to the form', async () => {
+  it('renders the AddStudentForm for admin', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
-    vi.mocked(getAllClasses).mockResolvedValue(mockClasses as any)
     vi.mocked(getAllGuardians).mockResolvedValue([])
 
     render(await AddStudentPage())
-    expect(screen.getByText('Year 1A')).toBeTruthy()
-    expect(screen.getByText('Year 2B')).toBeTruthy()
+    expect(screen.getByTestId('add-student-form')).toBeTruthy()
   })
 
   it('redirects teacher to students list', async () => {

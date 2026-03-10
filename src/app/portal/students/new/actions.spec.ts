@@ -2,14 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { createGuardian, createStudent, enrollStudentInClasses } from '@/db'
+import { createGuardian, createStudent } from '@/db'
 
 import { createStudentAction } from './actions'
 
 vi.mock('@/db', () => ({
   createGuardian: vi.fn(),
   createStudent: vi.fn(),
-  enrollStudentInClasses: vi.fn(),
 }))
 
 vi.mock('next/cache', () => ({
@@ -61,7 +60,6 @@ describe('createStudentAction', () => {
   it('creates primary guardian and student, then redirects', async () => {
     vi.mocked(createGuardian).mockResolvedValue({ id: 'guardian-1' } as any)
     vi.mocked(createStudent).mockResolvedValue({ id: 'student-1' } as any)
-    vi.mocked(enrollStudentInClasses).mockResolvedValue(undefined)
 
     await createStudentAction(makeFormData(baseFields))
 
@@ -93,7 +91,6 @@ describe('createStudentAction', () => {
       .mockResolvedValueOnce({ id: 'guardian-1' } as any)
       .mockResolvedValueOnce({ id: 'guardian-2' } as any)
     vi.mocked(createStudent).mockResolvedValue({ id: 'student-1' } as any)
-    vi.mocked(enrollStudentInClasses).mockResolvedValue(undefined)
 
     await createStudentAction(
       makeFormData({
@@ -121,7 +118,6 @@ describe('createStudentAction', () => {
       .mockResolvedValueOnce({ id: 'guardian-1' } as any)
       .mockResolvedValueOnce({ id: 'contact-1' } as any)
     vi.mocked(createStudent).mockResolvedValue({ id: 'student-1' } as any)
-    vi.mocked(enrollStudentInClasses).mockResolvedValue(undefined)
 
     await createStudentAction(
       makeFormData({
@@ -152,7 +148,6 @@ describe('createStudentAction', () => {
   it('converts empty strings to null for optional fields', async () => {
     vi.mocked(createGuardian).mockResolvedValue({ id: 'guardian-1' } as any)
     vi.mocked(createStudent).mockResolvedValue({ id: 'student-1' } as any)
-    vi.mocked(enrollStudentInClasses).mockResolvedValue(undefined)
 
     await createStudentAction(makeFormData(baseFields))
 
@@ -165,26 +160,8 @@ describe('createStudentAction', () => {
     )
   })
 
-  it('enrolls student in selected classes', async () => {
-    vi.mocked(createGuardian).mockResolvedValue({ id: 'guardian-1' } as any)
-    vi.mocked(createStudent).mockResolvedValue({ id: 'student-1' } as any)
-    vi.mocked(enrollStudentInClasses).mockResolvedValue(undefined)
-
-    const fd = makeFormData(baseFields)
-    fd.append('student_class_ids', 'class-1')
-    fd.append('student_class_ids', 'class-2')
-
-    await createStudentAction(fd)
-
-    expect(enrollStudentInClasses).toHaveBeenCalledWith('student-1', [
-      'class-1',
-      'class-2',
-    ])
-  })
-
   it('uses existing guardian id without calling createGuardian', async () => {
     vi.mocked(createStudent).mockResolvedValue({ id: 'student-1' } as any)
-    vi.mocked(enrollStudentInClasses).mockResolvedValue(undefined)
 
     await createStudentAction(
       makeFormData({
@@ -198,27 +175,6 @@ describe('createStudentAction', () => {
     expect(createGuardian).not.toHaveBeenCalled()
     expect(createStudent).toHaveBeenCalledWith(
       expect.objectContaining({ primary_guardian_id: 'guardian-existing' }),
-    )
-  })
-
-  it('uses existing id for secondary when mode is existing', async () => {
-    vi.mocked(createGuardian).mockResolvedValue({ id: 'guardian-1' } as any)
-    vi.mocked(createStudent).mockResolvedValue({ id: 'student-1' } as any)
-    vi.mocked(enrollStudentInClasses).mockResolvedValue(undefined)
-
-    await createStudentAction(
-      makeFormData({
-        ...baseFields,
-        has_secondary: 'true',
-        secondary_mode: 'existing',
-        secondary_existing_id: 'guardian-sec',
-        secondary_relationship: 'Aunt',
-      }),
-    )
-
-    expect(createGuardian).toHaveBeenCalledTimes(1) // only primary
-    expect(createStudent).toHaveBeenCalledWith(
-      expect.objectContaining({ secondary_guardian_id: 'guardian-sec' }),
     )
   })
 })

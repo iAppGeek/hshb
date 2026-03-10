@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
-import { createGuardian, createStudent, enrollStudentInClasses } from '@/db'
+import { createGuardian, createStudent } from '@/db'
 
 function str(formData: FormData, key: string): string | null {
   const v = (formData.get(key) as string | null)?.trim()
@@ -66,7 +66,7 @@ export async function createStudentAction(
       contact2Id = await resolveGuardian(formData, 'contact2')
     }
 
-    const student = await createStudent({
+    await createStudent({
       first_name: str(formData, 'student_first_name')!,
       last_name: str(formData, 'student_last_name')!,
       student_code: str(formData, 'student_code'),
@@ -93,11 +93,6 @@ export async function createStudentAction(
         ? str(formData, 'contact2_relationship')
         : null,
     })
-
-    const classIds = (formData.getAll('student_class_ids') as string[]).filter(
-      Boolean,
-    )
-    await enrollStudentInClasses(student.id, classIds)
 
     revalidatePath('/portal/students')
   } catch {

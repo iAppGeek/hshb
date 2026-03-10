@@ -64,13 +64,7 @@ const baseStudent = {
 
 describe('EditStudentForm', () => {
   it('renders student first and last name fields pre-filled', () => {
-    render(
-      <EditStudentForm
-        student={baseStudent}
-        classes={[]}
-        guardians={guardians}
-      />,
-    )
+    render(<EditStudentForm student={baseStudent} guardians={guardians} />)
     expect((screen.getByDisplayValue('Anna') as HTMLInputElement).name).toBe(
       'student_first_name',
     )
@@ -80,13 +74,7 @@ describe('EditStudentForm', () => {
   })
 
   it('shows Edit guardian link when a guardian is pre-selected', () => {
-    render(
-      <EditStudentForm
-        student={baseStudent}
-        classes={[]}
-        guardians={guardians}
-      />,
-    )
+    render(<EditStudentForm student={baseStudent} guardians={guardians} />)
     const link = screen.getByRole('link', { name: 'Edit guardian' })
     expect(link.getAttribute('href')).toBe('/portal/guardians/guardian-1/edit')
   })
@@ -95,47 +83,14 @@ describe('EditStudentForm', () => {
     render(
       <EditStudentForm
         student={{ ...baseStudent, primary_guardian_id: null }}
-        classes={[]}
         guardians={guardians}
       />,
     )
     expect(screen.queryByRole('link', { name: 'Edit guardian' })).toBeNull()
   })
 
-  it('renders class checkboxes pre-checked for enrolled classes', () => {
-    const classes = [
-      { id: 'class-1', name: 'Arabic Beginners', year_group: '1' },
-      { id: 'class-2', name: 'Quran Advanced', year_group: '3' },
-    ]
-    render(
-      <EditStudentForm
-        student={{
-          ...baseStudent,
-          student_classes: [{ class: { id: 'class-1' } }],
-        }}
-        classes={classes}
-        guardians={guardians}
-      />,
-    )
-    const checkboxes = screen.getAllByRole('checkbox')
-    const class1 = checkboxes.find(
-      (c) => (c as HTMLInputElement).value === 'class-1',
-    ) as HTMLInputElement
-    const class2 = checkboxes.find(
-      (c) => (c as HTMLInputElement).value === 'class-2',
-    ) as HTMLInputElement
-    expect(class1.defaultChecked).toBe(true)
-    expect(class2.defaultChecked).toBe(false)
-  })
-
   it('shows Save changes and Cancel buttons', () => {
-    render(
-      <EditStudentForm
-        student={baseStudent}
-        classes={[]}
-        guardians={guardians}
-      />,
-    )
+    render(<EditStudentForm student={baseStudent} guardians={guardians} />)
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Cancel' })).toBeTruthy()
   })

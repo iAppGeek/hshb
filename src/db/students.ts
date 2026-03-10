@@ -2,7 +2,7 @@ import { supabase } from './client'
 
 const STUDENT_SELECT = `
   *,
-  student_classes(class:classes(id, name, year_group)),
+  student_classes(class:classes(id, name, year_group, academic_year)),
   primary_guardian:guardians!students_primary_guardian_id_fkey(
     first_name, last_name, phone, email,
     address_line_1, address_line_2, city, postcode, notes

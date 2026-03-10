@@ -4,6 +4,7 @@ export {
   getStaffById,
   getAllStaff,
   getAllStaffWithClasses,
+  getTeachers,
   createStaff,
   updateStaff,
 } from './staff'
@@ -28,7 +29,15 @@ export type {
   GuardianFull,
   GuardianStudentLink,
 } from './guardians'
-export { getAllClasses, getClassesByTeacher } from './classes'
+export {
+  getAllClasses,
+  getAllClassesIncludingInactive,
+  getClassById,
+  getClassesByTeacher,
+  createClass,
+  updateClass,
+  setClassStudents,
+} from './classes'
 export { getAllTimetableSlots, getTimetableByClass } from './timetable'
 export { getAttendanceByClassAndDate, saveAttendance } from './attendance'
 export type { AttendanceStatus, AttendanceInsert } from './attendance'

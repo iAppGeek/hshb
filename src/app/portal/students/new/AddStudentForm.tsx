@@ -7,18 +7,11 @@ import type { GuardianSummary } from '@/db'
 
 import { createStudentAction } from './actions'
 
-type Class = {
-  id: string
-  name: string
-  year_group: string
-}
-
 type Props = {
-  classes: Class[]
   guardians: GuardianSummary[]
 }
 
-export default function AddStudentForm({ classes, guardians }: Props) {
+export default function AddStudentForm({ guardians }: Props) {
   const [showSecondary, setShowSecondary] = useState(false)
   const [showContact1, setShowContact1] = useState(false)
   const [showContact2, setShowContact2] = useState(false)
@@ -54,32 +47,6 @@ export default function AddStudentForm({ classes, guardians }: Props) {
           />
           <Field label="Student code" name="student_code" />
         </div>
-
-        {classes.length > 0 && (
-          <div className="mt-4">
-            <fieldset>
-              <legend className="block text-sm font-medium text-gray-700">
-                Classes
-              </legend>
-              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {classes.map((c) => (
-                  <label
-                    key={c.id}
-                    className="flex items-center gap-2 text-sm text-gray-700"
-                  >
-                    <input
-                      type="checkbox"
-                      name="student_class_ids"
-                      value={c.id}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    {c.name} (Year {c.year_group})
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          </div>
-        )}
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field

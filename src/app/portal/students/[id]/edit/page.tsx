@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getStudentById, getAllClasses, getAllGuardians } from '@/db'
+import { getStudentById, getAllGuardians } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
 import EditStudentForm from './EditStudentForm'
@@ -25,9 +25,8 @@ export default async function EditStudentPage({
 
   const { id } = await params
 
-  const [student, classes, guardians] = await Promise.all([
+  const [student, guardians] = await Promise.all([
     getStudentById(id),
-    getAllClasses(),
     getAllGuardians(),
   ])
 
@@ -47,11 +46,7 @@ export default async function EditStudentPage({
         </p>
       </div>
 
-      <EditStudentForm
-        student={student}
-        classes={classes}
-        guardians={guardians}
-      />
+      <EditStudentForm student={student} guardians={guardians} />
     </div>
   )
 }

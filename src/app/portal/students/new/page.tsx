@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getAllClasses, getAllGuardians } from '@/db'
+import { getAllGuardians } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
 import AddStudentForm from './AddStudentForm'
@@ -19,10 +19,7 @@ export default async function AddStudentPage() {
     redirect('/portal/students')
   }
 
-  const [classes, guardians] = await Promise.all([
-    getAllClasses(),
-    getAllGuardians(),
-  ])
+  const guardians = await getAllGuardians()
 
   return (
     <div className="max-w-2xl">
@@ -34,7 +31,7 @@ export default async function AddStudentPage() {
         </p>
       </div>
 
-      <AddStudentForm classes={classes} guardians={guardians} />
+      <AddStudentForm guardians={guardians} />
     </div>
   )
 }
