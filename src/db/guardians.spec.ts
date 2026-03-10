@@ -6,7 +6,13 @@ vi.mock('./client', () => ({
   supabase: { from: mockFrom },
 }))
 
-import { getAllGuardians, createGuardian } from './guardians'
+import {
+  getAllGuardians,
+  createGuardian,
+  getGuardianById,
+  getStudentsByGuardian,
+  updateGuardian,
+} from './guardians'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -83,6 +89,122 @@ describe('createGuardian', () => {
 
     await expect(
       createGuardian({ first_name: 'A', last_name: 'B', phone: '07700' }),
+    ).rejects.toThrow('DB error')
+  })
+})
+
+describe('getGuardianById', () => {
+  it('returns a guardian by id', async () => {
+    const mockGuardian = {
+      id: 'guardian-1',
+      first_name: 'Maria',
+      last_name: 'Smith',
+      phone: '07700 900000',
+      email: 'maria@example.com',
+      address_line_1: null,
+      address_line_2: null,
+      city: null,
+      postcode: null,
+      notes: null,
+    }
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: mockGuardian }),
+        }),
+      }),
+    })
+
+    const result = await getGuardianById('guardian-1')
+    expect(result).toEqual(mockGuardian)
+    expect(mockFrom).toHaveBeenCalledWith('guardians')
+  })
+
+  it('returns null when guardian not found', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: null }),
+        }),
+      }),
+    })
+
+    const result = await getGuardianById('missing-id')
+    expect(result).toBeNull()
+  })
+})
+
+describe('getStudentsByGuardian', () => {
+  it('returns students linked to the guardian', async () => {
+    const mockStudents = [
+      {
+        id: 'student-1',
+        first_name: 'Anna',
+        last_name: 'Smith',
+        student_code: 'S001',
+      },
+    ]
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        or: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: mockStudents }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await getStudentsByGuardian('guardian-1')
+    expect(result).toEqual(mockStudents)
+    expect(mockFrom).toHaveBeenCalledWith('students')
+  })
+
+  it('returns empty array when no students are linked', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        or: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: null }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await getStudentsByGuardian('guardian-1')
+    expect(result).toEqual([])
+  })
+})
+
+describe('updateGuardian', () => {
+  it('updates a guardian successfully', async () => {
+    const mockUpdate = vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ error: null }),
+    })
+    mockFrom.mockReturnValue({ update: mockUpdate })
+
+    await updateGuardian('guardian-1', {
+      first_name: 'Maria',
+      last_name: 'Smith',
+      phone: '07700 900000',
+    })
+
+    expect(mockFrom).toHaveBeenCalledWith('guardians')
+    expect(mockUpdate).toHaveBeenCalled()
+  })
+
+  it('throws when the database returns an error', async () => {
+    mockFrom.mockReturnValue({
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ error: new Error('DB error') }),
+      }),
+    })
+
+    await expect(
+      updateGuardian('guardian-1', {
+        first_name: 'A',
+        last_name: 'B',
+        phone: '07700',
+      }),
     ).rejects.toThrow('DB error')
   })
 })

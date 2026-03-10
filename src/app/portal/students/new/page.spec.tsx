@@ -75,14 +75,15 @@ describe('AddStudentPage', () => {
     expect(redirect).toHaveBeenCalledWith('/portal/students')
   })
 
-  it('renders the form for headteacher', async () => {
+  it('redirects headteacher to students list', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'headteacher', staffId: 'staff-3' },
     } as any)
-    vi.mocked(getAllClasses).mockResolvedValue([])
-    vi.mocked(getAllGuardians).mockResolvedValue([])
+    vi.mocked(redirect).mockImplementation(() => {
+      throw new Error('NEXT_REDIRECT')
+    })
 
-    render(await AddStudentPage())
-    expect(screen.getByTestId('add-student-form')).toBeTruthy()
+    await expect(AddStudentPage()).rejects.toThrow('NEXT_REDIRECT')
+    expect(redirect).toHaveBeenCalledWith('/portal/students')
   })
 })

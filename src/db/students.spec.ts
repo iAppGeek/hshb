@@ -12,6 +12,8 @@ import {
   getStudentById,
   createStudent,
   enrollStudentInClasses,
+  updateStudent,
+  updateStudentClasses,
 } from './students'
 
 beforeEach(() => {
@@ -221,5 +223,76 @@ describe('enrollStudentInClasses', () => {
     await expect(
       enrollStudentInClasses('student-1', ['class-1']),
     ).rejects.toThrow('DB error')
+  })
+})
+
+describe('updateStudent', () => {
+  it('updates a student successfully', async () => {
+    const mockUpdate = vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ error: null }),
+    })
+    mockFrom.mockReturnValue({ update: mockUpdate })
+
+    await updateStudent('student-1', { first_name: 'Updated' })
+
+    expect(mockFrom).toHaveBeenCalledWith('students')
+    expect(mockUpdate).toHaveBeenCalledWith({ first_name: 'Updated' })
+  })
+
+  it('throws when the database returns an error', async () => {
+    mockFrom.mockReturnValue({
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ error: new Error('DB error') }),
+      }),
+    })
+
+    await expect(
+      updateStudent('student-1', { first_name: 'X' }),
+    ).rejects.toThrow('DB error')
+  })
+})
+
+describe('updateStudentClasses', () => {
+  it('deletes existing classes and re-inserts new ones', async () => {
+    const mockDelete = vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ error: null }),
+    })
+    const mockInsert = vi.fn().mockResolvedValue({ error: null })
+    mockFrom
+      .mockReturnValueOnce({ delete: mockDelete })
+      .mockReturnValueOnce({ insert: mockInsert })
+
+    await updateStudentClasses('student-1', ['class-1', 'class-2'])
+
+    expect(mockFrom).toHaveBeenNthCalledWith(1, 'student_classes')
+    expect(mockDelete).toHaveBeenCalled()
+    expect(mockInsert).toHaveBeenCalledWith([
+      { student_id: 'student-1', class_id: 'class-1' },
+      { student_id: 'student-1', class_id: 'class-2' },
+    ])
+  })
+
+  it('deletes existing classes and skips insert when classIds is empty', async () => {
+    const mockDelete = vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ error: null }),
+    })
+    mockFrom.mockReturnValueOnce({ delete: mockDelete })
+
+    await updateStudentClasses('student-1', [])
+
+    expect(mockFrom).toHaveBeenCalledTimes(1)
+    expect(mockDelete).toHaveBeenCalled()
+  })
+
+  it('throws when the delete fails', async () => {
+    mockFrom.mockReturnValueOnce({
+      delete: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ error: new Error('Delete error') }),
+      }),
+    })
+
+    await expect(
+      updateStudentClasses('student-1', ['class-1']),
+    ).rejects.toThrow('Delete error')
   })
 })

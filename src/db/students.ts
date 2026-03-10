@@ -119,3 +119,24 @@ export async function getStudentById(id: string) {
     .single()
   return data
 }
+
+type StudentUpdate = Partial<StudentInsert>
+
+export async function updateStudent(id: string, data: StudentUpdate) {
+  const { error } = await supabase.from('students').update(data).eq('id', id)
+  if (error) throw error
+}
+
+export async function updateStudentClasses(
+  studentId: string,
+  classIds: string[],
+) {
+  const { error: deleteError } = await supabase
+    .from('student_classes')
+    .delete()
+    .eq('student_id', studentId)
+  if (deleteError) throw deleteError
+  if (classIds.length > 0) {
+    await enrollStudentInClasses(studentId, classIds)
+  }
+}

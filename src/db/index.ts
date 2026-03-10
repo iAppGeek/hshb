@@ -6,9 +6,21 @@ export {
   getStudentById,
   createStudent,
   enrollStudentInClasses,
+  updateStudent,
+  updateStudentClasses,
 } from './students'
-export { getAllGuardians, createGuardian } from './guardians'
-export type { GuardianSummary } from './guardians'
+export {
+  getAllGuardians,
+  createGuardian,
+  getGuardianById,
+  getStudentsByGuardian,
+  updateGuardian,
+} from './guardians'
+export type {
+  GuardianSummary,
+  GuardianFull,
+  GuardianStudentLink,
+} from './guardians'
 export { getAllClasses, getClassesByTeacher } from './classes'
 export { getAllTimetableSlots, getTimetableByClass } from './timetable'
 export { getAttendanceByClassAndDate, saveAttendance } from './attendance'

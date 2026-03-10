@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 import StudentDetailsModal, {
   type StudentForModal,
@@ -41,7 +42,7 @@ export default function StudentsTable({ students, role }: Props) {
                 Guardian
               </th>
               <th className="relative px-6 py-3">
-                <span className="sr-only">Details</span>
+                <span className="sr-only">Actions</span>
               </th>
             </tr>
           </thead>
@@ -66,12 +67,22 @@ export default function StudentsTable({ students, role }: Props) {
                     : '—'}
                 </td>
                 <td className="px-6 py-4 text-right text-sm font-medium">
-                  <button
-                    onClick={() => setSelected(student)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Details
-                  </button>
+                  <div className="flex items-center justify-end gap-3">
+                    <button
+                      onClick={() => setSelected(student)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Details
+                    </button>
+                    {role === 'admin' && (
+                      <Link
+                        href={`/portal/students/${student.id}/edit`}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        Edit
+                      </Link>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

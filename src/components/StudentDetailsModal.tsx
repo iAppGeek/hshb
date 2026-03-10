@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 import type { StaffRole } from '@/types/next-auth'
 
@@ -32,12 +33,16 @@ export type StudentForModal = {
   postcode: string | null
   allergies: string | null
   notes: string | null
+  primary_guardian_id: string | null
   primary_guardian: GuardianInfo | null
   primary_guardian_relationship: string | null
+  secondary_guardian_id: string | null
   secondary_guardian: GuardianInfo | null
   secondary_guardian_relationship: string | null
+  additional_contact_1_id: string | null
   additional_contact_1: AdditionalContact | null
   additional_contact_1_relationship: string | null
+  additional_contact_2_id: string | null
   additional_contact_2: AdditionalContact | null
   additional_contact_2_relationship: string | null
   medical_details: string | null
@@ -121,7 +126,9 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
             {student.primary_guardian ? (
               <GuardianCard
                 guardian={student.primary_guardian}
+                guardianId={student.primary_guardian_id}
                 relationship={student.primary_guardian_relationship}
+                role={role}
               />
             ) : (
               <p className="text-sm text-gray-400">No details recorded.</p>
@@ -135,7 +142,9 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
               </h3>
               <GuardianCard
                 guardian={student.secondary_guardian}
+                guardianId={student.secondary_guardian_id}
                 relationship={student.secondary_guardian_relationship}
+                role={role}
               />
             </section>
           )}
@@ -147,7 +156,9 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
               </h3>
               <ContactCard
                 contact={student.additional_contact_1}
+                contactId={student.additional_contact_1_id}
                 relationship={student.additional_contact_1_relationship}
+                role={role}
               />
             </section>
           )}
@@ -159,7 +170,9 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
               </h3>
               <ContactCard
                 contact={student.additional_contact_2}
+                contactId={student.additional_contact_2_id}
                 relationship={student.additional_contact_2_relationship}
+                role={role}
               />
             </section>
           )}
@@ -199,21 +212,35 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
 
 function GuardianCard({
   guardian,
+  guardianId,
   relationship,
+  role,
 }: {
   guardian: GuardianInfo
+  guardianId: string | null
   relationship: string | null
+  role: StaffRole
 }) {
   return (
     <div className="space-y-0.5">
-      <p className="text-sm font-medium text-gray-900">
-        {guardian.first_name} {guardian.last_name}
-        {relationship && (
-          <span className="ml-1 font-normal text-gray-500">
-            ({relationship})
-          </span>
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-gray-900">
+          {guardian.first_name} {guardian.last_name}
+          {relationship && (
+            <span className="ml-1 font-normal text-gray-500">
+              ({relationship})
+            </span>
+          )}
+        </p>
+        {role === 'admin' && guardianId && (
+          <Link
+            href={`/portal/guardians/${guardianId}/edit`}
+            className="text-xs text-blue-600 hover:text-blue-800"
+          >
+            Edit
+          </Link>
         )}
-      </p>
+      </div>
       {guardian.email && (
         <p className="text-sm text-gray-600">{guardian.email}</p>
       )}
@@ -232,21 +259,35 @@ function GuardianCard({
 
 function ContactCard({
   contact,
+  contactId,
   relationship,
+  role,
 }: {
   contact: AdditionalContact
+  contactId: string | null
   relationship: string | null
+  role: StaffRole
 }) {
   return (
     <div className="space-y-0.5">
-      <p className="text-sm font-medium text-gray-900">
-        {contact.first_name} {contact.last_name}
-        {relationship && (
-          <span className="ml-1 font-normal text-gray-500">
-            ({relationship})
-          </span>
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-gray-900">
+          {contact.first_name} {contact.last_name}
+          {relationship && (
+            <span className="ml-1 font-normal text-gray-500">
+              ({relationship})
+            </span>
+          )}
+        </p>
+        {role === 'admin' && contactId && (
+          <Link
+            href={`/portal/guardians/${contactId}/edit`}
+            className="text-xs text-blue-600 hover:text-blue-800"
+          >
+            Edit
+          </Link>
         )}
-      </p>
+      </div>
       <p className="text-sm text-gray-600">{contact.phone}</p>
     </div>
   )

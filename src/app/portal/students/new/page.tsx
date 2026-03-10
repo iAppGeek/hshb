@@ -13,7 +13,9 @@ export default async function AddStudentPage() {
   const session = await auth()
   const role = session?.user?.role as StaffRole
 
-  if (role === 'teacher') {
+  if (role === 'admin') {
+    // authorised — continue
+  } else {
     redirect('/portal/students')
   }
 

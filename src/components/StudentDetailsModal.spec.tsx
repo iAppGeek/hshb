@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
+vi.mock('next/link', () => ({
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode
+    href: string
+  }) => <a href={href}>{children}</a>,
+}))
+
 import StudentDetailsModal from './StudentDetailsModal'
 
 const onClose = vi.fn()
@@ -32,12 +42,16 @@ const baseStudent = {
   allergies: null,
   notes: null,
   medical_details: null,
+  primary_guardian_id: 'guardian-1',
   primary_guardian: primaryGuardian,
   primary_guardian_relationship: 'Mother',
+  secondary_guardian_id: null,
   secondary_guardian: null,
   secondary_guardian_relationship: null,
+  additional_contact_1_id: null,
   additional_contact_1: null,
   additional_contact_1_relationship: null,
+  additional_contact_2_id: null,
   additional_contact_2: null,
   additional_contact_2_relationship: null,
 }
@@ -389,5 +403,70 @@ describe('StudentDetailsModal', () => {
     )
     fireEvent.keyDown(document, { key: 'Enter' })
     expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('shows guardian Edit link for admin with correct href', () => {
+    render(
+      <StudentDetailsModal
+        student={baseStudent}
+        role="admin"
+        onClose={onClose}
+      />,
+    )
+    const editLink = screen.getByRole('link', { name: 'Edit' })
+    expect(editLink.getAttribute('href')).toBe(
+      '/portal/guardians/guardian-1/edit',
+    )
+  })
+
+  it('does not show guardian Edit link for teacher', () => {
+    render(
+      <StudentDetailsModal
+        student={baseStudent}
+        role="teacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.queryByRole('link', { name: 'Edit' })).toBeNull()
+  })
+
+  it('does not show guardian Edit link for headteacher', () => {
+    render(
+      <StudentDetailsModal
+        student={baseStudent}
+        role="headteacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.queryByRole('link', { name: 'Edit' })).toBeNull()
+  })
+
+  it('shows Edit links for each guardian when multiple are present', () => {
+    render(
+      <StudentDetailsModal
+        student={{
+          ...baseStudent,
+          secondary_guardian_id: 'guardian-2',
+          secondary_guardian: {
+            first_name: 'George',
+            last_name: 'Papadopoulos',
+            phone: '07700 900001',
+            email: null,
+            address_line_1: null,
+            address_line_2: null,
+            city: null,
+            postcode: null,
+            notes: null,
+          },
+        }}
+        role="admin"
+        onClose={onClose}
+      />,
+    )
+    const editLinks = screen.getAllByRole('link', { name: 'Edit' })
+    expect(editLinks).toHaveLength(2)
+    const hrefs = editLinks.map((l) => l.getAttribute('href'))
+    expect(hrefs).toContain('/portal/guardians/guardian-1/edit')
+    expect(hrefs).toContain('/portal/guardians/guardian-2/edit')
   })
 })

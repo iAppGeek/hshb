@@ -36,3 +36,47 @@ export async function createGuardian(data: GuardianInsert) {
   if (error) throw error
   return guardian
 }
+
+export type GuardianFull = GuardianInsert & { id: string }
+
+export async function getGuardianById(
+  id: string,
+): Promise<GuardianFull | null> {
+  const { data } = await supabase
+    .from('guardians')
+    .select(
+      'id, first_name, last_name, phone, email, address_line_1, address_line_2, city, postcode, notes',
+    )
+    .eq('id', id)
+    .single()
+  return data
+}
+
+export type GuardianStudentLink = {
+  id: string
+  first_name: string
+  last_name: string
+  student_code: string | null
+}
+
+export async function getStudentsByGuardian(
+  guardianId: string,
+): Promise<GuardianStudentLink[]> {
+  const { data } = await supabase
+    .from('students')
+    .select('id, first_name, last_name, student_code')
+    .or(
+      `primary_guardian_id.eq.${guardianId},secondary_guardian_id.eq.${guardianId},additional_contact_1_id.eq.${guardianId},additional_contact_2_id.eq.${guardianId}`,
+    )
+    .eq('active', true)
+    .order('last_name')
+  return data ?? []
+}
+
+export async function updateGuardian(id: string, data: GuardianInsert) {
+  const { error } = await supabase
+    .from('guardians')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id)
+  if (error) throw error
+}

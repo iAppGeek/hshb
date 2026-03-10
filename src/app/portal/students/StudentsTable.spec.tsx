@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 
+vi.mock('next/link', () => ({
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode
+    href: string
+  }) => <a href={href}>{children}</a>,
+}))
+
 vi.mock('@/components/StudentDetailsModal', () => ({
   default: ({
     student,
@@ -40,6 +50,7 @@ const students = [
     allergies: null,
     notes: null,
     medical_details: null,
+    primary_guardian_id: 'guardian-1',
     primary_guardian: {
       first_name: 'Maria',
       last_name: 'Papadopoulos',
@@ -52,10 +63,13 @@ const students = [
       notes: null,
     },
     primary_guardian_relationship: 'Mother',
+    secondary_guardian_id: null,
     secondary_guardian: null,
     secondary_guardian_relationship: null,
+    additional_contact_1_id: null,
     additional_contact_1: null,
     additional_contact_1_relationship: null,
+    additional_contact_2_id: null,
     additional_contact_2: null,
     additional_contact_2_relationship: null,
   },
@@ -74,6 +88,7 @@ const students = [
     allergies: null,
     notes: null,
     medical_details: null,
+    primary_guardian_id: 'guardian-2',
     primary_guardian: {
       first_name: 'Eleni',
       last_name: 'Georgiou',
@@ -86,10 +101,13 @@ const students = [
       notes: null,
     },
     primary_guardian_relationship: null,
+    secondary_guardian_id: null,
     secondary_guardian: null,
     secondary_guardian_relationship: null,
+    additional_contact_1_id: null,
     additional_contact_1: null,
     additional_contact_1_relationship: null,
+    additional_contact_2_id: null,
     additional_contact_2: null,
     additional_contact_2_relationship: null,
   },
@@ -194,5 +212,27 @@ describe('StudentsTable', () => {
     expect(
       within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick'),
     ).toBeTruthy()
+  })
+
+  it('shows Edit links for admin with correct hrefs', () => {
+    render(<StudentsTable students={students} role="admin" />)
+    const editLinks = screen.getAllByRole('link', { name: 'Edit' })
+    expect(editLinks).toHaveLength(2)
+    expect(editLinks[0].getAttribute('href')).toBe(
+      '/portal/students/student-1/edit',
+    )
+    expect(editLinks[1].getAttribute('href')).toBe(
+      '/portal/students/student-2/edit',
+    )
+  })
+
+  it('does not show Edit links for teacher', () => {
+    render(<StudentsTable students={students} role="teacher" />)
+    expect(screen.queryByRole('link', { name: 'Edit' })).toBeNull()
+  })
+
+  it('does not show Edit links for headteacher', () => {
+    render(<StudentsTable students={students} role="headteacher" />)
+    expect(screen.queryByRole('link', { name: 'Edit' })).toBeNull()
   })
 })
