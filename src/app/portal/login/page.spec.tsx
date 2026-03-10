@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
+import LoginPage from './page'
+
 vi.mock('@/auth', () => ({
   signIn: vi.fn(),
 }))
@@ -11,8 +13,6 @@ vi.mock('next/image', () => ({
 
 vi.mock('@/images/logo.png', () => ({ default: '/logo.png' }))
 vi.mock('@/images/icons/microsoft.svg', () => ({ default: '/microsoft.svg' }))
-
-import LoginPage from './page'
 
 beforeEach(() => {
   vi.clearAllMocks()

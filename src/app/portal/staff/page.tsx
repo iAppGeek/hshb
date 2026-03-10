@@ -1,8 +1,10 @@
 import { type Metadata } from 'next'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getAllStaffWithClasses } from '@/db'
+import type { StaffRole } from '@/types/next-auth'
 
 export const metadata: Metadata = { title: 'Staff' }
 
@@ -18,12 +20,23 @@ export default async function StaffPage() {
     redirect('/portal/login')
   }
 
+  const role = session.user?.role as StaffRole
+  const isAdmin = role === 'admin'
+
   const staff = await getAllStaffWithClasses()
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Staff</h1>
+        {isAdmin && (
+          <Link
+            href="/portal/staff/new"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+          >
+            Add Staff
+          </Link>
+        )}
       </div>
 
       {staff.length === 0 ? (
@@ -57,6 +70,11 @@ export default async function StaffPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                     Room
                   </th>
+                  {isAdmin && (
+                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -96,6 +114,16 @@ export default async function StaffPage() {
                           ? classes.map((c) => c.room_number ?? '—').join(', ')
                           : '—'}
                       </td>
+                      {isAdmin && (
+                        <td className="px-6 py-4 text-sm">
+                          <Link
+                            href={`/portal/staff/${member.id}/edit`}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            Edit
+                          </Link>
+                        </td>
+                      )}
                     </tr>
                   )
                 })}

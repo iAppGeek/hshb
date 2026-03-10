@@ -1,5 +1,12 @@
 export { supabase } from './client'
-export { getStaffByEmail, getAllStaff, getAllStaffWithClasses } from './staff'
+export {
+  getStaffByEmail,
+  getStaffById,
+  getAllStaff,
+  getAllStaffWithClasses,
+  createStaff,
+  updateStaff,
+} from './staff'
 export {
   getAllStudents,
   getStudentsByClass,

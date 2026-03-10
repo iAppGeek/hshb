@@ -6,7 +6,14 @@ vi.mock('./client', () => ({
   supabase: { from: mockFrom },
 }))
 
-import { getStaffByEmail, getAllStaff, getAllStaffWithClasses } from './staff'
+import {
+  getStaffByEmail,
+  getStaffById,
+  getAllStaff,
+  getAllStaffWithClasses,
+  createStaff,
+  updateStaff,
+} from './staff'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -140,5 +147,125 @@ describe('getAllStaffWithClasses', () => {
 
     const result = await getAllStaffWithClasses()
     expect(result).toEqual([])
+  })
+})
+
+describe('getStaffById', () => {
+  it('returns the staff member when found', async () => {
+    const mockStaff = {
+      id: 'staff-1',
+      first_name: 'Alice',
+      last_name: 'Smith',
+      email: 'alice@school.com',
+      role: 'teacher',
+      display_name: null,
+      contact_number: null,
+    }
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: mockStaff }),
+        }),
+      }),
+    })
+
+    const result = await getStaffById('staff-1')
+    expect(result).toEqual(mockStaff)
+    expect(mockFrom).toHaveBeenCalledWith('staff')
+  })
+
+  it('returns null when not found', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: null }),
+        }),
+      }),
+    })
+
+    const result = await getStaffById('nonexistent')
+    expect(result).toBeNull()
+  })
+})
+
+describe('createStaff', () => {
+  it('inserts a staff record and returns it', async () => {
+    const input = {
+      first_name: 'Alice',
+      last_name: 'Smith',
+      email: 'alice@school.com',
+      role: 'teacher',
+      display_name: null,
+      contact_number: null,
+    }
+    const created = { id: 'staff-new', ...input }
+    mockFrom.mockReturnValue({
+      insert: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: created, error: null }),
+        }),
+      }),
+    })
+
+    const result = await createStaff(input)
+    expect(result).toEqual(created)
+    expect(mockFrom).toHaveBeenCalledWith('staff')
+  })
+
+  it('throws when supabase returns an error', async () => {
+    mockFrom.mockReturnValue({
+      insert: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          single: vi
+            .fn()
+            .mockResolvedValue({ data: null, error: new Error('DB error') }),
+        }),
+      }),
+    })
+
+    await expect(
+      createStaff({
+        first_name: 'Alice',
+        last_name: 'Smith',
+        email: 'alice@school.com',
+        role: 'teacher',
+      }),
+    ).rejects.toThrow('DB error')
+  })
+})
+
+describe('updateStaff', () => {
+  it('calls update with the correct data', async () => {
+    const mockEq = vi.fn().mockResolvedValue({ error: null })
+    mockFrom.mockReturnValue({
+      update: vi.fn().mockReturnValue({ eq: mockEq }),
+    })
+
+    await updateStaff('staff-1', {
+      first_name: 'Alice',
+      last_name: 'Smith',
+      email: 'alice@school.com',
+      role: 'admin',
+    })
+
+    expect(mockFrom).toHaveBeenCalledWith('staff')
+    expect(mockEq).toHaveBeenCalledWith('id', 'staff-1')
+  })
+
+  it('throws when supabase returns an error', async () => {
+    mockFrom.mockReturnValue({
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ error: new Error('DB error') }),
+      }),
+    })
+
+    await expect(
+      updateStaff('staff-1', {
+        first_name: 'Alice',
+        last_name: 'Smith',
+        email: 'alice@school.com',
+        role: 'teacher',
+      }),
+    ).rejects.toThrow('DB error')
   })
 })
