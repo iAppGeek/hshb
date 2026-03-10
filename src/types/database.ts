@@ -247,6 +247,7 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
+          medical_details: string | null
           notes: string | null
           postcode: string
           primary_guardian_id: string | null
@@ -272,6 +273,7 @@ export type Database = {
           first_name: string
           id?: string
           last_name: string
+          medical_details?: string | null
           notes?: string | null
           postcode: string
           primary_guardian_id?: string | null
@@ -297,6 +299,7 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
+          medical_details?: string | null
           notes?: string | null
           postcode?: string
           primary_guardian_id?: string | null

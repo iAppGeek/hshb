@@ -94,6 +94,7 @@ export default function AddStudentForm({ classes, guardians }: Props) {
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Allergies" name="student_allergies" />
+          <Field label="Medical Details" name="student_medical_details" />
           <Field label="Notes" name="student_notes" />
         </div>
       </FormSection>

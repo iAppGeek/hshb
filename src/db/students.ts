@@ -84,6 +84,7 @@ type StudentInsert = {
   additional_contact_2_id?: string | null
   additional_contact_2_relationship?: string | null
   allergies?: string | null
+  medical_details?: string | null
   notes?: string | null
 }
 

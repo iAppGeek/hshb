@@ -84,6 +84,7 @@ CREATE TABLE students (
   additional_contact_2_relationship TEXT,
   -- Medical
   allergies               TEXT,
+  medical_details         TEXT,
   enrollment_date         DATE DEFAULT CURRENT_DATE,
   active                  BOOLEAN NOT NULL DEFAULT TRUE,
   notes                   TEXT,

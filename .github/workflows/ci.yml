@@ -51,12 +51,13 @@ jobs:
       - name: Build
         run: npm run build
 
-  deploy:
-    name: Deploy to Netlify
-    runs-on: ubuntu-latest
-    needs: ci
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+  # cant seem to get Netlify to stop deploying on every push, so disabling for now
+  # deploy:
+  #   name: Deploy to Netlify
+  #   runs-on: ubuntu-latest
+  #   needs: ci
+  #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
 
-    steps:
-      - name: Trigger Netlify deploy
-        run: curl -s -X POST ${{ secrets.NETLIFY_BUILD_HOOK }}
+  #   steps:
+  #     - name: Trigger Netlify deploy
+  #       run: curl -s -X POST ${{ secrets.NETLIFY_BUILD_HOOK }}

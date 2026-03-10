@@ -76,6 +76,7 @@ export async function createStudentAction(
       city: str(formData, 'student_city')!,
       postcode: str(formData, 'student_postcode')!,
       allergies: str(formData, 'student_allergies'),
+      medical_details: str(formData, 'student_medical_details'),
       notes: str(formData, 'student_notes'),
       primary_guardian_id: primaryGuardianId,
       primary_guardian_relationship: str(formData, 'primary_relationship'),
