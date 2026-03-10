@@ -25,7 +25,8 @@ export async function updateStaffAction(
     })
 
     revalidatePath('/portal/staff')
-  } catch {
+  } catch (err) {
+    console.error('[updateStaffAction] error:', err)
     return { error: 'Failed to update staff member. Please try again.' }
   }
 

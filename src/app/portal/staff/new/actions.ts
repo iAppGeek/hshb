@@ -24,7 +24,8 @@ export async function createStaffAction(
     })
 
     revalidatePath('/portal/staff')
-  } catch {
+  } catch (err) {
+    console.error('[createStaffAction] error:', err)
     return { error: 'Failed to create staff member. Please try again.' }
   }
 

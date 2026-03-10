@@ -95,7 +95,8 @@ export async function updateStudentAction(
     await updateStudentClasses(id, classIds)
 
     revalidatePath('/portal/students')
-  } catch {
+  } catch (err) {
+    console.error('[updateStudentAction] error:', err)
     return { error: 'Failed to save student. Please try again.' }
   }
 

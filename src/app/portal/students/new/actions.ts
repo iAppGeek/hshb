@@ -95,7 +95,8 @@ export async function createStudentAction(
     })
 
     revalidatePath('/portal/students')
-  } catch {
+  } catch (err) {
+    console.error('[createStudentAction] error:', err)
     return { error: 'Failed to save student. Please try again.' }
   }
 

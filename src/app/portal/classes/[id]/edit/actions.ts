@@ -30,7 +30,8 @@ export async function updateClassAction(
     await setClassStudents(id, studentIds)
 
     revalidatePath('/portal/classes')
-  } catch {
+  } catch (err) {
+    console.error('[updateClassAction] error:', err)
     return { error: 'Failed to update class. Please try again.' }
   }
 

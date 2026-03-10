@@ -66,6 +66,7 @@ export const ContactForm = () => {
         sendEvent('click', 'contact-form-submit-error', res)
       }
     } catch (e) {
+      console.error('[ContactForm] submit error:', e)
       setStatus('error')
       setError(`${e}`)
     }

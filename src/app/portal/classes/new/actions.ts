@@ -28,7 +28,8 @@ export async function createClassAction(
     await setClassStudents(cls.id, studentIds)
 
     revalidatePath('/portal/classes')
-  } catch {
+  } catch (err) {
+    console.error('[createClassAction] error:', err)
     return { error: 'Failed to create class. Please try again.' }
   }
 

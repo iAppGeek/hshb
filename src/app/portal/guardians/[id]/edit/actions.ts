@@ -29,7 +29,8 @@ export async function updateGuardianAction(
 
     revalidatePath('/portal/students')
     revalidatePath(`/portal/guardians/${id}/edit`)
-  } catch {
+  } catch (err) {
+    console.error('[updateGuardianAction] error:', err)
     return { error: 'Failed to save guardian. Please try again.' }
   }
 
