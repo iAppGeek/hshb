@@ -39,6 +39,23 @@ export async function getClassesByTeacher(teacherId: string) {
   return data ?? []
 }
 
+export async function getClassWithStudents(id: string) {
+  const { data } = await supabase
+    .from('classes')
+    .select(
+      `*, teacher:staff(first_name, last_name, display_name, contact_number),
+      student_classes(
+        student:students(
+          id, first_name, last_name, allergies,
+          primary_guardian:guardians!students_primary_guardian_id_fkey(first_name, last_name, phone)
+        )
+      )`,
+    )
+    .eq('id', id)
+    .single()
+  return data
+}
+
 type ClassInsert = {
   name: string
   year_group: string

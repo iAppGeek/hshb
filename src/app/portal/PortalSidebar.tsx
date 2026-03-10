@@ -82,7 +82,7 @@ export default function PortalSidebar({
   return (
     <>
       {/* Mobile top bar — only visible on narrow screens */}
-      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-3 bg-gray-900 px-4 md:hidden">
+      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-3 bg-gray-900 px-4 md:hidden print:hidden">
         <button
           onClick={() => setOpen(true)}
           className="rounded-md p-1.5 text-gray-400 hover:bg-gray-700 hover:text-white"
@@ -104,7 +104,7 @@ export default function PortalSidebar({
 
       {/* Mobile drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-gray-900 transition-transform duration-200 md:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-gray-900 transition-transform duration-200 md:hidden print:hidden ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -128,7 +128,7 @@ export default function PortalSidebar({
       </aside>
 
       {/* Desktop sidebar — always visible on md+ */}
-      <aside className="hidden w-64 shrink-0 flex-col bg-gray-900 md:flex">
+      <aside className="hidden w-64 shrink-0 flex-col bg-gray-900 md:flex print:hidden">
         <div className="flex items-center gap-3 border-b border-gray-700 px-5 py-4">
           <Image src={logo} alt="HSHB Logo" className="h-8 w-auto" />
           <div>

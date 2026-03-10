@@ -86,3 +86,10 @@ pre {
   font-family: inherit;
   white-space: pre-line;
 }
+
+@media print {
+  nav,
+  aside {
+    display: none !important;
+  }
+}

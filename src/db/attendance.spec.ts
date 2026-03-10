@@ -6,7 +6,11 @@ vi.mock('./client', () => ({
   supabase: { from: mockFrom },
 }))
 
-import { getAttendanceByClassAndDate, saveAttendance } from './attendance'
+import {
+  getAttendanceByClassAndDate,
+  getAttendanceLastUpdatedPerClass,
+  saveAttendance,
+} from './attendance'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -68,6 +72,40 @@ describe('getAttendanceByClassAndDate', () => {
     ).rejects.toEqual({
       message: 'DB error',
     })
+  })
+})
+
+describe('getAttendanceLastUpdatedPerClass', () => {
+  it('returns map of class_id to latest updated_at for the given date', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({
+          data: [
+            { class_id: 'class-1', updated_at: '2024-03-08T09:00:00Z' },
+            { class_id: 'class-1', updated_at: '2024-03-08T10:30:00Z' },
+            { class_id: 'class-2', updated_at: '2024-03-08T08:00:00Z' },
+          ],
+          error: null,
+        }),
+      }),
+    })
+
+    const result = await getAttendanceLastUpdatedPerClass('2024-03-08')
+    expect(result).toEqual({
+      'class-1': '2024-03-08T10:30:00Z',
+      'class-2': '2024-03-08T08:00:00Z',
+    })
+  })
+
+  it('returns empty object when no attendance records exist', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+      }),
+    })
+
+    const result = await getAttendanceLastUpdatedPerClass('2024-03-08')
+    expect(result).toEqual({})
   })
 })
 

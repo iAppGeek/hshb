@@ -33,11 +33,16 @@ export {
   getAllClasses,
   getAllClassesIncludingInactive,
   getClassById,
+  getClassWithStudents,
   getClassesByTeacher,
   createClass,
   updateClass,
   setClassStudents,
 } from './classes'
 export { getAllTimetableSlots, getTimetableByClass } from './timetable'
-export { getAttendanceByClassAndDate, saveAttendance } from './attendance'
+export {
+  getAttendanceByClassAndDate,
+  getAttendanceLastUpdatedPerClass,
+  saveAttendance,
+} from './attendance'
 export type { AttendanceStatus, AttendanceInsert } from './attendance'

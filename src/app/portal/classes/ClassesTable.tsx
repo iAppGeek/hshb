@@ -47,11 +47,9 @@ export default function ClassesTable({ classes, canEdit }: Props) {
               <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                 Status
               </th>
-              {canEdit && (
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Actions
-                </th>
-              )}
+              <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
@@ -85,16 +83,24 @@ export default function ClassesTable({ classes, canEdit }: Props) {
                     </span>
                   )}
                 </td>
-                {canEdit && (
-                  <td className="px-6 py-4 text-sm">
+                <td className="px-6 py-4 text-sm">
+                  <div className="flex items-center gap-4">
                     <Link
-                      href={`/portal/classes/${cls.id}/edit`}
+                      href={`/portal/classes/${cls.id}`}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      Edit
+                      Details
                     </Link>
-                  </td>
-                )}
+                    {canEdit && (
+                      <Link
+                        href={`/portal/classes/${cls.id}/edit`}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        Edit
+                      </Link>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -7,6 +7,12 @@ import type { GuardianSummary } from '@/db'
 
 import { updateStudentAction } from './actions'
 
+type ClassOption = {
+  id: string
+  name: string
+  year_group: string
+}
+
 type StudentData = {
   id: string
   first_name: string
@@ -33,9 +39,16 @@ type StudentData = {
 type Props = {
   student: StudentData
   guardians: GuardianSummary[]
+  classes?: ClassOption[]
+  enrolledClassIds?: string[]
 }
 
-export default function EditStudentForm({ student, guardians }: Props) {
+export default function EditStudentForm({
+  student,
+  guardians,
+  classes = [],
+  enrolledClassIds = [],
+}: Props) {
   const [showSecondary, setShowSecondary] = useState(
     Boolean(student.secondary_guardian_id),
   )
@@ -229,6 +242,29 @@ export default function EditStudentForm({ student, guardians }: Props) {
             + Add second additional contact
           </button>
         ))}
+
+      {/* ── Classes ─────────────────────────────────────────────────── */}
+      {classes.length > 0 && (
+        <FormSection title="Classes">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {classes.map((cls) => (
+              <label
+                key={cls.id}
+                className="flex items-center gap-2 text-sm text-gray-700"
+              >
+                <input
+                  type="checkbox"
+                  name="class_ids"
+                  value={cls.id}
+                  defaultChecked={enrolledClassIds.includes(cls.id)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                {cls.name} (Year {cls.year_group})
+              </label>
+            ))}
+          </div>
+        </FormSection>
+      )}
 
       {/* ── Actions ─────────────────────────────────────────────────── */}
       <div className="flex items-center gap-4">

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { createGuardian, updateStudent } from '@/db'
+import { createGuardian, updateStudent, updateStudentClasses } from '@/db'
 
 import { updateStudentAction } from './actions'
 
@@ -11,6 +11,7 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('@/db', () => ({
   createGuardian: vi.fn(),
   updateStudent: vi.fn(),
+  updateStudentClasses: vi.fn(),
 }))
 
 beforeEach(() => {
@@ -70,6 +71,24 @@ describe('updateStudentAction', () => {
     )
     expect(revalidatePath).toHaveBeenCalledWith('/portal/students')
     expect(redirect).toHaveBeenCalledWith('/portal/students')
+  })
+
+  it('updates class enrollments with submitted class ids', async () => {
+    vi.mocked(updateStudent).mockResolvedValue(undefined)
+    vi.mocked(redirect).mockImplementation(() => {
+      throw new Error('NEXT_REDIRECT')
+    })
+
+    const fields = { ...baseFields, class_ids: ['class-1', 'class-2'] }
+
+    await expect(
+      updateStudentAction('student-1', makeFormData(fields)),
+    ).rejects.toThrow('NEXT_REDIRECT')
+
+    expect(updateStudentClasses).toHaveBeenCalledWith('student-1', [
+      'class-1',
+      'class-2',
+    ])
   })
 
   it('creates a new guardian when mode is new', async () => {

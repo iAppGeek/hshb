@@ -94,4 +94,27 @@ describe('EditStudentForm', () => {
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Cancel' })).toBeTruthy()
   })
+
+  it('renders class checkboxes with enrolled ones pre-checked', () => {
+    const classes = [
+      { id: 'class-1', name: 'Year 1A', year_group: '1' },
+      { id: 'class-2', name: 'Year 2B', year_group: '2' },
+    ]
+    render(
+      <EditStudentForm
+        student={baseStudent}
+        guardians={guardians}
+        classes={classes}
+        enrolledClassIds={['class-1']}
+      />,
+    )
+    const checkbox1 = screen.getByRole('checkbox', {
+      name: /Year 1A/,
+    }) as HTMLInputElement
+    const checkbox2 = screen.getByRole('checkbox', {
+      name: /Year 2B/,
+    }) as HTMLInputElement
+    expect(checkbox1.checked).toBe(true)
+    expect(checkbox2.checked).toBe(false)
+  })
 })

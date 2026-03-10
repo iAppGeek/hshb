@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
 import { auth } from '@/auth'
-import { getAllStudents, getAllClasses, getAllStaff } from '@/db'
+import {
+  getAllStudents,
+  getAllClasses,
+  getAllStaff,
+  getAttendanceLastUpdatedPerClass,
+} from '@/db'
 
 import ReportsPage from './page'
 vi.mock('@/auth', () => ({
@@ -19,11 +24,13 @@ vi.mock('@/db', () => ({
   getAllStudents: vi.fn(),
   getAllClasses: vi.fn(),
   getAllStaff: vi.fn(),
+  getAttendanceLastUpdatedPerClass: vi.fn(),
 }))
 
 beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
+  vi.mocked(getAttendanceLastUpdatedPerClass).mockResolvedValue({})
 })
 
 const makeStudents = (count: number, active = true) =>
@@ -103,5 +110,31 @@ describe('ReportsPage', () => {
 
     render(await ReportsPage())
     expect(screen.getByText('Teaching staff')).toBeTruthy()
+  })
+
+  it('shows Not Completed when no attendance for a class today', async () => {
+    vi.mocked(getAllStudents).mockResolvedValue([])
+    vi.mocked(getAllClasses).mockResolvedValue([
+      { id: 'class-1', name: 'Year 3A', year_group: '3' },
+    ] as any)
+    vi.mocked(getAllStaff).mockResolvedValue([])
+    vi.mocked(getAttendanceLastUpdatedPerClass).mockResolvedValue({})
+
+    render(await ReportsPage())
+    expect(screen.getByText('Not Completed')).toBeTruthy()
+  })
+
+  it('shows last updated time when attendance exists for a class today', async () => {
+    vi.mocked(getAllStudents).mockResolvedValue([])
+    vi.mocked(getAllClasses).mockResolvedValue([
+      { id: 'class-1', name: 'Year 3A', year_group: '3' },
+    ] as any)
+    vi.mocked(getAllStaff).mockResolvedValue([])
+    vi.mocked(getAttendanceLastUpdatedPerClass).mockResolvedValue({
+      'class-1': '2024-03-08T09:30:00Z',
+    })
+
+    render(await ReportsPage())
+    expect(screen.getByText(/Last updated/)).toBeTruthy()
   })
 })

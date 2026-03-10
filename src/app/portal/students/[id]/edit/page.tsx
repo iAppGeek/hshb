@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getStudentById, getAllGuardians } from '@/db'
+import { getStudentById, getAllGuardians, getAllClasses } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
 import EditStudentForm from './EditStudentForm'
@@ -25,14 +25,21 @@ export default async function EditStudentPage({
 
   const { id } = await params
 
-  const [student, guardians] = await Promise.all([
+  const [student, guardians, classes] = await Promise.all([
     getStudentById(id),
     getAllGuardians(),
+    getAllClasses(),
   ])
 
   if (!student) {
     redirect('/portal/students')
   }
+
+  const enrolledClassIds = (
+    student.student_classes as Array<{ class: { id: string } | null }>
+  )
+    .map((sc) => sc.class?.id)
+    .filter((id): id is string => Boolean(id))
 
   return (
     <div className="max-w-2xl">
@@ -46,7 +53,12 @@ export default async function EditStudentPage({
         </p>
       </div>
 
-      <EditStudentForm student={student} guardians={guardians} />
+      <EditStudentForm
+        student={student}
+        guardians={guardians}
+        classes={classes as { id: string; name: string; year_group: string }[]}
+        enrolledClassIds={enrolledClassIds}
+      />
     </div>
   )
 }

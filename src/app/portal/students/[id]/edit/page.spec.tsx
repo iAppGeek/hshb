@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getStudentById, getAllGuardians } from '@/db'
+import { getStudentById, getAllGuardians, getAllClasses } from '@/db'
 
 import EditStudentPage from './page'
 
@@ -14,6 +14,7 @@ vi.mock('@/auth', () => ({
 vi.mock('@/db', () => ({
   getStudentById: vi.fn(),
   getAllGuardians: vi.fn(),
+  getAllClasses: vi.fn(),
 }))
 
 vi.mock('next/navigation', () => ({
@@ -65,6 +66,7 @@ describe('EditStudentPage', () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
     vi.mocked(getStudentById).mockResolvedValue(mockStudent as any)
     vi.mocked(getAllGuardians).mockResolvedValue([])
+    vi.mocked(getAllClasses).mockResolvedValue([])
 
     render(
       await EditStudentPage({ params: Promise.resolve({ id: 'student-1' }) }),
@@ -101,6 +103,7 @@ describe('EditStudentPage', () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
     vi.mocked(getStudentById).mockResolvedValue(null)
     vi.mocked(getAllGuardians).mockResolvedValue([])
+    vi.mocked(getAllClasses).mockResolvedValue([])
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
     })

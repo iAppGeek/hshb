@@ -18,6 +18,24 @@ export async function getAttendanceByClassAndDate(
   return data
 }
 
+export async function getAttendanceLastUpdatedPerClass(
+  date: string,
+): Promise<Record<string, string>> {
+  const { data } = await supabase
+    .from('attendance')
+    .select('class_id, updated_at')
+    .eq('date', date)
+  if (!data) return {}
+  const result: Record<string, string> = {}
+  for (const row of data) {
+    if (!row.updated_at) continue
+    if (!result[row.class_id] || row.updated_at > result[row.class_id]) {
+      result[row.class_id] = row.updated_at
+    }
+  }
+  return result
+}
+
 export async function saveAttendance(records: AttendanceInsert[]) {
   const { data, error } = await supabase
     .from('attendance')

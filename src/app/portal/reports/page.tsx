@@ -2,7 +2,12 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getAllStudents, getAllClasses, getAllStaff } from '@/db'
+import {
+  getAllStudents,
+  getAllClasses,
+  getAllStaff,
+  getAttendanceLastUpdatedPerClass,
+} from '@/db'
 
 export const metadata: Metadata = { title: 'Reports' }
 
@@ -13,23 +18,35 @@ export default async function ReportsPage() {
     redirect('/portal/dashboard')
   }
 
-  const [students, classes, staff] = await Promise.all([
+  const today = new Date().toISOString().split('T')[0]
+
+  const [students, classes, staff, attendanceLastUpdated] = await Promise.all([
     getAllStudents(), // TODO fix the types here
     getAllClasses(),
     getAllStaff(),
+    getAttendanceLastUpdatedPerClass(today),
   ])
 
   const activeStudents = students.filter((s) => s.active)
   const studentsWithAllergies = students.filter((s) => s.allergies)
   const teachers = staff.filter((s) => s.role === 'teacher')
 
-  const enrolmentByClass = classes.map((cls) => ({
-    name: cls.name,
-    yearGroup: cls.year_group,
-    count: activeStudents.filter((s) =>
-      s.student_classes.some((sc) => sc.class?.id === cls.id),
-    ).length,
-  }))
+  const enrolmentByClass = classes.map((cls) => {
+    const lastUpdated = attendanceLastUpdated[cls.id]
+    return {
+      name: cls.name,
+      yearGroup: cls.year_group,
+      count: activeStudents.filter((s) =>
+        s.student_classes.some((sc) => sc.class?.id === cls.id),
+      ).length,
+      attendanceLastUpdated: lastUpdated
+        ? new Date(lastUpdated).toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : null,
+    }
+  })
 
   const stats = [
     { label: 'Total active students', value: activeStudents.length },
@@ -76,6 +93,9 @@ export default async function ReportsPage() {
               <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                 Students
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                Today&apos;s Attendance
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -88,6 +108,17 @@ export default async function ReportsPage() {
                   {row.yearGroup}
                 </td>
                 <td className="px-6 py-3 text-sm text-gray-600">{row.count}</td>
+                <td className="px-6 py-3 text-sm">
+                  {row.attendanceLastUpdated ? (
+                    <span className="text-gray-600">
+                      Last updated {row.attendanceLastUpdated}
+                    </span>
+                  ) : (
+                    <span className="font-medium text-amber-600">
+                      Not Completed
+                    </span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
