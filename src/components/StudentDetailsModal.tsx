@@ -40,6 +40,7 @@ export type StudentForModal = {
   additional_contact_1_relationship: string | null
   additional_contact_2: AdditionalContact | null
   additional_contact_2_relationship: string | null
+  medical_details: string | null
 }
 
 type Props = {
@@ -172,13 +173,23 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
             </p>
           </section>
 
-          {role !== 'teacher' && (
-            <section className="border-t border-gray-100 pt-4">
-              <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Notes
-              </h3>
-              <p className="text-sm text-gray-600">{student.notes ?? '—'}</p>
-            </section>
+          {(role === 'admin' || role === 'headteacher') && (
+            <>
+              <section className="border-t border-gray-100 pt-4">
+                <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Medical Details
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {student.medical_details ?? '—'}
+                </p>
+              </section>
+              <section className="border-t border-gray-100 pt-4">
+                <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Notes
+                </h3>
+                <p className="text-sm text-gray-600">{student.notes ?? '—'}</p>
+              </section>
+            </>
           )}
         </div>
       </div>

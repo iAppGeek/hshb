@@ -49,7 +49,7 @@ export default async function DashboardPage() {
       icon: CalendarDaysIcon,
       href: '/portal/timetables',
     },
-    ...(role !== 'teacher'
+    ...(role === 'admin' || role === 'headteacher'
       ? [
           {
             label: 'Reports',
