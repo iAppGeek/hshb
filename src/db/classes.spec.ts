@@ -18,6 +18,7 @@ const mockClass = {
   year_group: '3',
   room_number: 'R12',
   teacher_id: 'staff-1',
+  active: true,
   teacher: {
     id: 'staff-1',
     first_name: 'Jane',
@@ -28,10 +29,12 @@ const mockClass = {
 }
 
 describe('getAllClasses', () => {
-  it('returns all classes ordered by year group', async () => {
+  it('returns active classes ordered by year group', async () => {
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
-        order: vi.fn().mockResolvedValue({ data: [mockClass] }),
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({ data: [mockClass] }),
+        }),
       }),
     })
 
@@ -43,7 +46,9 @@ describe('getAllClasses', () => {
   it('returns empty array when no classes exist', async () => {
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
-        order: vi.fn().mockResolvedValue({ data: null }),
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({ data: null }),
+        }),
       }),
     })
 
@@ -53,11 +58,13 @@ describe('getAllClasses', () => {
 })
 
 describe('getClassesByTeacher', () => {
-  it('returns classes assigned to the given teacher', async () => {
+  it('returns active classes assigned to the given teacher', async () => {
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({ data: [mockClass] }),
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: [mockClass] }),
+          }),
         }),
       }),
     })
@@ -70,7 +77,9 @@ describe('getClassesByTeacher', () => {
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({ data: null }),
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: null }),
+          }),
         }),
       }),
     })

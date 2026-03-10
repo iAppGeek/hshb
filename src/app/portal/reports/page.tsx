@@ -26,7 +26,9 @@ export default async function ReportsPage() {
   const enrolmentByClass = classes.map((cls) => ({
     name: cls.name,
     yearGroup: cls.year_group,
-    count: activeStudents.filter((s) => s.class_id === cls.id).length,
+    count: activeStudents.filter((s) =>
+      s.student_classes.some((sc) => sc.class?.id === cls.id),
+    ).length,
   }))
 
   const stats = [

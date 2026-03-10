@@ -33,9 +33,12 @@ export default async function DashboardPage() {
   const stats = [
     {
       label: isTeacher ? 'My Students' : 'Total Students',
-      value: isTeacher // TODO fix the types here
-        ? students.filter((s) => classes.some((c) => c.id === s.class_id))
-            .length
+      value: isTeacher
+        ? students.filter((s) =>
+            s.student_classes.some((sc) =>
+              classes.some((c) => c.id === sc.class?.id),
+            ),
+          ).length
         : students.length,
       icon: UsersIcon,
       href: '/portal/students',

@@ -96,6 +96,7 @@ export default async function AttendancePage({
                 classId={selectedClassId}
                 date={selectedDate}
                 className={selectedClass?.name ?? selectedClassId}
+                role={role}
               />
             </Suspense>
           )}

@@ -36,6 +36,7 @@ describe('AttendanceRegister', () => {
         classId: 'class-1',
         date: '2024-06-15',
         className: 'Year 3A',
+        role: 'admin',
       }),
     )
 
@@ -63,6 +64,7 @@ describe('AttendanceRegister', () => {
         classId: 'class-1',
         date: '2024-06-15',
         className: 'Year 3A',
+        role: 'admin',
       }),
     )
 
@@ -72,6 +74,7 @@ describe('AttendanceRegister', () => {
         date: '2024-06-15',
         students: [mockStudent],
         existing: { 'student-1': 'absent' },
+        role: 'admin',
       }),
       undefined,
     )
@@ -86,6 +89,7 @@ describe('AttendanceRegister', () => {
         classId: 'class-1',
         date: '2024-06-15',
         className: 'Year 3A',
+        role: 'admin',
       }),
     )
 
@@ -110,6 +114,7 @@ describe('AttendanceRegister', () => {
         classId: 'class-1',
         date: '2024-06-15',
         className: 'Year 3A',
+        role: 'admin',
       }),
     )
 
@@ -125,6 +130,7 @@ describe('AttendanceRegister', () => {
         classId: 'class-1',
         date: '2024-06-15',
         className: 'Year 3A',
+        role: 'admin',
       }),
     )
 

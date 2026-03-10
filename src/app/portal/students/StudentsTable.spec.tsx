@@ -30,73 +30,135 @@ const students = [
     first_name: 'Anna',
     last_name: 'Papadopoulos',
     student_code: 'S001',
-    class: { id: 'class-1', name: 'Year 1A', year_group: '1' },
-    primary_parent_name: 'Maria Papadopoulos',
-    primary_parent_email: 'maria@example.com',
-    primary_parent_phone: '07700 900000',
-    secondary_parent_name: null,
-    secondary_parent_email: null,
-    secondary_parent_phone: null,
-    emergency_contacts: [],
+    student_classes: [
+      { class: { id: 'class-1', name: 'Year 1A', year_group: '1' } },
+    ],
+    address_line_1: null,
+    address_line_2: null,
+    city: null,
+    postcode: null,
+    allergies: null,
+    notes: null,
+    primary_guardian: {
+      first_name: 'Maria',
+      last_name: 'Papadopoulos',
+      phone: '07700 900000',
+      email: 'maria@example.com',
+      address_line_1: null,
+      address_line_2: null,
+      city: null,
+      postcode: null,
+      notes: null,
+    },
+    primary_guardian_relationship: 'Mother',
+    secondary_guardian: null,
+    secondary_guardian_relationship: null,
+    additional_contact_1: null,
+    additional_contact_1_relationship: null,
+    additional_contact_2: null,
+    additional_contact_2_relationship: null,
   },
   {
     id: 'student-2',
     first_name: 'Nick',
     last_name: 'Georgiou',
     student_code: 'S002',
-    class: { id: 'class-1', name: 'Year 1A', year_group: '1' },
-    primary_parent_name: 'Eleni Georgiou',
-    primary_parent_email: null,
-    primary_parent_phone: null,
-    secondary_parent_name: null,
-    secondary_parent_email: null,
-    secondary_parent_phone: null,
-    emergency_contacts: [],
+    student_classes: [
+      { class: { id: 'class-1', name: 'Year 1A', year_group: '1' } },
+    ],
+    address_line_1: null,
+    address_line_2: null,
+    city: null,
+    postcode: null,
+    allergies: null,
+    notes: null,
+    primary_guardian: {
+      first_name: 'Eleni',
+      last_name: 'Georgiou',
+      phone: '07700 900001',
+      email: null,
+      address_line_1: null,
+      address_line_2: null,
+      city: null,
+      postcode: null,
+      notes: null,
+    },
+    primary_guardian_relationship: null,
+    secondary_guardian: null,
+    secondary_guardian_relationship: null,
+    additional_contact_1: null,
+    additional_contact_1_relationship: null,
+    additional_contact_2: null,
+    additional_contact_2_relationship: null,
   },
 ]
 
 describe('StudentsTable', () => {
   it('renders all student names', () => {
-    render(<StudentsTable students={students} />)
+    render(<StudentsTable students={students} role="admin" />)
     expect(screen.getByText('Papadopoulos, Anna')).toBeTruthy()
     expect(screen.getByText('Georgiou, Nick')).toBeTruthy()
   })
 
   it('renders student codes', () => {
-    render(<StudentsTable students={students} />)
+    render(<StudentsTable students={students} role="admin" />)
     expect(screen.getByText('S001')).toBeTruthy()
     expect(screen.getByText('S002')).toBeTruthy()
   })
 
-  it('renders class name', () => {
-    render(<StudentsTable students={students} />)
+  it('renders class names from student_classes', () => {
+    render(<StudentsTable students={students} role="admin" />)
     expect(screen.getAllByText('Year 1A')).toHaveLength(2)
   })
 
-  it('renders primary parent name', () => {
-    render(<StudentsTable students={students} />)
+  it('renders primary guardian name', () => {
+    render(<StudentsTable students={students} role="admin" />)
     expect(screen.getByText('Maria Papadopoulos')).toBeTruthy()
   })
 
   it('shows dash when student code is null', () => {
     render(
-      <StudentsTable students={[{ ...students[0], student_code: null }]} />,
+      <StudentsTable
+        students={[{ ...students[0], student_code: null }]}
+        role="admin"
+      />,
     )
     expect(screen.getAllByText('—').length).toBeGreaterThan(0)
   })
 
-  it('shows dash when class is null', () => {
-    render(<StudentsTable students={[{ ...students[0], class: null }]} />)
+  it('shows dash when student has no classes', () => {
+    render(
+      <StudentsTable
+        students={[{ ...students[0], student_classes: [] }]}
+        role="admin"
+      />,
+    )
     expect(screen.getAllByText('—').length).toBeGreaterThan(0)
   })
 
+  it('shows dash when primary guardian is null', () => {
+    render(
+      <StudentsTable
+        students={[{ ...students[0], primary_guardian: null }]}
+        role="admin"
+      />,
+    )
+    expect(screen.getAllByText('—').length).toBeGreaterThan(0)
+  })
+
+  it('renders the Classes and Guardian column headers', () => {
+    render(<StudentsTable students={students} role="admin" />)
+    expect(screen.getByText('Classes')).toBeTruthy()
+    expect(screen.getByText('Guardian')).toBeTruthy()
+  })
+
   it('renders a Details button for each student', () => {
-    render(<StudentsTable students={students} />)
+    render(<StudentsTable students={students} role="admin" />)
     expect(screen.getAllByRole('button', { name: 'Details' })).toHaveLength(2)
   })
 
   it('opens modal for the clicked student', () => {
-    render(<StudentsTable students={students} />)
+    render(<StudentsTable students={students} role="admin" />)
     expect(screen.queryByTestId('student-modal')).toBeNull()
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])
@@ -106,7 +168,7 @@ describe('StudentsTable', () => {
   })
 
   it('opens modal for the correct student when second row is clicked', () => {
-    render(<StudentsTable students={students} />)
+    render(<StudentsTable students={students} role="admin" />)
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[1])
     expect(
       within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick'),
@@ -114,7 +176,7 @@ describe('StudentsTable', () => {
   })
 
   it('closes the modal when onClose is called', () => {
-    render(<StudentsTable students={students} />)
+    render(<StudentsTable students={students} role="admin" />)
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])
     expect(screen.getByTestId('student-modal')).toBeTruthy()
 
@@ -123,7 +185,7 @@ describe('StudentsTable', () => {
   })
 
   it('only shows one modal at a time', () => {
-    render(<StudentsTable students={students} />)
+    render(<StudentsTable students={students} role="admin" />)
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[1])
     expect(screen.getAllByTestId('student-modal')).toHaveLength(1)

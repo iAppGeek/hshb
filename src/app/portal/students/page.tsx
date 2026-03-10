@@ -47,7 +47,7 @@ export default async function StudentsPage() {
           <p className="text-gray-500">No students found.</p>
         </div>
       ) : (
-        <StudentsTable students={students} />
+        <StudentsTable students={students} role={role} />
       )}
     </div>
   )

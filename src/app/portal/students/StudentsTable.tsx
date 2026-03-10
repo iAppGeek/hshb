@@ -5,17 +5,21 @@ import { useState } from 'react'
 import StudentDetailsModal, {
   type StudentForModal,
 } from '@/components/StudentDetailsModal'
+import type { StaffRole } from '@/types/next-auth'
 
 type Student = StudentForModal & {
   student_code: string | null
-  class: { id: string; name: string; year_group: string } | null
+  student_classes: Array<{
+    class: { id: string; name: string; year_group: string } | null
+  }>
 }
 
 type Props = {
   students: Student[]
+  role: StaffRole
 }
 
-export default function StudentsTable({ students }: Props) {
+export default function StudentsTable({ students, role }: Props) {
   const [selected, setSelected] = useState<Student | null>(null)
 
   return (
@@ -31,10 +35,10 @@ export default function StudentsTable({ students }: Props) {
                 Code
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Class
+                Classes
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Parent
+                Guardian
               </th>
               <th className="relative px-6 py-3">
                 <span className="sr-only">Details</span>
@@ -51,10 +55,15 @@ export default function StudentsTable({ students }: Props) {
                   {student.student_code ?? '—'}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
-                  {student.class?.name ?? '—'}
+                  {student.student_classes
+                    .map((sc) => sc.class?.name)
+                    .filter(Boolean)
+                    .join(', ') || '—'}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
-                  {student.primary_parent_name ?? '—'}
+                  {student.primary_guardian
+                    ? `${student.primary_guardian.first_name} ${student.primary_guardian.last_name}`
+                    : '—'}
                 </td>
                 <td className="px-6 py-4 text-right text-sm font-medium">
                   <button
@@ -73,6 +82,7 @@ export default function StudentsTable({ students }: Props) {
       {selected && (
         <StudentDetailsModal
           student={selected}
+          role={role}
           onClose={() => setSelected(null)}
         />
       )}

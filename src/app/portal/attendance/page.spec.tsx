@@ -136,6 +136,7 @@ describe('AttendancePage', () => {
         classId: 'class-1',
         date: '2024-06-15',
         className: 'Year 3A',
+        role: 'admin',
       }),
       undefined,
     )

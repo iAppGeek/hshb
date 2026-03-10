@@ -30,7 +30,9 @@ const makeStudents = (count: number, active = true) =>
   Array.from({ length: count }, (_, i) => ({
     id: `student-${i}`,
     active,
-    class_id: 'class-1',
+    student_classes: [
+      { class: { id: 'class-1', name: 'Year 3A', year_group: '3' } },
+    ],
     allergies: i === 0 ? 'Nuts' : null,
   }))
 

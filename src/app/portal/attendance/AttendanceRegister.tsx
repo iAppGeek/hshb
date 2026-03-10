@@ -1,5 +1,6 @@
 import { getStudentsByClass, getAttendanceByClassAndDate } from '@/db'
 import type { AttendanceStatus } from '@/db'
+import type { StaffRole } from '@/types/next-auth'
 
 import AttendanceForm from './AttendanceForm'
 
@@ -7,12 +8,14 @@ type Props = {
   classId: string
   date: string
   className: string
+  role: StaffRole
 }
 
 export default async function AttendanceRegister({
   classId,
   date,
   className,
+  role,
 }: Props) {
   const [students, existingRows] = await Promise.all([
     getStudentsByClass(classId),
@@ -37,6 +40,7 @@ export default async function AttendanceRegister({
         date={date}
         students={students}
         existing={existing}
+        role={role}
       />
     </>
   )

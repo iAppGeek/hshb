@@ -35,26 +35,60 @@ const students = [
     first_name: 'Anna',
     last_name: 'Papadopoulos',
     student_code: 'S001',
-    primary_parent_name: 'Maria Papadopoulos',
-    primary_parent_email: 'maria@example.com',
-    primary_parent_phone: '07700 900000',
-    secondary_parent_name: null,
-    secondary_parent_email: null,
-    secondary_parent_phone: null,
-    emergency_contacts: [],
+    address_line_1: null,
+    address_line_2: null,
+    city: null,
+    postcode: null,
+    allergies: null,
+    notes: null,
+    primary_guardian: {
+      first_name: 'Maria',
+      last_name: 'Papadopoulos',
+      phone: '07700 900000',
+      email: 'maria@example.com',
+      address_line_1: null,
+      address_line_2: null,
+      city: null,
+      postcode: null,
+      notes: null,
+    },
+    primary_guardian_relationship: 'Mother',
+    secondary_guardian: null,
+    secondary_guardian_relationship: null,
+    additional_contact_1: null,
+    additional_contact_1_relationship: null,
+    additional_contact_2: null,
+    additional_contact_2_relationship: null,
   },
   {
     id: 'student-2',
     first_name: 'Nick',
     last_name: 'Georgiou',
     student_code: 'S002',
-    primary_parent_name: 'Eleni Georgiou',
-    primary_parent_email: null,
-    primary_parent_phone: null,
-    secondary_parent_name: null,
-    secondary_parent_email: null,
-    secondary_parent_phone: null,
-    emergency_contacts: [],
+    address_line_1: null,
+    address_line_2: null,
+    city: null,
+    postcode: null,
+    allergies: null,
+    notes: null,
+    primary_guardian: {
+      first_name: 'Eleni',
+      last_name: 'Georgiou',
+      phone: '07700 900001',
+      email: null,
+      address_line_1: null,
+      address_line_2: null,
+      city: null,
+      postcode: null,
+      notes: null,
+    },
+    primary_guardian_relationship: null,
+    secondary_guardian: null,
+    secondary_guardian_relationship: null,
+    additional_contact_1: null,
+    additional_contact_1_relationship: null,
+    additional_contact_2: null,
+    additional_contact_2_relationship: null,
   },
 ]
 
@@ -66,6 +100,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={students}
         existing={{}}
+        role="admin"
       />,
     )
 
@@ -80,6 +115,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={[]}
         existing={{}}
+        role="admin"
       />,
     )
     expect(screen.getByText('No students in this class.')).toBeTruthy()
@@ -92,6 +128,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={students}
         existing={{ 'student-1': 'absent', 'student-2': 'late' }}
+        role="admin"
       />,
     )
     expect(screen.getByText('0 present')).toBeTruthy()
@@ -106,6 +143,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={students}
         existing={{}}
+        role="admin"
       />,
     )
     expect(screen.getByText('0 present')).toBeTruthy()
@@ -119,6 +157,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={[students[0]]}
         existing={{}}
+        role="admin"
       />,
     )
 
@@ -138,6 +177,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={students}
         existing={{}}
+        role="admin"
       />,
     )
     expect(screen.getByText('Save register')).toBeTruthy()
@@ -150,6 +190,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={[students[0]]}
         existing={{}}
+        role="admin"
       />,
     )
 
@@ -167,6 +208,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={students}
         existing={{}}
+        role="admin"
       />,
     )
     expect(screen.getAllByRole('button', { name: 'Details' })).toHaveLength(2)
@@ -179,6 +221,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={students}
         existing={{}}
+        role="admin"
       />,
     )
     expect(screen.queryByTestId('student-modal')).toBeNull()
@@ -199,6 +242,7 @@ describe('AttendanceForm', () => {
         date="2024-03-08"
         students={students}
         existing={{}}
+        role="admin"
       />,
     )
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])

@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import StudentDetailsModal, {
   type StudentForModal,
 } from '@/components/StudentDetailsModal'
+import type { StaffRole } from '@/types/next-auth'
 
 import { saveAttendanceAction } from './actions'
 
@@ -19,6 +20,7 @@ type Props = {
   date: string
   students: Student[]
   existing: Record<string, AttendanceStatus>
+  role: StaffRole
 }
 
 const STATUS_OPTIONS: {
@@ -48,6 +50,7 @@ export default function AttendanceForm({
   date,
   students,
   existing,
+  role,
 }: Props) {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [statuses, setStatuses] = useState<
@@ -211,6 +214,7 @@ export default function AttendanceForm({
       {selectedStudent && (
         <StudentDetailsModal
           student={selectedStudent}
+          role={role}
           onClose={() => setSelectedStudent(null)}
         />
       )}

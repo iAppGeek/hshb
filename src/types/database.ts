@@ -78,6 +78,7 @@ export type Database = {
       classes: {
         Row: {
           academic_year: string
+          active: boolean
           created_at: string | null
           id: string
           name: string
@@ -87,6 +88,7 @@ export type Database = {
         }
         Insert: {
           academic_year?: string
+          active?: boolean
           created_at?: string | null
           id?: string
           name: string
@@ -96,6 +98,7 @@ export type Database = {
         }
         Update: {
           academic_year?: string
+          active?: boolean
           created_at?: string | null
           id?: string
           name?: string
@@ -112,6 +115,51 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      guardians: {
+        Row: {
+          address_line_1: string | null
+          address_line_2: string | null
+          city: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string
+          id: string
+          last_name: string
+          notes: string | null
+          phone: string
+          postcode: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          city?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          notes?: string | null
+          phone: string
+          postcode?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          city?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          notes?: string | null
+          phone?: string
+          postcode?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       staff: {
         Row: {
@@ -146,76 +194,145 @@ export type Database = {
         }
         Relationships: []
       }
+      student_classes: {
+        Row: {
+          class_id: string
+          enrolled_at: string | null
+          id: string
+          student_id: string
+        }
+        Insert: {
+          class_id: string
+          enrolled_at?: string | null
+          id?: string
+          student_id: string
+        }
+        Update: {
+          class_id?: string
+          enrolled_at?: string | null
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'student_classes_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'student_classes_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'students'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       students: {
         Row: {
           active: boolean
+          additional_contact_1_id: string | null
+          additional_contact_1_relationship: string | null
+          additional_contact_2_id: string | null
+          additional_contact_2_relationship: string | null
+          address_line_1: string
+          address_line_2: string | null
           allergies: string | null
-          class_id: string | null
+          city: string
           created_at: string | null
           date_of_birth: string | null
-          emergency_contacts: Json
           enrollment_date: string | null
           first_name: string
           id: string
           last_name: string
           notes: string | null
-          primary_parent_email: string | null
-          primary_parent_name: string | null
-          primary_parent_phone: string | null
-          secondary_parent_email: string | null
-          secondary_parent_name: string | null
-          secondary_parent_phone: string | null
+          postcode: string
+          primary_guardian_id: string | null
+          primary_guardian_relationship: string | null
+          secondary_guardian_id: string | null
+          secondary_guardian_relationship: string | null
           student_code: string | null
           updated_at: string | null
         }
         Insert: {
           active?: boolean
+          additional_contact_1_id?: string | null
+          additional_contact_1_relationship?: string | null
+          additional_contact_2_id?: string | null
+          additional_contact_2_relationship?: string | null
+          address_line_1: string
+          address_line_2?: string | null
           allergies?: string | null
-          class_id?: string | null
+          city: string
           created_at?: string | null
           date_of_birth?: string | null
-          emergency_contacts?: Json
           enrollment_date?: string | null
           first_name: string
           id?: string
           last_name: string
           notes?: string | null
-          primary_parent_email?: string | null
-          primary_parent_name?: string | null
-          primary_parent_phone?: string | null
-          secondary_parent_email?: string | null
-          secondary_parent_name?: string | null
-          secondary_parent_phone?: string | null
+          postcode: string
+          primary_guardian_id?: string | null
+          primary_guardian_relationship?: string | null
+          secondary_guardian_id?: string | null
+          secondary_guardian_relationship?: string | null
           student_code?: string | null
           updated_at?: string | null
         }
         Update: {
           active?: boolean
+          additional_contact_1_id?: string | null
+          additional_contact_1_relationship?: string | null
+          additional_contact_2_id?: string | null
+          additional_contact_2_relationship?: string | null
+          address_line_1?: string
+          address_line_2?: string | null
           allergies?: string | null
-          class_id?: string | null
+          city?: string
           created_at?: string | null
           date_of_birth?: string | null
-          emergency_contacts?: Json
           enrollment_date?: string | null
           first_name?: string
           id?: string
           last_name?: string
           notes?: string | null
-          primary_parent_email?: string | null
-          primary_parent_name?: string | null
-          primary_parent_phone?: string | null
-          secondary_parent_email?: string | null
-          secondary_parent_name?: string | null
-          secondary_parent_phone?: string | null
+          postcode?: string
+          primary_guardian_id?: string | null
+          primary_guardian_relationship?: string | null
+          secondary_guardian_id?: string | null
+          secondary_guardian_relationship?: string | null
           student_code?: string | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'students_class_id_fkey'
-            columns: ['class_id']
+            foreignKeyName: 'students_additional_contact_1_id_fkey'
+            columns: ['additional_contact_1_id']
             isOneToOne: false
-            referencedRelation: 'classes'
+            referencedRelation: 'guardians'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'students_additional_contact_2_id_fkey'
+            columns: ['additional_contact_2_id']
+            isOneToOne: false
+            referencedRelation: 'guardians'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'students_primary_guardian_id_fkey'
+            columns: ['primary_guardian_id']
+            isOneToOne: false
+            referencedRelation: 'guardians'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'students_secondary_guardian_id_fkey'
+            columns: ['secondary_guardian_id']
+            isOneToOne: false
+            referencedRelation: 'guardians'
             referencedColumns: ['id']
           },
         ]
