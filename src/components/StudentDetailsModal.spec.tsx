@@ -31,6 +31,7 @@ const baseStudent = {
   postcode: null,
   allergies: null,
   notes: null,
+  medical_details: null,
   primary_guardian: primaryGuardian,
   primary_guardian_relationship: 'Mother',
   secondary_guardian: null,
@@ -258,6 +259,41 @@ describe('StudentDetailsModal', () => {
       />,
     )
     expect(screen.getByText('Peanuts, Gluten')).toBeTruthy()
+  })
+
+  it('shows Medical Details section for admin', () => {
+    render(
+      <StudentDetailsModal
+        student={{ ...baseStudent, medical_details: 'Asthma' }}
+        role="admin"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.getByText(/Medical Details/i)).toBeTruthy()
+    expect(screen.getByText('Asthma')).toBeTruthy()
+  })
+
+  it('shows Medical Details section for headteacher', () => {
+    render(
+      <StudentDetailsModal
+        student={{ ...baseStudent, medical_details: 'Asthma' }}
+        role="headteacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.getByText(/Medical Details/i)).toBeTruthy()
+  })
+
+  it('does not show Medical Details section for teacher', () => {
+    render(
+      <StudentDetailsModal
+        student={{ ...baseStudent, medical_details: 'Asthma' }}
+        role="teacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.queryByText(/Medical Details/i)).toBeNull()
+    expect(screen.queryByText('Asthma')).toBeNull()
   })
 
   it('shows Notes section for admin', () => {

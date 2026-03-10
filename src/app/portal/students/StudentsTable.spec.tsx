@@ -39,6 +39,7 @@ const students = [
     postcode: null,
     allergies: null,
     notes: null,
+    medical_details: null,
     primary_guardian: {
       first_name: 'Maria',
       last_name: 'Papadopoulos',
@@ -72,6 +73,7 @@ const students = [
     postcode: null,
     allergies: null,
     notes: null,
+    medical_details: null,
     primary_guardian: {
       first_name: 'Eleni',
       last_name: 'Georgiou',
