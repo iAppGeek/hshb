@@ -10,6 +10,12 @@ export {
 } from './staff'
 export {
   getAllStudents,
+  getStudentsForList,
+  searchStudents,
+  getStudentsByTeacher,
+  getStudentIdsByTeacher,
+  getStudentCount,
+  getStudentsWithAllergiesCount,
   getStudentsByClass,
   getStudentById,
   createStudent,
@@ -35,6 +41,7 @@ export {
   getClassById,
   getClassWithStudents,
   getClassesByTeacher,
+  getEnrollmentCountsByClass,
   createClass,
   updateClass,
   setClassStudents,
@@ -49,6 +56,7 @@ export {
 export type { IncidentType, IncidentRow } from './incidents'
 export {
   getAttendanceByClassAndDate,
+  getAttendanceSummaryByDate,
   getAttendanceLastUpdatedPerClass,
   saveAttendance,
 } from './attendance'

@@ -13,9 +13,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/db', () => ({
   getIncidents: vi.fn(),
-  getClassesByTeacher: vi.fn(),
-  getStudentsByClass: vi.fn(),
-  getAllStudents: vi.fn(),
+  getStudentIdsByTeacher: vi.fn(),
 }))
 
 vi.mock('./IncidentsClient', () => ({
@@ -33,12 +31,7 @@ vi.mock('./IncidentsClient', () => ({
 }))
 
 import { auth } from '@/auth'
-import {
-  getIncidents,
-  getClassesByTeacher,
-  getStudentsByClass,
-  getAllStudents,
-} from '@/db'
+import { getIncidents, getStudentIdsByTeacher } from '@/db'
 
 import IncidentsPage from './page'
 
@@ -62,12 +55,6 @@ const mockIncident = {
   updater: null,
 }
 
-const mockStudent = {
-  id: 'student-1',
-  first_name: 'Nikos',
-  last_name: 'Papadopoulos',
-}
-
 describe('IncidentsPage', () => {
   it('redirects to /portal/login when not authenticated', async () => {
     vi.mocked(auth).mockResolvedValue(null as any)
@@ -80,7 +67,6 @@ describe('IncidentsPage', () => {
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
     vi.mocked(getIncidents).mockResolvedValue([mockIncident] as any)
-    vi.mocked(getAllStudents).mockResolvedValue([mockStudent] as any)
 
     render(await IncidentsPage())
     expect(screen.getByText(/IncidentsClient/)).toBeTruthy()
@@ -92,7 +78,6 @@ describe('IncidentsPage', () => {
       user: { role: 'headteacher', staffId: 'staff-2' },
     } as any)
     vi.mocked(getIncidents).mockResolvedValue([])
-    vi.mocked(getAllStudents).mockResolvedValue([])
 
     render(await IncidentsPage())
     expect(screen.getByText(/canEdit=true/)).toBeTruthy()
@@ -102,8 +87,7 @@ describe('IncidentsPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'teacher', staffId: 'staff-3' },
     } as any)
-    vi.mocked(getClassesByTeacher).mockResolvedValue([{ id: 'class-1' }] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getStudentIdsByTeacher).mockResolvedValue(['student-1'])
     vi.mocked(getIncidents).mockResolvedValue([mockIncident] as any)
 
     render(await IncidentsPage())
@@ -114,27 +98,25 @@ describe('IncidentsPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'teacher', staffId: 'staff-3' },
     } as any)
-    vi.mocked(getClassesByTeacher).mockResolvedValue([{ id: 'class-1' }] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getStudentIdsByTeacher).mockResolvedValue(['student-1'])
     vi.mocked(getIncidents).mockResolvedValue([])
 
     await IncidentsPage()
-    expect(getClassesByTeacher).toHaveBeenCalledWith('staff-3')
-    expect(getStudentsByClass).toHaveBeenCalledWith('class-1')
-    expect(getIncidents).toHaveBeenCalledWith({ studentIds: ['student-1'] })
-    expect(getAllStudents).not.toHaveBeenCalled()
+    expect(getStudentIdsByTeacher).toHaveBeenCalledWith('staff-3')
+    expect(getIncidents).toHaveBeenCalledWith({
+      studentIds: ['student-1'],
+      limit: 50,
+    })
   })
 
-  it('fetches all data for admin without scoping', async () => {
+  it('fetches all incidents for admin without scoping', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
     vi.mocked(getIncidents).mockResolvedValue([])
-    vi.mocked(getAllStudents).mockResolvedValue([])
 
     await IncidentsPage()
-    expect(getIncidents).toHaveBeenCalledWith()
-    expect(getAllStudents).toHaveBeenCalled()
-    expect(getClassesByTeacher).not.toHaveBeenCalled()
+    expect(getIncidents).toHaveBeenCalledWith({ limit: 50 })
+    expect(getStudentIdsByTeacher).not.toHaveBeenCalled()
   })
 })

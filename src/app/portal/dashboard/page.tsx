@@ -7,7 +7,12 @@ import {
 } from '@heroicons/react/24/outline'
 
 import { auth } from '@/auth'
-import { getAllStudents, getAllClasses, getClassesByTeacher } from '@/db'
+import {
+  getStudentCount,
+  getStudentsByTeacher,
+  getAllClasses,
+  getClassesByTeacher,
+} from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
 export const metadata: Metadata = { title: 'Dashboard' }
@@ -25,21 +30,17 @@ export default async function DashboardPage() {
 
   const isTeacher = role === 'teacher'
 
-  const [students, classes] = await Promise.all([
-    getAllStudents(),
+  const [studentCount, classes] = await Promise.all([
+    isTeacher
+      ? getStudentsByTeacher(staffId!).then((s) => s.length)
+      : getStudentCount(),
     isTeacher ? getClassesByTeacher(staffId!) : getAllClasses(),
   ])
 
   const stats = [
     {
       label: isTeacher ? 'My Students' : 'Total Students',
-      value: isTeacher
-        ? students.filter((s) =>
-            s.student_classes.some((sc) =>
-              classes.some((c) => c.id === sc.class?.id),
-            ),
-          ).length
-        : students.length,
+      value: studentCount,
       icon: UsersIcon,
       href: '/portal/students',
     },
@@ -63,7 +64,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
           Welcome back, {session?.user?.name?.split(' ')[0]}
         </h1>

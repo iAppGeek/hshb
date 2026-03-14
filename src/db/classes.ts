@@ -83,6 +83,21 @@ export async function updateClass(
   if (error) throw error
 }
 
+export async function getEnrollmentCountsByClass(): Promise<
+  Record<string, number>
+> {
+  const { data } = await supabase
+    .from('student_classes')
+    .select('class_id, students!inner(active)')
+    .eq('students.active', true)
+  if (!data) return {}
+  const result: Record<string, number> = {}
+  for (const row of data) {
+    result[row.class_id] = (result[row.class_id] ?? 0) + 1
+  }
+  return result
+}
+
 export async function setClassStudents(classId: string, studentIds: string[]) {
   const { error: deleteError } = await supabase
     .from('student_classes')

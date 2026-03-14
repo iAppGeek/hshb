@@ -13,7 +13,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/db', () => ({
   getTeachers: vi.fn(),
-  getAllStudents: vi.fn(),
+  getStudentsForList: vi.fn(),
 }))
 
 vi.mock('../ClassForm', () => ({
@@ -27,7 +27,7 @@ vi.mock('./actions', () => ({
 }))
 
 import { auth } from '@/auth'
-import { getTeachers, getAllStudents } from '@/db'
+import { getTeachers, getStudentsForList } from '@/db'
 
 import AddClassPage from './page'
 
@@ -58,7 +58,7 @@ describe('AddClassPage', () => {
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await AddClassPage())
     expect(screen.getByRole('heading', { name: 'Add Class' })).toBeTruthy()
@@ -69,7 +69,7 @@ describe('AddClassPage', () => {
       user: { role: 'headteacher', staffId: 'staff-1' },
     } as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await AddClassPage())
     expect(screen.getByRole('heading', { name: 'Add Class' })).toBeTruthy()
@@ -80,7 +80,7 @@ describe('AddClassPage', () => {
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await AddClassPage())
     expect(screen.getByTestId('class-form')).toBeTruthy()
@@ -91,10 +91,10 @@ describe('AddClassPage', () => {
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await AddClassPage())
     expect(getTeachers).toHaveBeenCalled()
-    expect(getAllStudents).toHaveBeenCalled()
+    expect(getStudentsForList).toHaveBeenCalled()
   })
 })

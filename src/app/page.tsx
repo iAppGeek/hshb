@@ -1,5 +1,3 @@
-import * as contentful from 'contentful'
-
 import { Contact } from '@/sections/Contact'
 import { Footer } from '@/sections/Footer'
 import { Hero } from '@/sections/Hero'
@@ -18,12 +16,8 @@ import {
   getTestimonials,
   getTextSectionData,
 } from '@/data/contentful'
+import { contentfulClient as client } from '@/data/contentfulClient'
 import { Enrolement } from '@/sections/Enrolment'
-
-const client = contentful.createClient({
-  space: process.env.CONTENTFUL_SPACE,
-  accessToken: process.env.CONTENTFUL_TOKEN,
-})
 
 const Home = async () => {
   const heroText = await getTextSectionData(client, 'hero-section')

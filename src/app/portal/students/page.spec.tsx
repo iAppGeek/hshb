@@ -7,8 +7,7 @@ vi.mock('@/auth', () => ({
 
 vi.mock('@/db', () => ({
   getAllStudents: vi.fn(),
-  getStudentsByClass: vi.fn(),
-  getClassesByTeacher: vi.fn(),
+  getStudentsByTeacher: vi.fn(),
 }))
 
 vi.mock('next/link', () => ({
@@ -21,8 +20,14 @@ vi.mock('next/link', () => ({
   }) => <a href={href}>{children}</a>,
 }))
 
+vi.mock('./StudentsTable', () => ({
+  default: ({ students }: { students: unknown[] }) => (
+    <div>StudentsTable count={students.length}</div>
+  ),
+}))
+
 import { auth } from '@/auth'
-import { getAllStudents, getStudentsByClass, getClassesByTeacher } from '@/db'
+import { getAllStudents, getStudentsByTeacher } from '@/db'
 
 import StudentsPage from './page'
 
@@ -90,8 +95,7 @@ describe('StudentsPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'teacher', staffId: 'staff-2' },
     } as any)
-    vi.mocked(getClassesByTeacher).mockResolvedValue([])
-    vi.mocked(getStudentsByClass).mockResolvedValue([])
+    vi.mocked(getStudentsByTeacher).mockResolvedValue([])
 
     render(await StudentsPage())
     expect(screen.queryByText('Add student')).toBeNull()
@@ -114,8 +118,7 @@ describe('StudentsPage', () => {
     vi.mocked(getAllStudents).mockResolvedValue([mockStudent] as any)
 
     render(await StudentsPage())
-    expect(screen.getByText('Papadopoulos, Nikos')).toBeTruthy()
-    expect(screen.getByText('STU-001')).toBeTruthy()
+    expect(screen.getByText(/StudentsTable/)).toBeTruthy()
   })
 
   it('shows empty state when no students exist', async () => {
@@ -128,16 +131,14 @@ describe('StudentsPage', () => {
     expect(screen.getByText('No students found.')).toBeTruthy()
   })
 
-  it('fetches only teacher classes and their students for teacher role', async () => {
+  it('fetches only teacher students via getStudentsByTeacher for teacher role', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'teacher', staffId: 'staff-2' },
     } as any)
-    vi.mocked(getClassesByTeacher).mockResolvedValue([{ id: 'class-1' }] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getStudentsByTeacher).mockResolvedValue([mockStudent] as any)
 
     await StudentsPage()
-    expect(getClassesByTeacher).toHaveBeenCalledWith('staff-2')
-    expect(getStudentsByClass).toHaveBeenCalledWith('class-1')
+    expect(getStudentsByTeacher).toHaveBeenCalledWith('staff-2')
     expect(getAllStudents).not.toHaveBeenCalled()
   })
 })

@@ -14,7 +14,7 @@ vi.mock('next/navigation', () => ({
 vi.mock('@/db', () => ({
   getClassById: vi.fn(),
   getTeachers: vi.fn(),
-  getAllStudents: vi.fn(),
+  getStudentsForList: vi.fn(),
 }))
 
 vi.mock('../../ClassForm', () => ({
@@ -37,7 +37,7 @@ vi.mock('./actions', () => ({
 }))
 
 import { auth } from '@/auth'
-import { getClassById, getTeachers, getAllStudents } from '@/db'
+import { getClassById, getTeachers, getStudentsForList } from '@/db'
 
 import EditClassPage from './page'
 
@@ -80,7 +80,7 @@ describe('EditClassPage', () => {
     } as any)
     vi.mocked(getClassById).mockResolvedValue(null as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     await expect(
       EditClassPage({ params: Promise.resolve({ id: 'nonexistent' }) }),
@@ -93,7 +93,7 @@ describe('EditClassPage', () => {
     } as any)
     vi.mocked(getClassById).mockResolvedValue(mockClass as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await EditClassPage({ params: Promise.resolve({ id: 'class-1' }) }))
     expect(screen.getByText('Edit Class: Year 1A')).toBeTruthy()
@@ -105,7 +105,7 @@ describe('EditClassPage', () => {
     } as any)
     vi.mocked(getClassById).mockResolvedValue(mockClass as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await EditClassPage({ params: Promise.resolve({ id: 'class-1' }) }))
     expect(screen.getByText('Edit Class: Year 1A')).toBeTruthy()
@@ -117,7 +117,7 @@ describe('EditClassPage', () => {
     } as any)
     vi.mocked(getClassById).mockResolvedValue(mockClass as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await EditClassPage({ params: Promise.resolve({ id: 'class-1' }) }))
     expect(screen.getByTestId('class-form')).toBeTruthy()
@@ -130,11 +130,11 @@ describe('EditClassPage', () => {
     } as any)
     vi.mocked(getClassById).mockResolvedValue(mockClass as any)
     vi.mocked(getTeachers).mockResolvedValue(mockTeachers as any)
-    vi.mocked(getAllStudents).mockResolvedValue(mockStudents as any)
+    vi.mocked(getStudentsForList).mockResolvedValue(mockStudents as any)
 
     render(await EditClassPage({ params: Promise.resolve({ id: 'class-1' }) }))
     expect(getClassById).toHaveBeenCalledWith('class-1')
     expect(getTeachers).toHaveBeenCalled()
-    expect(getAllStudents).toHaveBeenCalled()
+    expect(getStudentsForList).toHaveBeenCalled()
   })
 })

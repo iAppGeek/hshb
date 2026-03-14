@@ -2,12 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import {
-  getIncidents,
-  getClassesByTeacher,
-  getStudentsByClass,
-  getAllStudents,
-} from '@/db'
+import { getIncidents, getStudentIdsByTeacher } from '@/db'
 import type { IncidentRow } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -25,27 +20,17 @@ export default async function IncidentsPage() {
   const canEdit = role === 'admin' || role === 'headteacher'
 
   let incidents: IncidentRow[]
-  let students: Awaited<ReturnType<typeof getAllStudents>>
 
   if (isTeacher) {
-    const classes = await getClassesByTeacher(staffId)
-    const perClass = await Promise.all(
-      classes.map((c) => getStudentsByClass(c.id)),
-    )
-    const studentMap = new Map(perClass.flat().map((s) => [s.id, s]))
-    students = [...studentMap.values()]
-    incidents = await getIncidents({ studentIds: students.map((s) => s.id) })
+    const studentIds = await getStudentIdsByTeacher(staffId)
+    incidents = await getIncidents({ studentIds, limit: 50 })
   } else {
-    ;[incidents, students] = await Promise.all([
-      getIncidents(),
-      getAllStudents(),
-    ])
+    incidents = await getIncidents({ limit: 50 })
   }
 
   return (
     <IncidentsClient
       incidents={incidents}
-      students={students}
       role={role}
       staffId={staffId}
       canEdit={canEdit}

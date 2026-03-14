@@ -24,6 +24,36 @@ export type AttendanceClassSummary = {
   presentCount: number
 }
 
+/**
+ * Returns attendance summary per class for a given date using a SQL aggregate
+ * function (get_attendance_summary RPC). Must be registered in Supabase first —
+ * see supabase/schema.sql.
+ */
+export async function getAttendanceSummaryByDate(
+  date: string,
+): Promise<Record<string, AttendanceClassSummary>> {
+  const { data, error } = await supabase.rpc('get_attendance_summary', {
+    p_date: date,
+  })
+  if (error) throw error
+  if (!data) return {}
+  const result: Record<string, AttendanceClassSummary> = {}
+  for (const row of data as {
+    class_id: string
+    present_count: number
+    min_created_at: string
+    max_updated_at: string
+  }[]) {
+    result[row.class_id] = {
+      presentCount: row.present_count,
+      createdAt: row.min_created_at,
+      updatedAt: row.max_updated_at,
+    }
+  }
+  return result
+}
+
+/** @deprecated Use getAttendanceSummaryByDate (SQL RPC) for better performance at scale */
 export async function getAttendanceLastUpdatedPerClass(
   date: string,
 ): Promise<Record<string, AttendanceClassSummary>> {

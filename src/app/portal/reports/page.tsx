@@ -3,10 +3,12 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import {
-  getAllStudents,
+  getStudentCount,
+  getStudentsWithAllergiesCount,
+  getEnrollmentCountsByClass,
   getAllClasses,
   getAllStaff,
-  getAttendanceLastUpdatedPerClass,
+  getAttendanceSummaryByDate,
 } from '@/db'
 
 export const metadata: Metadata = { title: 'Reports' }
@@ -20,15 +22,22 @@ export default async function ReportsPage() {
 
   const today = new Date().toISOString().split('T')[0]
 
-  const [students, classes, staff, attendanceLastUpdated] = await Promise.all([
-    getAllStudents(), // TODO fix the types here
+  const [
+    activeStudentCount,
+    allergiesCount,
+    enrollmentCounts,
+    classes,
+    staff,
+    attendanceSummary,
+  ] = await Promise.all([
+    getStudentCount(),
+    getStudentsWithAllergiesCount(),
+    getEnrollmentCountsByClass(),
     getAllClasses(),
     getAllStaff(),
-    getAttendanceLastUpdatedPerClass(today),
+    getAttendanceSummaryByDate(today),
   ])
 
-  const activeStudents = students.filter((s) => s.active)
-  const studentsWithAllergies = students.filter((s) => s.allergies)
   const teachers = staff.filter((s) => s.role === 'teacher')
 
   const fmt = (ts: string) =>
@@ -38,10 +47,8 @@ export default async function ReportsPage() {
     })
 
   const enrolmentByClass = classes.map((cls) => {
-    const summary = attendanceLastUpdated[cls.id]
-    const enrolled = activeStudents.filter((s) =>
-      s.student_classes.some((sc) => sc.class?.id === cls.id),
-    ).length
+    const summary = attendanceSummary[cls.id]
+    const enrolled = enrollmentCounts[cls.id] ?? 0
     return {
       name: cls.name,
       enrolled,
@@ -52,10 +59,10 @@ export default async function ReportsPage() {
   })
 
   const stats = [
-    { label: 'Total active students', value: activeStudents.length },
+    { label: 'Total active students', value: activeStudentCount },
     { label: 'Total classes', value: classes.length },
     { label: 'Teaching staff', value: teachers.length },
-    { label: 'Students with allergies', value: studentsWithAllergies.length },
+    { label: 'Students with allergies', value: allergiesCount },
   ]
 
   return (
@@ -80,7 +87,7 @@ export default async function ReportsPage() {
       {/* Enrolment by class */}
       <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
-          <h2 className="text-sm font-semibold text-gray-700">
+          <h2 className="text-sm font-semibold text-gray-900">
             Todays Attendance
           </h2>
         </div>

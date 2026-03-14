@@ -456,7 +456,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_attendance_summary: {
+        Args: { p_date: string }
+        Returns: {
+          class_id: string
+          max_updated_at: string
+          min_created_at: string
+          present_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

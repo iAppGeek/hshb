@@ -123,9 +123,9 @@ export default async function ClassRegisterPage({
 
       {/* Students */}
       {students.length === 0 ? (
-        <p className="text-sm text-gray-500">
-          No students enrolled in this class.
-        </p>
+        <div className="rounded-xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-200 print:hidden">
+          <p className="text-gray-500">No students enrolled in this class.</p>
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-gray-200 print:overflow-visible print:rounded-none print:shadow-none print:ring-0">
           <table className="min-w-full border-collapse">
@@ -143,7 +143,7 @@ export default async function ClassRegisterPage({
                 ].map((col) => (
                   <th
                     key={col}
-                    className="border border-gray-200 px-4 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase print:border-gray-400 print:py-2 print:text-[10px]"
+                    className="border border-gray-200 px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase print:border-gray-400 print:px-4 print:py-2 print:text-[10px]"
                   >
                     {col}
                   </th>
@@ -156,28 +156,28 @@ export default async function ClassRegisterPage({
                   key={student.id}
                   className="hover:bg-gray-50 print:hover:bg-white"
                 >
-                  <td className="border border-gray-200 px-4 py-3 text-sm text-gray-500 print:border-gray-400 print:py-2 print:text-xs">
+                  <td className="border border-gray-200 px-6 py-3 text-sm text-gray-500 print:border-gray-400 print:px-4 print:py-2 print:text-xs">
                     {i + 1}
                   </td>
-                  <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900 print:border-gray-400 print:py-2 print:text-xs">
+                  <td className="border border-gray-200 px-6 py-3 text-sm text-gray-900 print:border-gray-400 print:px-4 print:py-2 print:text-xs">
                     {student.first_name}
                   </td>
-                  <td className="border border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 print:border-gray-400 print:py-2 print:text-xs">
+                  <td className="border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 print:border-gray-400 print:px-4 print:py-2 print:text-xs">
                     {student.last_name}
                   </td>
-                  <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 print:border-gray-400 print:py-2 print:text-xs">
+                  <td className="border border-gray-200 px-6 py-3 text-sm text-gray-700 print:border-gray-400 print:px-4 print:py-2 print:text-xs">
                     {student.primary_guardian
                       ? `${student.primary_guardian.first_name} ${student.primary_guardian.last_name}`
                       : '—'}
                   </td>
-                  <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 print:border-gray-400 print:py-2 print:text-xs">
+                  <td className="border border-gray-200 px-6 py-3 text-sm text-gray-700 print:border-gray-400 print:px-4 print:py-2 print:text-xs">
                     {student.primary_guardian?.phone ?? '—'}
                   </td>
-                  <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 print:border-gray-400 print:py-2 print:text-xs">
+                  <td className="border border-gray-200 px-6 py-3 text-sm text-gray-700 print:border-gray-400 print:px-4 print:py-2 print:text-xs">
                     {student.allergies ?? '—'}
                   </td>
-                  <td className="w-16 border border-gray-200 px-4 py-3 print:border-gray-400 print:py-2" />
-                  <td className="w-16 border border-gray-200 px-4 py-3 print:border-gray-400 print:py-2" />
+                  <td className="w-16 border border-gray-200 px-6 py-3 print:border-gray-400 print:px-4 print:py-2" />
+                  <td className="w-16 border border-gray-200 px-6 py-3 print:border-gray-400 print:px-4 print:py-2" />
                 </tr>
               ))}
             </tbody>

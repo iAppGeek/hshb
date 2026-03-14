@@ -199,3 +199,25 @@ CREATE INDEX ON attendance (student_id);
 CREATE INDEX ON incidents (student_id);
 CREATE INDEX ON incidents (type);
 CREATE INDEX ON incidents (incident_date DESC);
+
+
+-- ─── Functions ────────────────────────────────────────────────────────────────
+
+-- Aggregates attendance records for a given date by class.
+-- Returns present count, earliest created_at, and latest updated_at per class.
+CREATE OR REPLACE FUNCTION get_attendance_summary(p_date DATE)
+RETURNS TABLE(
+  class_id        UUID,
+  present_count   BIGINT,
+  min_created_at  TIMESTAMPTZ,
+  max_updated_at  TIMESTAMPTZ
+) AS $$
+  SELECT
+    class_id,
+    COUNT(*) FILTER (WHERE status IN ('present', 'late')) AS present_count,
+    MIN(created_at)  AS min_created_at,
+    MAX(updated_at)  AS max_updated_at
+  FROM attendance
+  WHERE date = p_date
+  GROUP BY class_id
+$$ LANGUAGE sql STABLE;

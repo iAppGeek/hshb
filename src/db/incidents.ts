@@ -31,6 +31,8 @@ const INCIDENT_SELECT = `
 
 export async function getIncidents(options?: {
   studentIds?: string[]
+  limit?: number
+  offset?: number
 }): Promise<IncidentRow[]> {
   let query = supabase
     .from('incidents')
@@ -39,6 +41,11 @@ export async function getIncidents(options?: {
 
   if (options?.studentIds && options.studentIds.length > 0) {
     query = query.in('student_id', options.studentIds)
+  }
+
+  if (options?.limit !== undefined) {
+    const from = options.offset ?? 0
+    query = query.range(from, from + options.limit - 1)
   }
 
   const { data, error } = await query

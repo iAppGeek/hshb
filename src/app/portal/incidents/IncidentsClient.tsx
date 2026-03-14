@@ -6,11 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import type { IncidentRow, IncidentType } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
-type StudentSummary = { id: string; first_name: string; last_name: string }
-
 type Props = {
   incidents: IncidentRow[]
-  students: StudentSummary[]
   role: StaffRole
   staffId: string
   canEdit: boolean
@@ -82,7 +79,7 @@ export default function IncidentsClient({ incidents, canEdit }: Props) {
                   ].map((h) => (
                     <th
                       key={h}
-                      className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
+                      className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase"
                     >
                       {h}
                     </th>

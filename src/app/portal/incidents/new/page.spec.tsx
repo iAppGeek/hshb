@@ -12,9 +12,8 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  getAllStudents: vi.fn(),
-  getClassesByTeacher: vi.fn(),
-  getStudentsByClass: vi.fn(),
+  getStudentsForList: vi.fn(),
+  getStudentsByTeacher: vi.fn(),
 }))
 
 vi.mock('./AddIncidentForm', () => ({
@@ -24,7 +23,7 @@ vi.mock('./AddIncidentForm', () => ({
 }))
 
 import { auth } from '@/auth'
-import { getAllStudents, getClassesByTeacher, getStudentsByClass } from '@/db'
+import { getStudentsForList, getStudentsByTeacher } from '@/db'
 
 import AddIncidentPage from './page'
 
@@ -51,7 +50,7 @@ describe('AddIncidentPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
-    vi.mocked(getAllStudents).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getStudentsForList).mockResolvedValue([mockStudent] as any)
 
     render(await AddIncidentPage({ searchParams: Promise.resolve({}) }))
     expect(screen.getByText('AddIncidentForm type=medical')).toBeTruthy()
@@ -61,7 +60,7 @@ describe('AddIncidentPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },
     } as any)
-    vi.mocked(getAllStudents).mockResolvedValue([])
+    vi.mocked(getStudentsForList).mockResolvedValue([])
 
     render(
       await AddIncidentPage({
@@ -75,12 +74,10 @@ describe('AddIncidentPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'teacher', staffId: 'staff-3' },
     } as any)
-    vi.mocked(getClassesByTeacher).mockResolvedValue([{ id: 'class-1' }] as any)
-    vi.mocked(getStudentsByClass).mockResolvedValue([mockStudent] as any)
+    vi.mocked(getStudentsByTeacher).mockResolvedValue([mockStudent] as any)
 
     await AddIncidentPage({ searchParams: Promise.resolve({}) })
-    expect(getClassesByTeacher).toHaveBeenCalledWith('staff-3')
-    expect(getStudentsByClass).toHaveBeenCalledWith('class-1')
-    expect(getAllStudents).not.toHaveBeenCalled()
+    expect(getStudentsByTeacher).toHaveBeenCalledWith('staff-3')
+    expect(getStudentsForList).not.toHaveBeenCalled()
   })
 })

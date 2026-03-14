@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getAllStudents, getClassesByTeacher, getStudentsByClass } from '@/db'
+import { getStudentsForList, getStudentsByTeacher } from '@/db'
 import type { IncidentType } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -24,18 +24,10 @@ export default async function AddIncidentPage({
   const incidentType: IncidentType =
     type === 'behaviour' ? 'behaviour' : 'medical'
 
-  let students: Awaited<ReturnType<typeof getAllStudents>>
-
-  if (role === 'teacher') {
-    const classes = await getClassesByTeacher(staffId)
-    const perClass = await Promise.all(
-      classes.map((c) => getStudentsByClass(c.id)),
-    )
-    const studentMap = new Map(perClass.flat().map((s) => [s.id, s]))
-    students = [...studentMap.values()]
-  } else {
-    students = await getAllStudents()
-  }
+  const students =
+    role === 'teacher'
+      ? await getStudentsByTeacher(staffId)
+      : await getStudentsForList()
 
   return (
     <div className="max-w-2xl">

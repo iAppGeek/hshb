@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import Link from 'next/link'
 
 import { auth } from '@/auth'
-import { getAllStudents, getStudentsByClass, getClassesByTeacher } from '@/db'
+import { getAllStudents, getStudentsByTeacher } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
 import StudentsTable from './StudentsTable'
@@ -16,17 +16,9 @@ export default async function StudentsPage() {
 
   const isTeacher = role === 'teacher'
 
-  let students
-  if (isTeacher) {
-    const classes = await getClassesByTeacher(staffId!)
-    const classIds = classes.map((c) => c.id)
-    const perClass = await Promise.all(
-      classIds.map((id) => getStudentsByClass(id)),
-    )
-    students = perClass.flat()
-  } else {
-    students = await getAllStudents()
-  }
+  const students = isTeacher
+    ? await getStudentsByTeacher(staffId!)
+    : await getAllStudents()
 
   return (
     <div>

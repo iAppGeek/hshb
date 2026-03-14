@@ -1,9 +1,12 @@
 import { supabase } from './client'
 
+const STAFF_SELECT =
+  'id, email, first_name, last_name, display_name, role, contact_number, created_at'
+
 export async function getStaffByEmail(email: string) {
   const { data } = await supabase
     .from('staff')
-    .select('*')
+    .select(STAFF_SELECT)
     .eq('email', email.toLowerCase())
     .single()
   return data
@@ -12,14 +15,17 @@ export async function getStaffByEmail(email: string) {
 export async function getStaffById(id: string) {
   const { data } = await supabase
     .from('staff')
-    .select('*')
+    .select(STAFF_SELECT)
     .eq('id', id)
     .single()
   return data
 }
 
 export async function getAllStaff() {
-  const { data } = await supabase.from('staff').select('*').order('last_name')
+  const { data } = await supabase
+    .from('staff')
+    .select(STAFF_SELECT)
+    .order('last_name')
   return data ?? []
 }
 

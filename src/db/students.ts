@@ -1,5 +1,7 @@
 import { supabase } from './client'
 
+const STUDENT_LIST_SELECT = 'id, first_name, last_name, student_code'
+
 const STUDENT_SELECT = `
   *,
   student_classes(class:classes(id, name, year_group, academic_year)),
@@ -37,6 +39,96 @@ const STUDENT_SELECT_WITH_TEACHER = `
     first_name, last_name, phone
   )
 `
+
+export async function getStudentsForList() {
+  const { data } = await supabase
+    .from('students')
+    .select(STUDENT_LIST_SELECT)
+    .eq('active', true)
+    .order('last_name')
+  return data ?? []
+}
+
+export async function searchStudents(query: string) {
+  const trimmed = query.trim()
+  if (!trimmed) return []
+  const { data } = await supabase
+    .from('students')
+    .select(STUDENT_LIST_SELECT)
+    .eq('active', true)
+    .or(`first_name.ilike.%${trimmed}%,last_name.ilike.%${trimmed}%`)
+    .order('last_name')
+    .limit(20)
+  return data ?? []
+}
+
+export async function getStudentsByTeacher(teacherId: string) {
+  const { data: classes } = await supabase
+    .from('classes')
+    .select('id')
+    .eq('teacher_id', teacherId)
+    .eq('active', true)
+
+  if (!classes?.length) return []
+
+  const classIds = classes.map((c) => c.id)
+
+  const { data: enrollments } = await supabase
+    .from('student_classes')
+    .select('student_id')
+    .in('class_id', classIds)
+
+  if (!enrollments?.length) return []
+
+  const studentIds = [...new Set(enrollments.map((e) => e.student_id))]
+
+  const { data } = await supabase
+    .from('students')
+    .select(STUDENT_SELECT)
+    .in('id', studentIds)
+    .eq('active', true)
+    .order('last_name')
+  return data ?? []
+}
+
+export async function getStudentIdsByTeacher(
+  teacherId: string,
+): Promise<string[]> {
+  const { data: classes } = await supabase
+    .from('classes')
+    .select('id')
+    .eq('teacher_id', teacherId)
+    .eq('active', true)
+
+  if (!classes?.length) return []
+
+  const classIds = classes.map((c) => c.id)
+
+  const { data: enrollments } = await supabase
+    .from('student_classes')
+    .select('student_id')
+    .in('class_id', classIds)
+
+  return [...new Set(enrollments?.map((e) => e.student_id) ?? [])]
+}
+
+export async function getStudentCount(): Promise<number> {
+  const { count } = await supabase
+    .from('students')
+    .select('*', { count: 'exact', head: true })
+    .eq('active', true)
+  return count ?? 0
+}
+
+export async function getStudentsWithAllergiesCount(): Promise<number> {
+  const { count } = await supabase
+    .from('students')
+    .select('*', { count: 'exact', head: true })
+    .eq('active', true)
+    .not('allergies', 'is', null)
+    .neq('allergies', '')
+  return count ?? 0
+}
 
 export async function getAllStudents() {
   const { data } = await supabase

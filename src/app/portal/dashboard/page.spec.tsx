@@ -6,7 +6,8 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  getAllStudents: vi.fn(),
+  getStudentCount: vi.fn(),
+  getStudentsByTeacher: vi.fn(),
   getAllClasses: vi.fn(),
   getClassesByTeacher: vi.fn(),
 }))
@@ -28,7 +29,12 @@ vi.mock('@heroicons/react/24/outline', () => ({
 }))
 
 import { auth } from '@/auth'
-import { getAllStudents, getAllClasses, getClassesByTeacher } from '@/db'
+import {
+  getStudentCount,
+  getStudentsByTeacher,
+  getAllClasses,
+  getClassesByTeacher,
+} from '@/db'
 
 import DashboardPage from './page'
 
@@ -41,7 +47,7 @@ describe('DashboardPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { name: 'Jane Smith', role: 'admin', staffId: 'staff-1' },
     } as any)
-    vi.mocked(getAllStudents).mockResolvedValue([])
+    vi.mocked(getStudentCount).mockResolvedValue(0)
     vi.mocked(getAllClasses).mockResolvedValue([])
 
     render(await DashboardPage())
@@ -52,7 +58,7 @@ describe('DashboardPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { name: 'Admin User', role: 'admin', staffId: 'staff-1' },
     } as any)
-    vi.mocked(getAllStudents).mockResolvedValue([])
+    vi.mocked(getStudentCount).mockResolvedValue(0)
     vi.mocked(getAllClasses).mockResolvedValue([])
 
     render(await DashboardPage())
@@ -63,7 +69,7 @@ describe('DashboardPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { name: 'Admin', role: 'admin', staffId: 'staff-1' },
     } as any)
-    vi.mocked(getAllStudents).mockResolvedValue([])
+    vi.mocked(getStudentCount).mockResolvedValue(0)
     vi.mocked(getAllClasses).mockResolvedValue([])
 
     render(await DashboardPage())
@@ -74,8 +80,8 @@ describe('DashboardPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { name: 'Teacher', role: 'teacher', staffId: 'staff-2' },
     } as any)
+    vi.mocked(getStudentsByTeacher).mockResolvedValue([])
     vi.mocked(getClassesByTeacher).mockResolvedValue([])
-    vi.mocked(getAllStudents).mockResolvedValue([])
 
     render(await DashboardPage())
     expect(screen.queryByText('Reports')).toBeNull()
@@ -85,11 +91,37 @@ describe('DashboardPage', () => {
     vi.mocked(auth).mockResolvedValue({
       user: { name: 'Teacher', role: 'teacher', staffId: 'staff-2' },
     } as any)
+    vi.mocked(getStudentsByTeacher).mockResolvedValue([])
     vi.mocked(getClassesByTeacher).mockResolvedValue([])
-    vi.mocked(getAllStudents).mockResolvedValue([])
 
     await DashboardPage()
     expect(getClassesByTeacher).toHaveBeenCalledWith('staff-2')
     expect(getAllClasses).not.toHaveBeenCalled()
+  })
+
+  it('calls getStudentsByTeacher for teacher role student count', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { name: 'Teacher', role: 'teacher', staffId: 'staff-2' },
+    } as any)
+    vi.mocked(getStudentsByTeacher).mockResolvedValue([
+      { id: 'student-1' },
+    ] as any)
+    vi.mocked(getClassesByTeacher).mockResolvedValue([])
+
+    await DashboardPage()
+    expect(getStudentsByTeacher).toHaveBeenCalledWith('staff-2')
+    expect(getStudentCount).not.toHaveBeenCalled()
+  })
+
+  it('calls getStudentCount for admin role', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { name: 'Admin', role: 'admin', staffId: 'staff-1' },
+    } as any)
+    vi.mocked(getStudentCount).mockResolvedValue(42)
+    vi.mocked(getAllClasses).mockResolvedValue([])
+
+    await DashboardPage()
+    expect(getStudentCount).toHaveBeenCalled()
+    expect(getStudentsByTeacher).not.toHaveBeenCalled()
   })
 })

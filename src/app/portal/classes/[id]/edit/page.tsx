@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getClassById, getTeachers, getAllStudents } from '@/db'
+import { getClassById, getTeachers, getStudentsForList } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
 import ClassForm, {
@@ -34,7 +34,7 @@ export default async function EditClassPage({
   const [classData, teachers, students] = await Promise.all([
     getClassById(id),
     getTeachers(),
-    getAllStudents(),
+    getStudentsForList(),
   ])
 
   if (!classData) {

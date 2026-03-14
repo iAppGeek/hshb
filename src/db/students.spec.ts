@@ -8,6 +8,12 @@ vi.mock('./client', () => ({
 
 import {
   getAllStudents,
+  getStudentsForList,
+  searchStudents,
+  getStudentsByTeacher,
+  getStudentIdsByTeacher,
+  getStudentCount,
+  getStudentsWithAllergiesCount,
   getStudentsByClass,
   getStudentById,
   createStudent,
@@ -48,6 +54,213 @@ const mockStudent = {
   additional_contact_2: null,
   additional_contact_2_relationship: null,
 }
+
+describe('getStudentsForList', () => {
+  it('returns lightweight active students ordered by last name', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({
+            data: [
+              {
+                id: 'student-1',
+                first_name: 'Nikos',
+                last_name: 'Papadopoulos',
+                student_code: 'STU-001',
+              },
+            ],
+          }),
+        }),
+      }),
+    })
+
+    const result = await getStudentsForList()
+    expect(result).toHaveLength(1)
+    expect(mockFrom).toHaveBeenCalledWith('students')
+  })
+
+  it('returns empty array when no students', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({ data: null }),
+        }),
+      }),
+    })
+
+    const result = await getStudentsForList()
+    expect(result).toEqual([])
+  })
+})
+
+describe('searchStudents', () => {
+  it('returns matching students limited to 20', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          or: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              limit: vi.fn().mockResolvedValue({
+                data: [
+                  {
+                    id: 'student-1',
+                    first_name: 'Nikos',
+                    last_name: 'Papadopoulos',
+                    student_code: 'STU-001',
+                  },
+                ],
+              }),
+            }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await searchStudents('Nikos')
+    expect(result).toHaveLength(1)
+    expect(mockFrom).toHaveBeenCalledWith('students')
+  })
+
+  it('returns empty array for empty query', async () => {
+    const result = await searchStudents('   ')
+    expect(result).toEqual([])
+    expect(mockFrom).not.toHaveBeenCalled()
+  })
+})
+
+describe('getStudentsByTeacher', () => {
+  it('returns students in the teacher classes', async () => {
+    mockFrom
+      .mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({ data: [{ id: 'class-1' }] }),
+          }),
+        }),
+      })
+      .mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          in: vi
+            .fn()
+            .mockResolvedValue({ data: [{ student_id: 'student-1' }] }),
+        }),
+      })
+      .mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          in: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({ data: [mockStudent] }),
+            }),
+          }),
+        }),
+      })
+
+    const result = await getStudentsByTeacher('teacher-1')
+    expect(result).toEqual([mockStudent])
+    expect(mockFrom).toHaveBeenNthCalledWith(1, 'classes')
+    expect(mockFrom).toHaveBeenNthCalledWith(2, 'student_classes')
+    expect(mockFrom).toHaveBeenNthCalledWith(3, 'students')
+  })
+
+  it('returns empty array when teacher has no classes', async () => {
+    mockFrom.mockReturnValueOnce({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ data: [] }),
+        }),
+      }),
+    })
+
+    const result = await getStudentsByTeacher('teacher-no-classes')
+    expect(result).toEqual([])
+    expect(mockFrom).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('getStudentIdsByTeacher', () => {
+  it('returns unique student IDs for a teacher', async () => {
+    mockFrom
+      .mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              data: [{ id: 'class-1' }, { id: 'class-2' }],
+            }),
+          }),
+        }),
+      })
+      .mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          in: vi.fn().mockResolvedValue({
+            data: [
+              { student_id: 'student-1' },
+              { student_id: 'student-1' },
+              { student_id: 'student-2' },
+            ],
+          }),
+        }),
+      })
+
+    const result = await getStudentIdsByTeacher('teacher-1')
+    expect(result).toEqual(['student-1', 'student-2'])
+  })
+
+  it('returns empty array when teacher has no classes', async () => {
+    mockFrom.mockReturnValueOnce({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ data: [] }),
+        }),
+      }),
+    })
+
+    const result = await getStudentIdsByTeacher('teacher-no-classes')
+    expect(result).toEqual([])
+  })
+})
+
+describe('getStudentCount', () => {
+  it('returns count of active students', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ count: 42 }),
+      }),
+    })
+
+    const result = await getStudentCount()
+    expect(result).toBe(42)
+    expect(mockFrom).toHaveBeenCalledWith('students')
+  })
+
+  it('returns 0 when count is null', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ count: null }),
+      }),
+    })
+
+    const result = await getStudentCount()
+    expect(result).toBe(0)
+  })
+})
+
+describe('getStudentsWithAllergiesCount', () => {
+  it('returns count of active students with allergies', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          not: vi.fn().mockReturnValue({
+            neq: vi.fn().mockResolvedValue({ count: 7 }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await getStudentsWithAllergiesCount()
+    expect(result).toBe(7)
+    expect(mockFrom).toHaveBeenCalledWith('students')
+  })
+})
 
 describe('getAllStudents', () => {
   it('returns active students ordered by last name', async () => {

@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getTeachers, getAllStudents } from '@/db'
+import { getTeachers, getStudentsForList } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
 import ClassForm, {
@@ -26,7 +26,7 @@ export default async function AddClassPage() {
 
   const [teachers, students] = await Promise.all([
     getTeachers(),
-    getAllStudents(),
+    getStudentsForList(),
   ])
 
   return (
