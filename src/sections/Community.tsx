@@ -4,6 +4,8 @@ import { useEffect, useId, useState } from 'react'
 import Image from 'next/image'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import clsx from 'clsx'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 import { Container } from '@/components/Container'
 import { DiamondIcon } from '@/components/DiamondIcon'
@@ -178,8 +180,14 @@ export const Community = (props: Props) => {
                         {person.name}
                       </h3>
                       <div className="mt-1 text-base tracking-tight text-slate-500">
-                        {person.blurb}
-                        <pre className="prose">{person.extendedBlurb}</pre>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {person.blurb}
+                        </ReactMarkdown>
+                        <pre className="prose">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {person.extendedBlurb}
+                          </ReactMarkdown>
+                        </pre>
                       </div>
                     </div>
                   ))}
