@@ -14,6 +14,7 @@ import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 
 import logo from '@/images/logo.png'
@@ -24,6 +25,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   '/portal/classes': AcademicCapIcon,
   '/portal/timetables': CalendarDaysIcon,
   '/portal/attendance': ClipboardDocumentCheckIcon,
+  '/portal/incidents': ExclamationTriangleIcon,
   '/portal/staff': UserGroupIcon,
   '/portal/reports': ChartBarIcon,
 }

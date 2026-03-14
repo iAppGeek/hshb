@@ -41,6 +41,13 @@ export {
 } from './classes'
 export { getAllTimetableSlots, getTimetableByClass } from './timetable'
 export {
+  getIncidents,
+  createIncident,
+  updateIncident,
+  getIncidentById,
+} from './incidents'
+export type { IncidentType, IncidentRow } from './incidents'
+export {
   getAttendanceByClassAndDate,
   getAttendanceLastUpdatedPerClass,
   saveAttendance,

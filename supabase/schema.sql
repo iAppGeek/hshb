@@ -144,6 +144,27 @@ CREATE TRIGGER attendance_updated_at
   BEFORE UPDATE ON attendance
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+-- ─── Incidents ────────────────────────────────────────────────────────────────
+
+CREATE TABLE incidents (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type          TEXT NOT NULL CHECK (type IN ('medical', 'behaviour', 'other')),
+  student_id    UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  title         TEXT NOT NULL,
+  description   TEXT NOT NULL,
+  incident_date TIMESTAMPTZ NOT NULL,
+  created_by          UUID NOT NULL REFERENCES staff(id),
+  updated_by          UUID REFERENCES staff(id),
+  parent_notified     BOOLEAN NOT NULL DEFAULT FALSE,
+  parent_notified_at  TIMESTAMPTZ,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TRIGGER incidents_updated_at
+  BEFORE UPDATE ON incidents
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- ─── Row Level Security ───────────────────────────────────────────────────────
 -- Access is enforced in the application layer (Next.js) using the service role
 -- key, so RLS is enabled but permissive for the service role.
@@ -155,6 +176,7 @@ ALTER TABLE students         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE student_classes  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE timetable_slots  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE attendance       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE incidents        ENABLE ROW LEVEL SECURITY;
 
 -- Service role bypasses RLS automatically — no policy needed for server-side queries.
 -- Add restrictive policies here if you ever expose these tables via the anon key.
@@ -174,3 +196,6 @@ CREATE INDEX ON timetable_slots (class_id);
 CREATE INDEX ON timetable_slots (day_of_week);
 CREATE INDEX ON attendance (class_id, date);
 CREATE INDEX ON attendance (student_id);
+CREATE INDEX ON incidents (student_id);
+CREATE INDEX ON incidents (type);
+CREATE INDEX ON incidents (incident_date DESC);

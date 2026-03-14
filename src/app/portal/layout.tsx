@@ -15,6 +15,7 @@ const navItems = [
   { href: '/portal/classes', label: 'Classes' },
   { href: '/portal/timetables', label: 'Timetables' },
   { href: '/portal/attendance', label: 'Attendance' },
+  { href: '/portal/incidents', label: 'Incidents' },
   { href: '/portal/staff', label: 'Staff' },
   {
     href: '/portal/reports',

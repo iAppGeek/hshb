@@ -161,6 +161,73 @@ export type Database = {
         }
         Relationships: []
       }
+      incidents: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          incident_date: string
+          parent_notified: boolean
+          parent_notified_at: string | null
+          student_id: string
+          title: string
+          type: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          incident_date: string
+          parent_notified?: boolean
+          parent_notified_at?: string | null
+          student_id: string
+          title: string
+          type: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          incident_date?: string
+          parent_notified?: boolean
+          parent_notified_at?: string | null
+          student_id?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'incidents_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'staff'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'incidents_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'students'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'incidents_updated_by_fkey'
+            columns: ['updated_by']
+            isOneToOne: false
+            referencedRelation: 'staff'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       staff: {
         Row: {
           contact_number: string | null
