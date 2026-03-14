@@ -31,20 +31,23 @@ export default async function ReportsPage() {
   const studentsWithAllergies = students.filter((s) => s.allergies)
   const teachers = staff.filter((s) => s.role === 'teacher')
 
+  const fmt = (ts: string) =>
+    new Date(ts).toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+
   const enrolmentByClass = classes.map((cls) => {
-    const lastUpdated = attendanceLastUpdated[cls.id]
+    const summary = attendanceLastUpdated[cls.id]
+    const enrolled = activeStudents.filter((s) =>
+      s.student_classes.some((sc) => sc.class?.id === cls.id),
+    ).length
     return {
       name: cls.name,
-      yearGroup: cls.year_group,
-      count: activeStudents.filter((s) =>
-        s.student_classes.some((sc) => sc.class?.id === cls.id),
-      ).length,
-      attendanceLastUpdated: lastUpdated
-        ? new Date(lastUpdated).toLocaleTimeString('en-GB', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })
-        : null,
+      enrolled,
+      presentCount: summary?.presentCount ?? null,
+      attendanceCreatedAt: summary ? fmt(summary.createdAt) : null,
+      attendanceUpdatedAt: summary ? fmt(summary.updatedAt) : null,
     }
   })
 
@@ -78,7 +81,7 @@ export default async function ReportsPage() {
       <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
           <h2 className="text-sm font-semibold text-gray-700">
-            Enrolment by Class
+            Todays Attendance
           </h2>
         </div>
         <table className="min-w-full divide-y divide-gray-200">
@@ -88,13 +91,10 @@ export default async function ReportsPage() {
                 Class
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Year Group
+                Attendance
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Students
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Today&apos;s Attendance
+                Record Times
               </th>
             </tr>
           </thead>
@@ -105,14 +105,16 @@ export default async function ReportsPage() {
                   {row.name}
                 </td>
                 <td className="px-6 py-3 text-sm text-gray-600">
-                  {row.yearGroup}
+                  {row.presentCount !== null
+                    ? `${row.presentCount}/${row.enrolled}`
+                    : `—/${row.enrolled}`}
                 </td>
-                <td className="px-6 py-3 text-sm text-gray-600">{row.count}</td>
-                <td className="px-6 py-3 text-sm">
-                  {row.attendanceLastUpdated ? (
-                    <span className="text-gray-600">
-                      Last updated {row.attendanceLastUpdated}
-                    </span>
+                <td className="px-6 py-3 text-sm text-gray-600">
+                  {row.attendanceCreatedAt ? (
+                    <div className="flex flex-col gap-0.5">
+                      <span>Created: {row.attendanceCreatedAt}</span>
+                      <span>Updated: {row.attendanceUpdatedAt}</span>
+                    </div>
                   ) : (
                     <span className="font-medium text-amber-600">
                       Not Completed

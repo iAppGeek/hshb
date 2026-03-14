@@ -18,19 +18,43 @@ export async function getAttendanceByClassAndDate(
   return data
 }
 
+export type AttendanceClassSummary = {
+  createdAt: string
+  updatedAt: string
+  presentCount: number
+}
+
 export async function getAttendanceLastUpdatedPerClass(
   date: string,
-): Promise<Record<string, string>> {
+): Promise<Record<string, AttendanceClassSummary>> {
   const { data } = await supabase
     .from('attendance')
-    .select('class_id, updated_at')
+    .select('class_id, created_at, updated_at, status')
     .eq('date', date)
   if (!data) return {}
-  const result: Record<string, string> = {}
+  const result: Record<string, AttendanceClassSummary> = {}
   for (const row of data) {
-    if (!row.updated_at) continue
-    if (!result[row.class_id] || row.updated_at > result[row.class_id]) {
-      result[row.class_id] = row.updated_at
+    if (!row.updated_at || !row.created_at) continue
+    const existing = result[row.class_id]
+    const isPresent = row.status === 'present' || row.status === 'late'
+    if (!existing) {
+      result[row.class_id] = {
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        presentCount: isPresent ? 1 : 0,
+      }
+    } else {
+      result[row.class_id] = {
+        createdAt:
+          row.created_at < existing.createdAt
+            ? row.created_at
+            : existing.createdAt,
+        updatedAt:
+          row.updated_at > existing.updatedAt
+            ? row.updated_at
+            : existing.updatedAt,
+        presentCount: existing.presentCount + (isPresent ? 1 : 0),
+      }
     }
   }
   return result

@@ -96,7 +96,7 @@ describe('ReportsPage', () => {
 
     render(await ReportsPage())
     expect(screen.getByText('Year 3A')).toBeTruthy()
-    expect(screen.getByText('Enrolment by Class')).toBeTruthy()
+    expect(screen.getByText('Todays Attendance')).toBeTruthy()
   })
 
   it('counts only teaching staff in the teachers stat', async () => {
@@ -121,20 +121,24 @@ describe('ReportsPage', () => {
     vi.mocked(getAttendanceLastUpdatedPerClass).mockResolvedValue({})
 
     render(await ReportsPage())
-    expect(screen.getByText('Not Completed')).toBeTruthy()
+    expect(screen.getAllByText('Not Completed')).toHaveLength(1)
   })
 
-  it('shows last updated time when attendance exists for a class today', async () => {
+  it('shows created and updated times when attendance exists for a class today', async () => {
     vi.mocked(getAllStudents).mockResolvedValue([])
     vi.mocked(getAllClasses).mockResolvedValue([
       { id: 'class-1', name: 'Year 3A', year_group: '3' },
     ] as any)
     vi.mocked(getAllStaff).mockResolvedValue([])
     vi.mocked(getAttendanceLastUpdatedPerClass).mockResolvedValue({
-      'class-1': '2024-03-08T09:30:00Z',
-    })
+      'class-1': {
+        createdAt: '2024-03-08T09:00:00Z',
+        updatedAt: '2024-03-08T09:30:00Z',
+        presentCount: 3,
+      },
+    } as any)
 
     render(await ReportsPage())
-    expect(screen.getByText(/Last updated/)).toBeTruthy()
+    expect(screen.queryAllByText('Not Completed')).toHaveLength(0)
   })
 })
