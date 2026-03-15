@@ -19,11 +19,15 @@ import RootLayout, { metadata } from './layout'
 
 describe('metadata', () => {
   it('has the correct default title', () => {
-    expect((metadata.title as { default: string }).default).toBe('HSHB')
+    expect((metadata.title as { default: string }).default).toBe(
+      'Hellenic School of High Barnet',
+    )
   })
 
   it('has a title template', () => {
-    expect((metadata.title as { template: string }).template).toContain('HSHB')
+    expect((metadata.title as { template: string }).template).toContain(
+      'Hellenic School of High Barnet',
+    )
   })
 
   it('includes the correct description', () => {
@@ -39,7 +43,7 @@ describe('metadata', () => {
   })
 
   it('includes greek school keywords', () => {
-    expect(metadata.keywords).toContain('greek school')
+    expect(metadata.keywords).toContain('greek school london')
   })
 })
 

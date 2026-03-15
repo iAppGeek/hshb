@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { Container } from '@/components/Container'
 import { HeroVideo } from '@/clientComponents/HeroVideo'
+import { ScrollTracker } from '@/clientComponents/ScrollTracker'
 
 type Props = { text: string; videoUrl: string | undefined }
 export const Introduction: FC<Props> = ({ text, videoUrl }) => {
@@ -19,6 +20,7 @@ export const Introduction: FC<Props> = ({ text, videoUrl }) => {
         </blockquote>
       </Container>
       <HeroVideo videoUrl={videoUrl} />
+      <ScrollTracker section="introduction" />
     </section>
   )
 }

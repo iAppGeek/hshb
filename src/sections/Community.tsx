@@ -11,6 +11,7 @@ import { Container } from '@/components/Container'
 import { DiamondIcon } from '@/components/DiamondIcon'
 import type { CommunityDirectory } from '@/data/contentful'
 import { sendEvent } from '@/data/events'
+import { ScrollTracker } from '@/clientComponents/ScrollTracker'
 
 const ImageClipPaths = ({
   id,
@@ -62,9 +63,12 @@ export const Community = (props: Props) => {
     >
       <ImageClipPaths id={id} />
       <Container>
-        <p className="font-display mt-8 text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
+        <h2
+          id="our-community-title"
+          className="font-display mt-8 text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl"
+        >
           The School Community
-        </p>
+        </h2>
         <div className="mx-auto max-w-2xl lg:mx-0">
           <p className="font-display mt-4 text-2xl tracking-tight text-blue-900">
             Get to know the individuals that help keep the school running
@@ -196,6 +200,7 @@ export const Community = (props: Props) => {
           </TabPanels>
         </TabGroup>
       </Container>
+      <ScrollTracker section="our-community" />
     </section>
   )
 }

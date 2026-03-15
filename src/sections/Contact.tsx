@@ -1,5 +1,6 @@
 import { ContactDetails, ContactFormProps } from '@/components/ContactDetails'
 import { ContactForm } from '@/clientComponents/ContactForm'
+import { ScrollTracker } from '@/clientComponents/ScrollTracker'
 
 export const Contact = (props: ContactFormProps) => {
   return (
@@ -26,6 +27,7 @@ export const Contact = (props: ContactFormProps) => {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
+      <ScrollTracker section="contact" />
     </section>
   )
 }

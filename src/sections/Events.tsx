@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
 import { Container } from '@/components/Container'
+import { ScrollTracker } from '@/clientComponents/ScrollTracker'
 import discordImage from '@/images/resources/discord.svg'
 import { PastEvent } from '@/data/contentful'
 
@@ -16,16 +17,55 @@ const PlaceholderImage = () => {
 
 type Props = { events: PastEvent[] }
 export const Events = (props: Props) => {
+  const eventsJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'HSHB Recent Events',
+    itemListElement: props.events.map((event, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Event',
+        name: event.name,
+        startDate: event.date.toISOString(),
+        description: event.description,
+        location: {
+          '@type': 'Place',
+          name: 'Hellenic School of High Barnet',
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'East Barnet School, 5 Chestnut Grove',
+            addressLocality: 'Cockfosters',
+            addressRegion: 'London',
+            addressCountry: 'GB',
+          },
+        },
+        organizer: {
+          '@type': 'Organization',
+          name: 'Hellenic School of High Barnet',
+          url: 'https://www.hshb.org.uk',
+        },
+      },
+    })),
+  }
+
   return (
     <section
       id="events"
       aria-labelledby="events-title"
       className="m:py-10 py-8 lg:py-8"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsJsonLd) }}
+      />
       <Container className="mt-8">
-        <p className="font-display mt-8 mb-4 text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
+        <h2
+          id="events-title"
+          className="font-display mt-8 mb-4 text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl"
+        >
           Our Events Calendar
-        </p>
+        </h2>
         <iframe
           src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&hl=en_GB&showCalendars=0&title&src=dG9uLmFudG9uaWFkb3VAZ21haWwuY29t&color=%233F51B5"
           style={{ display: 'block' }}
@@ -38,9 +78,9 @@ export const Events = (props: Props) => {
         ></iframe>
       </Container>
       <Container>
-        <p className="font-display mt-8 text-4xl font-bold tracking-tight text-slate-900">
+        <h3 className="font-display mt-8 text-4xl font-bold tracking-tight text-slate-900">
           Some of our recent events
-        </p>
+        </h3>
         <p className="mt-4 text-lg tracking-tight text-slate-700">
           We hold many events over the school year to showcase what our children
           have been learning and to help raise funds for the school
@@ -82,6 +122,7 @@ export const Events = (props: Props) => {
           ))}
         </ol>
       </Container>
+      <ScrollTracker section="events" />
     </section>
   )
 }

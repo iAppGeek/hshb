@@ -11,9 +11,10 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-const baseTitle = 'HSHB'
+const siteUrl = 'https://www.hshb.org.uk'
+const baseTitle = 'Hellenic School of High Barnet'
 const description =
-  'The Hellenic School of High Barnet. Located in Cockfosters, North London Based in East Barnet Secondary School'
+  'The Hellenic School of High Barnet (HSHB) is a Greek language school in Cockfosters, North London, serving families across Barnet, Enfield, and Hertfordshire.'
 
 export const metadata: Metadata = {
   title: {
@@ -21,18 +22,30 @@ export const metadata: Metadata = {
     default: baseTitle,
   },
   description,
-  authors: { name: 'HSHB', url: 'www.hshb.org.uk' },
-  category: 'Greek School',
-  classification: 'Greek School in Cockfosters, Enfield, Barnet, North London',
-  keywords: ['greek school', 'greekschool', 'enfield', 'barnet', 'cockfosters'],
+  metadataBase: new URL(siteUrl),
+  authors: { name: 'HSHB', url: siteUrl },
+  category: 'Education',
+  classification: 'Greek Language School in North London',
+  keywords: [
+    'greek school london',
+    'greek language school',
+    'hellenic school',
+    'greek school north london',
+    'greek school barnet',
+    'greek school enfield',
+    'greek school cockfosters',
+    'HSHB',
+  ],
   openGraph: {
     type: 'website',
     title: baseTitle,
     description,
+    url: siteUrl,
+    siteName: baseTitle,
     emails: ['info@hshb.org.uk', 'head@hshb.org.uk'],
     phoneNumbers: '+44 (0) 7753 829 692',
   },
-  twitter: { site: '@HSHBInfo' },
+  twitter: { site: '@HSHBInfo', card: 'summary_large_image' },
   formatDetection: {
     address: true,
     date: true,
@@ -67,7 +80,9 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col">{children}</body>
-      <GoogleAnalytics gaId="G-E02EY5EHFE" />
+      {process.env.NODE_ENV === 'production' && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
+      )}
     </html>
   )
 }

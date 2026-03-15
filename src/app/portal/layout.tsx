@@ -7,6 +7,7 @@ import PortalSidebar from './PortalSidebar'
 
 export const metadata: Metadata = {
   title: { template: '%s | Staff Portal', default: 'Staff Portal' },
+  robots: { index: false, follow: false },
 }
 
 const navItems = [

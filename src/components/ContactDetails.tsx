@@ -49,7 +49,10 @@ export const ContactDetails = (props: ContactFormProps) => {
             />
           </svg>
         </div>
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+        <h2
+          id="contact-title"
+          className="text-3xl font-bold tracking-tight text-gray-900"
+        >
           Get in touch
         </h2>
         <pre className="prose mt-6 text-lg leading-8 text-gray-600">
