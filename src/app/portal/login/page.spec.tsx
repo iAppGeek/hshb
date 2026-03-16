@@ -1,10 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
 import LoginPage from './page'
 
 vi.mock('@/auth', () => ({
+  auth: vi.fn(),
   signIn: vi.fn(),
+}))
+
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn(),
 }))
 
 vi.mock('next/image', () => ({
@@ -14,12 +19,31 @@ vi.mock('next/image', () => ({
 vi.mock('@/images/logo.png', () => ({ default: '/logo.png' }))
 vi.mock('@/images/icons/microsoft.svg', () => ({ default: '/microsoft.svg' }))
 
-beforeEach(() => {
+let authMock: Mock
+let redirectMock: Mock
+
+beforeEach(async () => {
   vi.clearAllMocks()
+  const { auth } = await import('@/auth')
+  const { redirect } = await import('next/navigation')
+  authMock = auth as unknown as Mock
+  redirectMock = redirect as unknown as Mock
+  authMock.mockResolvedValue(null)
 })
 
 describe('LoginPage', () => {
-  it('renders the sign in button', async () => {
+  it('redirects to dashboard when authenticated', async () => {
+    authMock.mockResolvedValue({
+      user: { name: 'Test User', role: 'teacher', staffId: 1 },
+      expires: '',
+    })
+
+    await LoginPage({ searchParams: Promise.resolve({}) })
+
+    expect(redirectMock).toHaveBeenCalledWith('/portal/dashboard')
+  })
+
+  it('renders the sign in button when unauthenticated', async () => {
     render(await LoginPage({ searchParams: Promise.resolve({}) }))
     expect(
       screen.getByRole('button', { name: /sign in with microsoft/i }),

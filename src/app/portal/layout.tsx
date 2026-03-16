@@ -1,13 +1,24 @@
-import { type Metadata } from 'next'
+import { type Metadata, type Viewport } from 'next'
 
 import { auth, signOut } from '@/auth'
 import type { StaffRole } from '@/types/next-auth'
 
 import PortalSidebar from './PortalSidebar'
+import PwaRegistrar from './PwaRegistrar'
+
+export const viewport: Viewport = {
+  themeColor: '#1e40af',
+}
 
 export const metadata: Metadata = {
   title: { template: '%s | Staff Portal', default: 'Staff Portal' },
   robots: { index: false, follow: false },
+  manifest: '/manifest.portal.json',
+  other: {
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'HSHB Portal',
+  },
+  icons: { apple: '/icons/portal-icon-192.png' },
 }
 
 const navItems = [
@@ -49,6 +60,7 @@ export default async function PortalLayout({
 
   return (
     <div className="flex min-h-screen bg-gray-100">
+      <PwaRegistrar />
       <PortalSidebar
         navItems={visibleNav}
         userName={session?.user?.name}

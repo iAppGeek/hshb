@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import { type Metadata } from 'next'
+import { redirect } from 'next/navigation'
 
-import { signIn } from '@/auth'
+import { auth, signIn } from '@/auth'
 import logo from '@/images/logo.png'
 import microsoftIcon from '@/images/icons/microsoft.svg'
 
@@ -12,6 +13,9 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ error?: string }>
 }) {
+  const session = await auth()
+  if (session?.user) redirect('/portal/dashboard')
+
   const { error } = await searchParams
   const isUnauthorised = error === 'AccessDenied'
 

@@ -3,3 +3,8 @@
 
 [[plugins]]
 package = "@netlify/plugin-nextjs"
+
+[[headers]]
+  for = "/portal-sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
