@@ -49,29 +49,29 @@ export default async function StaffPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     First name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     Last name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  <th className="hidden px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:table-cell sm:px-6">
                     Display name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  <th className="hidden px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase md:table-cell md:px-6">
                     Contact
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     Class
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     Room
                   </th>
                   {isAdmin && (
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                    <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                       Actions
                     </th>
                   )}
@@ -89,33 +89,33 @@ export default async function StaffPage() {
                       | null) ?? []
                   return (
                     <tr key={member.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <td className="px-3 py-4 text-sm font-medium text-gray-900 sm:px-6">
                         {member.first_name}
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <td className="px-3 py-4 text-sm font-medium text-gray-900 sm:px-6">
                         {member.last_name}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
                         {member.display_name ?? '—'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
                         {roleLabels[member.role] ?? member.role}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell md:px-6">
                         {member.contact_number ?? '—'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
                         {classes.length > 0
                           ? classes.map((c) => c.name).join(', ')
                           : '—'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
                         {classes.length > 0
                           ? classes.map((c) => c.room_number ?? '—').join(', ')
                           : '—'}
                       </td>
                       {isAdmin && (
-                        <td className="px-6 py-4 text-sm">
+                        <td className="px-3 py-4 text-sm sm:px-6">
                           <Link
                             href={`/portal/staff/${member.id}/edit`}
                             className="text-blue-600 hover:text-blue-800"

@@ -2,10 +2,12 @@
   "name": "HSHB Staff Portal",
   "short_name": "HSHB Portal",
   "description": "Staff portal for the Hellenic School of High Barnet",
+  "id": "/portal",
   "start_url": "/portal/login",
   "scope": "/portal",
   "display": "standalone",
-  "background_color": "#f3f4f6",
+  "orientation": "any",
+  "background_color": "#ffffff",
   "theme_color": "#1e40af",
   "icons": [
     {

@@ -80,10 +80,10 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg rounded-xl bg-white shadow-xl ring-1 ring-gray-200"
+        className="relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-xl bg-white shadow-xl ring-1 ring-gray-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-gray-200 px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-900">
             {student.last_name}, {student.first_name}
           </h2>
@@ -108,7 +108,7 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
           </button>
         </div>
 
-        <div className="space-y-4 px-6 py-4">
+        <div className="flex-1 space-y-4 overflow-y-auto px-6 py-4">
           {hasStudentAddress && (
             <section>
               <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   Bars3Icon,
   XMarkIcon,
@@ -11,7 +12,6 @@ import {
   UsersIcon,
   UserGroupIcon,
   AcademicCapIcon,
-  CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
   ExclamationTriangleIcon,
@@ -23,7 +23,6 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   '/portal/dashboard': HomeIcon,
   '/portal/students': UsersIcon,
   '/portal/classes': AcademicCapIcon,
-  '/portal/timetables': CalendarDaysIcon,
   '/portal/attendance': ClipboardDocumentCheckIcon,
   '/portal/incidents': ExclamationTriangleIcon,
   '/portal/staff': UserGroupIcon,
@@ -49,15 +48,21 @@ export default function PortalSidebar({
   signOutAction,
 }: Props) {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
 
   const navLinks = navItems.map(({ href, label }) => {
     const Icon = iconMap[href]
+    const isActive = pathname === href || pathname.startsWith(href + '/')
     return (
       <Link
         key={href}
         href={href}
         onClick={() => setOpen(false)}
-        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition hover:bg-gray-700 hover:text-white"
+        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+          isActive
+            ? 'bg-blue-600 text-white'
+            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+        }`}
       >
         {Icon && <Icon className="h-5 w-5 shrink-0" />}
         {label}

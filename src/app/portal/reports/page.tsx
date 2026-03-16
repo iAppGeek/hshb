@@ -72,11 +72,11 @@ export default async function ReportsPage() {
       </h1>
 
       {/* Summary stats */}
-      <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {stats.map(({ label, value }) => (
           <div
             key={label}
-            className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200"
+            className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200 sm:p-6"
           >
             <p className="text-sm text-gray-500">{label}</p>
             <p className="mt-1 text-3xl font-bold text-gray-900">{value}</p>
@@ -91,47 +91,49 @@ export default async function ReportsPage() {
             Todays Attendance
           </h2>
         </div>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Class
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Attendance
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Record Times
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {enrolmentByClass.map((row) => (
-              <tr key={row.name} className="hover:bg-gray-50">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">
-                  {row.name}
-                </td>
-                <td className="px-6 py-3 text-sm text-gray-600">
-                  {row.presentCount !== null
-                    ? `${row.presentCount}/${row.enrolled}`
-                    : `—/${row.enrolled}`}
-                </td>
-                <td className="px-6 py-3 text-sm text-gray-600">
-                  {row.attendanceCreatedAt ? (
-                    <div className="flex flex-col gap-0.5">
-                      <span>Created: {row.attendanceCreatedAt}</span>
-                      <span>Updated: {row.attendanceUpdatedAt}</span>
-                    </div>
-                  ) : (
-                    <span className="font-medium text-amber-600">
-                      Not Completed
-                    </span>
-                  )}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Class
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Attendance
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Record Times
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {enrolmentByClass.map((row) => (
+                <tr key={row.name} className="hover:bg-gray-50">
+                  <td className="px-6 py-3 text-sm font-medium text-gray-900">
+                    {row.name}
+                  </td>
+                  <td className="px-6 py-3 text-sm text-gray-600">
+                    {row.presentCount !== null
+                      ? `${row.presentCount}/${row.enrolled}`
+                      : `—/${row.enrolled}`}
+                  </td>
+                  <td className="px-6 py-3 text-sm text-gray-600">
+                    {row.attendanceCreatedAt ? (
+                      <div className="flex flex-col gap-0.5">
+                        <span>Created: {row.attendanceCreatedAt}</span>
+                        <span>Updated: {row.attendanceUpdatedAt}</span>
+                      </div>
+                    ) : (
+                      <span className="font-medium text-amber-600">
+                        Not Completed
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

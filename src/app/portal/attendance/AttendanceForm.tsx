@@ -23,28 +23,6 @@ type Props = {
   role: StaffRole
 }
 
-const STATUS_OPTIONS: {
-  value: AttendanceStatus
-  label: string
-  colour: string
-}[] = [
-  {
-    value: 'present',
-    label: 'Present',
-    colour: 'bg-green-100 text-green-800 ring-green-300',
-  },
-  {
-    value: 'late',
-    label: 'Late',
-    colour: 'bg-yellow-100 text-yellow-800 ring-yellow-300',
-  },
-  {
-    value: 'absent',
-    label: 'Absent',
-    colour: 'bg-red-100 text-red-800 ring-red-300',
-  },
-]
-
 export default function AttendanceForm({
   classId,
   date,
@@ -118,74 +96,98 @@ export default function AttendanceForm({
           </div>
 
           <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                    Student
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                    Status
-                  </th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">Details</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {students.map((student) => {
-                  const current = statuses[student.id]
-                  return (
-                    <tr key={student.id}>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {/* Hidden inputs carry the data for the server action */}
-                        <input
-                          type="hidden"
-                          name="studentId"
-                          value={student.id}
-                        />
-                        {current !== null && (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                      Student
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right sm:w-full">
+                      <span className="sr-only">Details</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {students.map((student) => {
+                    const current = statuses[student.id]
+                    return (
+                      <tr key={student.id}>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 sm:whitespace-nowrap">
+                          {/* Hidden inputs carry the data for the server action */}
                           <input
                             type="hidden"
-                            name={`status_${student.id}`}
-                            value={current}
+                            name="studentId"
+                            value={student.id}
                           />
-                        )}
-                        {student.last_name}, {student.first_name}
-                      </td>
+                          {current !== null && (
+                            <input
+                              type="hidden"
+                              name={`status_${student.id}`}
+                              value={current}
+                            />
+                          )}
+                          {student.last_name}, {student.first_name}
+                        </td>
 
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          {STATUS_OPTIONS.map(({ value, label, colour }) => (
+                        <td className="w-px px-6 py-4 whitespace-nowrap">
+                          <div className="flex overflow-hidden rounded-full ring-1 ring-gray-200">
                             <button
-                              key={value}
                               type="button"
-                              onClick={() => toggle(student.id, value)}
-                              className={`rounded-full px-3 py-1 text-xs font-medium ring-1 transition ring-inset ${
-                                current === value
-                                  ? colour
-                                  : 'bg-white text-gray-500 ring-gray-200 hover:bg-gray-50'
+                              onClick={() => toggle(student.id, 'present')}
+                              className={`px-4 py-2 text-sm font-medium transition ${
+                                current === 'present'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-white text-gray-400 hover:bg-gray-50'
                               }`}
                             >
-                              {label}
+                              <span className="sm:hidden">P</span>
+                              <span className="hidden sm:block">Present</span>
                             </button>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm font-medium">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedStudent(student)}
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          Details
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+                            <button
+                              type="button"
+                              onClick={() => toggle(student.id, 'late')}
+                              className={`border-x border-gray-200 px-4 py-2 text-sm font-medium transition ${
+                                current === 'late'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-white text-gray-400 hover:bg-gray-50'
+                              }`}
+                            >
+                              <span className="sm:hidden">L</span>
+                              <span className="hidden sm:block">Late</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => toggle(student.id, 'absent')}
+                              className={`px-4 py-2 text-sm font-medium transition ${
+                                current === 'absent'
+                                  ? 'bg-red-100 text-red-800'
+                                  : 'bg-white text-gray-400 hover:bg-gray-50'
+                              }`}
+                            >
+                              <span className="sm:hidden">A</span>
+                              <span className="hidden sm:block">Absent</span>
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right text-sm font-medium">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedStudent(student)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            Details
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div className="mt-4 flex items-center gap-4">

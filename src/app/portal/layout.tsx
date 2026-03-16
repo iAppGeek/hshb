@@ -3,6 +3,7 @@ import { type Metadata, type Viewport } from 'next'
 import { auth, signOut } from '@/auth'
 import type { StaffRole } from '@/types/next-auth'
 
+import IosSplashLinks from './IosSplashLinks'
 import PortalSidebar from './PortalSidebar'
 import PwaRegistrar from './PwaRegistrar'
 
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   manifest: '/manifest.portal.json',
   other: {
+    'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
     'apple-mobile-web-app-title': 'HSHB Portal',
   },
@@ -25,7 +27,6 @@ const navItems = [
   { href: '/portal/dashboard', label: 'Dashboard' },
   { href: '/portal/students', label: 'Students' },
   { href: '/portal/classes', label: 'Classes' },
-  { href: '/portal/timetables', label: 'Timetables' },
   { href: '/portal/attendance', label: 'Attendance' },
   { href: '/portal/incidents', label: 'Incidents' },
   { href: '/portal/staff', label: 'Staff' },
@@ -59,17 +60,22 @@ export default async function PortalLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <PwaRegistrar />
-      <PortalSidebar
-        navItems={visibleNav}
-        userName={session?.user?.name}
-        roleLabel={role ? roleLabels[role] : null}
-        signOutAction={signOutAction}
-      />
+    <>
+      <IosSplashLinks />
+      <div className="flex min-h-screen bg-gray-100">
+        <PwaRegistrar />
+        <PortalSidebar
+          navItems={visibleNav}
+          userName={session?.user?.name}
+          roleLabel={role ? roleLabels[role] : null}
+          signOutAction={signOutAction}
+        />
 
-      {/* pt-20 on mobile clears the fixed top bar; reverts to p-8 on md+ */}
-      <main className="flex-1 overflow-auto p-6 pt-20 md:p-8">{children}</main>
-    </div>
+        {/* pt-20 on mobile clears the fixed top bar; reverts to p-8 on md+ */}
+        <main className="flex-1 overflow-auto px-4 py-6 pt-20 md:p-8">
+          {children}
+        </main>
+      </div>
+    </>
   )
 }
