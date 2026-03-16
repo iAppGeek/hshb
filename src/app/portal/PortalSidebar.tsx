@@ -39,6 +39,7 @@ type Props = {
   userName: string | null | undefined
   roleLabel: string | null
   signOutAction: () => Promise<void>
+  notificationSlot?: React.ReactNode
 }
 
 export default function PortalSidebar({
@@ -46,6 +47,7 @@ export default function PortalSidebar({
   userName,
   roleLabel,
   signOutAction,
+  notificationSlot,
 }: Props) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
@@ -74,6 +76,7 @@ export default function PortalSidebar({
     <div className="border-t border-gray-700 px-4 py-4">
       <p className="truncate text-sm font-medium text-white">{userName}</p>
       {roleLabel && <p className="mt-0.5 text-xs text-gray-400">{roleLabel}</p>}
+      {notificationSlot}
       <form className="mt-3" action={signOutAction}>
         <button
           type="submit"

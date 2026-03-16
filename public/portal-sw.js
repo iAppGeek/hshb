@@ -64,3 +64,38 @@ self.addEventListener('fetch', (event) => {
     fetch(event.request).catch(() => caches.match(event.request)),
   )
 })
+
+self.addEventListener('push', (event) => {
+  const payload = event.data ? event.data.json() : {}
+  const title = payload.title ?? 'Staff Portal'
+  const body = payload.body ?? ''
+  const data = payload.data ?? {}
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: '/icons/portal-icon-192.png',
+      badge: '/icons/portal-icon-192.png',
+      data,
+    }),
+  )
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url ?? '/portal/reports'
+  event.waitUntil(
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        for (const client of windowClients) {
+          if (client.url.includes('/portal') && 'focus' in client) {
+            client.focus()
+            return client.navigate(url)
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(url)
+        }
+      }),
+  )
+})

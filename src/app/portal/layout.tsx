@@ -4,6 +4,8 @@ import { auth, signOut } from '@/auth'
 import type { StaffRole } from '@/types/next-auth'
 
 import IosSplashLinks from './IosSplashLinks'
+import NotificationBanner from './NotificationBanner'
+import NotificationToggle from './NotificationToggle'
 import PortalSidebar from './PortalSidebar'
 import PwaRegistrar from './PwaRegistrar'
 
@@ -50,6 +52,7 @@ export default async function PortalLayout({
 }) {
   const session = await auth()
   const role = session?.user?.role
+  const isAdminOrHead = role === 'admin' || role === 'headteacher'
   const visibleNav = navItems
     .filter((item) => !item.roles || item.roles.includes(role as StaffRole))
     .map(({ href, label }) => ({ href, label }))
@@ -69,10 +72,12 @@ export default async function PortalLayout({
           userName={session?.user?.name}
           roleLabel={role ? roleLabels[role] : null}
           signOutAction={signOutAction}
+          notificationSlot={isAdminOrHead ? <NotificationToggle /> : null}
         />
 
         {/* pt-20 on mobile clears the fixed top bar; reverts to p-8 on md+ */}
         <main className="flex-1 overflow-auto px-4 py-6 pt-20 md:p-8">
+          {isAdminOrHead && <NotificationBanner />}
           {children}
         </main>
       </div>

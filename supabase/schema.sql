@@ -165,6 +165,22 @@ CREATE TRIGGER incidents_updated_at
   BEFORE UPDATE ON incidents
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+-- ─── Push Subscriptions ───────────────────────────────────────────────────────
+-- Stores Web Push API subscriptions per staff member (one row per device).
+-- endpoint is UNIQUE: re-subscribing the same device upserts cleanly.
+-- No role column — role is joined from staff at query time so promotions propagate automatically.
+
+CREATE TABLE push_subscriptions (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  staff_id   UUID NOT NULL REFERENCES staff(id) ON DELETE CASCADE,
+  endpoint   TEXT NOT NULL UNIQUE,
+  p256dh     TEXT NOT NULL,
+  auth       TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX ON push_subscriptions (staff_id);
+
 -- ─── Row Level Security ───────────────────────────────────────────────────────
 -- Access is enforced in the application layer (Next.js) using the service role
 -- key, so RLS is enabled but permissive for the service role.
@@ -175,8 +191,9 @@ ALTER TABLE guardians        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE student_classes  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE timetable_slots  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE attendance       ENABLE ROW LEVEL SECURITY;
-ALTER TABLE incidents        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE attendance          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE incidents           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE push_subscriptions  ENABLE ROW LEVEL SECURITY;
 
 -- Service role bypasses RLS automatically — no policy needed for server-side queries.
 -- Add restrictive policies here if you ever expose these tables via the anon key.
