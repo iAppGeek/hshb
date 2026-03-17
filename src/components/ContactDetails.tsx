@@ -1,11 +1,8 @@
-import {
-  BuildingOffice2Icon,
-  PhoneIcon,
-  EnvelopeIcon,
-} from '@heroicons/react/24/outline'
+import { BuildingOffice2Icon } from '@heroicons/react/24/outline'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { mdxOptions, mdxGridComponents } from '@/data/mdxConfig'
+import { ContactLinks } from '@/components/ContactLinks'
 
 export type ContactFormProps = {
   text: string
@@ -14,9 +11,6 @@ export type ContactFormProps = {
   email: string
 }
 export const ContactDetails = (props: ContactFormProps) => {
-  const numberLink = `tel:${props.number}`
-  const emailLink = `mailto:${props.email}`
-
   return (
     <div className="relative px-6 py-12 lg:static lg:px-8">
       <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
@@ -75,31 +69,7 @@ export const ContactDetails = (props: ContactFormProps) => {
               <pre>{props.address}</pre>
             </dd>
           </div>
-          <div className="flex gap-x-4">
-            <dt className="flex-none">
-              <span className="sr-only">Telephone</span>
-              <PhoneIcon aria-hidden="true" className="h-7 w-6 text-gray-400" />
-            </dt>
-            <dd>
-              <a href={numberLink} className="hover:text-gray-900">
-                {props.number}
-              </a>
-            </dd>
-          </div>
-          <div className="flex gap-x-4">
-            <dt className="flex-none">
-              <span className="sr-only">Email</span>
-              <EnvelopeIcon
-                aria-hidden="true"
-                className="h-7 w-6 text-gray-400"
-              />
-            </dt>
-            <dd>
-              <a href={emailLink} className="hover:text-gray-900">
-                {props.email}
-              </a>
-            </dd>
-          </div>
+          <ContactLinks number={props.number} email={props.email} />
         </dl>
       </div>
     </div>
