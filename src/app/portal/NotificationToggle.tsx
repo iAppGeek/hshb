@@ -22,16 +22,8 @@ export default function NotificationToggle() {
   const [status, setStatus] = useState<Status>('loading')
 
   useEffect(() => {
-    void (async () => {
-      const isStandalone =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (navigator as Navigator & { standalone?: boolean }).standalone === true
-
-      if (
-        !isStandalone ||
-        !('PushManager' in window) ||
-        !('serviceWorker' in navigator)
-      ) {
+    async function checkStatus() {
+      if (!('PushManager' in window) || !('serviceWorker' in navigator)) {
         setStatus('unsupported')
         return
       }
@@ -44,7 +36,15 @@ export default function NotificationToggle() {
       const reg = await navigator.serviceWorker.ready
       const sub = await reg.pushManager.getSubscription()
       setStatus(sub ? 'subscribed' : 'unsubscribed')
-    })()
+    }
+
+    void checkStatus()
+    window.addEventListener('focus', checkStatus)
+    window.addEventListener('push-subscription-changed', checkStatus)
+    return () => {
+      window.removeEventListener('focus', checkStatus)
+      window.removeEventListener('push-subscription-changed', checkStatus)
+    }
   }, [])
 
   async function subscribe() {
@@ -80,22 +80,34 @@ export default function NotificationToggle() {
     return <p className="text-xs text-gray-500">Notifications blocked</p>
   }
 
+  const subscribed = status === 'subscribed'
+
   return (
     <button
-      onClick={status === 'subscribed' ? unsubscribe : subscribe}
-      className="flex items-center gap-2 text-xs text-gray-400 transition hover:text-white"
-      title={
-        status === 'subscribed'
-          ? 'Disable notifications'
-          : 'Enable notifications'
-      }
+      onClick={subscribed ? unsubscribe : subscribe}
+      className={`flex w-full items-center justify-between gap-2 text-xs font-medium transition ${
+        subscribed
+          ? 'text-green-400 hover:text-green-300'
+          : 'text-red-400 hover:text-red-300'
+      }`}
     >
-      {status === 'subscribed' ? (
-        <BellSlashIcon className="h-4 w-4" />
-      ) : (
-        <BellIcon className="h-4 w-4" />
-      )}
-      {status === 'subscribed' ? 'Notifications on' : 'Notifications off'}
+      <span className="flex items-center gap-2">
+        {subscribed ? (
+          <BellIcon className="h-4 w-4" />
+        ) : (
+          <BellSlashIcon className="h-4 w-4" />
+        )}
+        Notifications
+      </span>
+      <span
+        className={`rounded-full px-2 py-0.5 text-xs ${
+          subscribed
+            ? 'bg-green-500/20 text-green-400'
+            : 'bg-red-500/20 text-red-400'
+        }`}
+      >
+        {subscribed ? 'On' : 'Off'}
+      </span>
     </button>
   )
 }

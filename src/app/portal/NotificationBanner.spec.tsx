@@ -12,13 +12,6 @@ import NotificationBanner from './NotificationBanner'
 
 const DISMISSED_KEY = 'push-notif-dismissed'
 
-function setStandalone(value: boolean) {
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: vi.fn().mockReturnValue({ matches: value }),
-  })
-}
-
 function setupServiceWorker(sub: PushSubscription | null = null) {
   const getSubscription = vi.fn().mockResolvedValue(sub)
   const subscribe = vi.fn()
@@ -42,38 +35,34 @@ beforeEach(() => {
 })
 
 describe('NotificationBanner', () => {
-  it('renders nothing when not in standalone mode', () => {
-    setStandalone(false)
+  it('renders nothing when PushManager is unsupported', () => {
+    // @ts-expect-error -- removing for test
+    delete window.PushManager
     const { container } = render(<NotificationBanner />)
     expect(container.innerHTML).toBe('')
   })
 
   it('renders nothing when already dismissed', async () => {
-    setStandalone(true)
     localStorage.setItem(DISMISSED_KEY, '1')
     setupServiceWorker(null)
     const { container } = render(<NotificationBanner />)
-    // Wait a tick for the effect to run
     await waitFor(() => expect(container.innerHTML).toBe(''))
   })
 
   it('renders nothing when already subscribed', async () => {
-    setStandalone(true)
     setupServiceWorker({} as PushSubscription)
     const { container } = render(<NotificationBanner />)
     await waitFor(() => expect(container.innerHTML).toBe(''))
   })
 
   it('renders nothing when permission is denied', async () => {
-    setStandalone(true)
     vi.stubGlobal('Notification', { permission: 'denied' })
     setupServiceWorker(null)
     const { container } = render(<NotificationBanner />)
     await waitFor(() => expect(container.innerHTML).toBe(''))
   })
 
-  it('shows the banner when all conditions are met', async () => {
-    setStandalone(true)
+  it('shows the banner when unsubscribed and not dismissed', async () => {
     setupServiceWorker(null)
     render(<NotificationBanner />)
     await waitFor(() => {
@@ -86,7 +75,6 @@ describe('NotificationBanner', () => {
   })
 
   it('hides the banner after clicking Enable (subscribe succeeds)', async () => {
-    setStandalone(true)
     const mockSub = { endpoint: 'https://example.com' } as PushSubscription
     const { subscribe } = setupServiceWorker(null)
     subscribe.mockResolvedValue(mockSub)
@@ -102,7 +90,6 @@ describe('NotificationBanner', () => {
   })
 
   it('keeps the banner visible when subscribe throws', async () => {
-    setStandalone(true)
     const { subscribe } = setupServiceWorker(null)
     subscribe.mockRejectedValue(new Error('Permission denied'))
 
@@ -116,7 +103,6 @@ describe('NotificationBanner', () => {
   })
 
   it('hides the banner and sets localStorage key when dismissed', async () => {
-    setStandalone(true)
     setupServiceWorker(null)
 
     render(<NotificationBanner />)
@@ -127,5 +113,45 @@ describe('NotificationBanner', () => {
       expect(screen.queryByText('Enable')).toBeNull()
     })
     expect(localStorage.getItem(DISMISSED_KEY)).toBe('1')
+  })
+
+  it('dispatches push-subscription-changed event on successful subscribe', async () => {
+    const mockSub = { endpoint: 'https://example.com' } as PushSubscription
+    const { subscribe } = setupServiceWorker(null)
+    subscribe.mockResolvedValue(mockSub)
+    vi.mocked(saveSubscription).mockResolvedValue(undefined)
+
+    const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
+
+    render(<NotificationBanner />)
+    const btn = await screen.findByText('Enable')
+    fireEvent.click(btn)
+
+    await waitFor(() => {
+      const dispatched = dispatchSpy.mock.calls.find(
+        ([e]) => e instanceof Event && e.type === 'push-subscription-changed',
+      )
+      expect(dispatched).toBeDefined()
+    })
+  })
+
+  it('does not dispatch push-subscription-changed when subscribe throws', async () => {
+    const { subscribe } = setupServiceWorker(null)
+    subscribe.mockRejectedValue(new Error('Permission denied'))
+
+    const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
+
+    render(<NotificationBanner />)
+    const btn = await screen.findByText('Enable')
+    fireEvent.click(btn)
+
+    await waitFor(() => {
+      expect(screen.getByText('Enable')).toBeDefined()
+    })
+
+    const dispatched = dispatchSpy.mock.calls.find(
+      ([e]) => e instanceof Event && e.type === 'push-subscription-changed',
+    )
+    expect(dispatched).toBeUndefined()
   })
 })

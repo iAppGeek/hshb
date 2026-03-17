@@ -12,12 +12,7 @@ export default function NotificationBanner() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (navigator as Navigator & { standalone?: boolean }).standalone === true
-
     if (
-      !isStandalone ||
       !('PushManager' in window) ||
       !('serviceWorker' in navigator) ||
       Notification.permission === 'denied' ||
@@ -41,6 +36,7 @@ export default function NotificationBanner() {
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       })
       await saveSubscription(sub)
+      window.dispatchEvent(new Event('push-subscription-changed'))
       setVisible(false)
     } catch {
       // Permission denied or failed — banner stays visible

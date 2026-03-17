@@ -8,6 +8,7 @@ import {
   Bars3Icon,
   XMarkIcon,
   ArrowRightStartOnRectangleIcon,
+  ArrowTopRightOnSquareIcon,
   HomeIcon,
   UsersIcon,
   UserGroupIcon,
@@ -76,16 +77,29 @@ export default function PortalSidebar({
     <div className="border-t border-gray-700 px-4 py-4">
       <p className="truncate text-sm font-medium text-white">{userName}</p>
       {roleLabel && <p className="mt-0.5 text-xs text-gray-400">{roleLabel}</p>}
-      {notificationSlot}
-      <form className="mt-3" action={signOutAction}>
-        <button
-          type="submit"
+      {notificationSlot && (
+        <div className="mt-3 rounded-lg bg-gray-800 px-3 py-2">
+          {notificationSlot}
+        </div>
+      )}
+      <div className="mt-3 flex items-center gap-4">
+        <Link
+          href="/"
           className="flex items-center gap-2 text-xs text-gray-400 transition hover:text-white"
         >
-          <ArrowRightStartOnRectangleIcon className="h-4 w-4" />
-          Sign out
-        </button>
-      </form>
+          <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+          Main site
+        </Link>
+        <form action={signOutAction}>
+          <button
+            type="submit"
+            className="flex items-center gap-2 text-xs text-gray-400 transition hover:text-white"
+          >
+            <ArrowRightStartOnRectangleIcon className="h-4 w-4" />
+            Sign out
+          </button>
+        </form>
+      </div>
     </div>
   )
 
