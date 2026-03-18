@@ -19,6 +19,7 @@ vi.mock('@/db', () => ({
   getAllStaff: vi.fn(),
   getAttendanceSummaryByDate: vi.fn(),
   getAttendancePresentAllergyCount: vi.fn(),
+  getStaffSignedInCount: vi.fn(),
 }))
 
 import { auth } from '@/auth'
@@ -30,6 +31,7 @@ import {
   getAllStaff,
   getAttendanceSummaryByDate,
   getAttendancePresentAllergyCount,
+  getStaffSignedInCount,
 } from '@/db'
 
 import ReportsPage from './page'
@@ -44,6 +46,7 @@ beforeEach(() => {
   vi.mocked(getAllStaff).mockResolvedValue([])
   vi.mocked(getAttendanceSummaryByDate).mockResolvedValue({})
   vi.mocked(getAttendancePresentAllergyCount).mockResolvedValue(0)
+  vi.mocked(getStaffSignedInCount).mockResolvedValue(0)
 })
 
 describe('ReportsPage', () => {

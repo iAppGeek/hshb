@@ -218,6 +218,31 @@ CREATE INDEX ON incidents (type);
 CREATE INDEX ON incidents (incident_date DESC);
 
 
+-- ─── Staff Attendance ─────────────────────────────────────────────────────────
+-- One record per staff member per date. signed_in_at is user-provided (not auto
+-- NOW()) so admins can backfill accurate arrival times for past dates.
+-- signed_out_at is nullable: NULL means currently signed in.
+
+CREATE TABLE staff_attendance (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  staff_id        UUID NOT NULL REFERENCES staff(id) ON DELETE CASCADE,
+  date            DATE NOT NULL DEFAULT CURRENT_DATE,
+  signed_in_at    TIMESTAMPTZ NOT NULL,
+  signed_out_at   TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (staff_id, date)
+);
+
+CREATE TRIGGER staff_attendance_updated_at
+  BEFORE UPDATE ON staff_attendance
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+ALTER TABLE staff_attendance ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX ON staff_attendance (staff_id);
+CREATE INDEX ON staff_attendance (date);
+
 -- ─── Functions ────────────────────────────────────────────────────────────────
 
 -- Aggregates attendance records for a given date by class.

@@ -296,6 +296,44 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_attendance: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          signed_in_at: string
+          signed_out_at: string | null
+          staff_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          signed_in_at: string
+          signed_out_at?: string | null
+          staff_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          signed_in_at?: string
+          signed_out_at?: string | null
+          staff_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'staff_attendance_staff_id_fkey'
+            columns: ['staff_id']
+            isOneToOne: false
+            referencedRelation: 'staff'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       student_classes: {
         Row: {
           class_id: string

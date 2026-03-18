@@ -72,3 +72,11 @@ export {
   saveAttendance,
 } from './attendance'
 export type { AttendanceStatus, AttendanceInsert } from './attendance'
+export {
+  getStaffAttendanceForToday,
+  getStaffAttendanceByDate,
+  signInStaff,
+  signOutStaff,
+  getStaffSignedInCount,
+} from './staff-attendance'
+export type { StaffAttendanceRow } from './staff-attendance'

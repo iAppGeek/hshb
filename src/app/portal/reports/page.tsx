@@ -10,6 +10,7 @@ import {
   getAllStaff,
   getAttendanceSummaryByDate,
   getAttendancePresentAllergyCount,
+  getStaffSignedInCount,
 } from '@/db'
 
 export const metadata: Metadata = { title: 'Reports' }
@@ -31,6 +32,7 @@ export default async function ReportsPage() {
     staff,
     attendanceSummary,
     allergyPresentCount,
+    staffSignedInCount,
   ] = await Promise.all([
     getStudentCount(),
     getStudentsWithAllergiesCount(),
@@ -39,9 +41,13 @@ export default async function ReportsPage() {
     getAllStaff(),
     getAttendanceSummaryByDate(today),
     getAttendancePresentAllergyCount(today),
+    getStaffSignedInCount(today),
   ])
 
   const teachers = staff.filter((s) => s.role === 'teacher')
+  const teachingStaff = staff.filter(
+    (s) => s.role === 'teacher' || s.role === 'headteacher',
+  )
 
   const presentToday = Object.values(attendanceSummary).reduce(
     (sum, s) => sum + s.presentCount,
@@ -72,6 +78,11 @@ export default async function ReportsPage() {
   const stats = [
     { label: 'Teaching staff', value: teachers.length, sub: null },
     {
+      label: 'Staff signed in',
+      value: `${staffSignedInCount}/${teachingStaff.length}`,
+      sub: pct(staffSignedInCount, teachingStaff.length),
+    },
+    {
       label: "Today's attendance",
       value: `${presentToday}/${activeStudentCount}`,
       sub: pct(presentToday, activeStudentCount),
@@ -90,7 +101,7 @@ export default async function ReportsPage() {
       </h1>
 
       {/* Summary stats */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map(({ label, value, sub }) => (
           <div
             key={label}

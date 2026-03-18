@@ -9,6 +9,7 @@ import {
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
   ExclamationTriangleIcon,
+  ClockIcon,
 } from '@heroicons/react/24/outline'
 
 import { auth, signOut } from '@/auth'
@@ -45,6 +46,11 @@ const navItems = [
     href: '/portal/attendance',
     label: 'Attendance',
     Icon: ClipboardDocumentCheckIcon,
+  },
+  {
+    href: '/portal/staff-attendance',
+    label: 'Staff Sign-In',
+    Icon: ClockIcon,
   },
   {
     href: '/portal/incidents',
@@ -146,7 +152,7 @@ export default function PortalLayout({
 }) {
   return (
     <>
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex min-h-screen bg-gray-100 print:min-h-0">
         <PwaRegistrar />
         <Suspense fallback={<SidebarLoadingSkeleton />}>
           <AuthedSidebar />
