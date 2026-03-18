@@ -1,3 +1,5 @@
+import { revalidateTag } from 'next/cache'
+
 import { supabase } from './client'
 
 type GuardianInsert = {
@@ -79,4 +81,5 @@ export async function updateGuardian(id: string, data: GuardianInsert) {
     .update({ ...data, updated_at: new Date().toISOString() })
     .eq('id', id)
   if (error) throw error
+  revalidateTag('students', 'max')
 }

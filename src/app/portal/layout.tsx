@@ -15,7 +15,7 @@ import { auth, signOut } from '@/auth'
 import logo from '@/images/logo.png'
 import type { StaffRole } from '@/types/next-auth'
 
-import IosSplashLinks from './IosSplashLinks'
+import { revalidateAllCaches } from './actions'
 import NotificationBanner from './NotificationBanner'
 import NotificationToggle from './NotificationToggle'
 import PortalSidebar from './PortalSidebar'
@@ -29,10 +29,90 @@ export const metadata: Metadata = {
   title: { template: '%s | Staff Portal', default: 'Staff Portal' },
   robots: { index: false, follow: false },
   manifest: '/manifest.portal.json',
-  other: {
-    'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'apple-mobile-web-app-title': 'HSHB Portal',
+  appleWebApp: {
+    capable: true,
+    title: 'HSHB Portal',
+    statusBarStyle: 'default',
+    startupImage: [
+      // iPhone SE / 6 / 7 / 8 portrait
+      {
+        url: '/icons/splash/apple-splash-750-1334.png',
+        media:
+          '(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+      },
+      // iPhone XR / 11 portrait
+      {
+        url: '/icons/splash/apple-splash-828-1792.png',
+        media:
+          '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+      },
+      // iPhone X / XS / 11 Pro / 12 mini / 13 mini portrait
+      {
+        url: '/icons/splash/apple-splash-1125-2436.png',
+        media:
+          '(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPhone XS Max / 11 Pro Max portrait
+      {
+        url: '/icons/splash/apple-splash-1242-2688.png',
+        media:
+          '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPhone 12 / 12 Pro / 13 / 13 Pro / 14 portrait
+      {
+        url: '/icons/splash/apple-splash-1170-2532.png',
+        media:
+          '(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPhone 12 Pro Max / 13 Pro Max / 14 Plus portrait
+      {
+        url: '/icons/splash/apple-splash-1284-2778.png',
+        media:
+          '(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPhone 14 Pro / 15 Pro portrait
+      {
+        url: '/icons/splash/apple-splash-1179-2556.png',
+        media:
+          '(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPhone 16 Pro Max / 17 Pro Max portrait
+      {
+        url: '/icons/splash/apple-splash-1320-2868.png',
+        media:
+          '(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPhone 16 Pro / 17 / 17 Pro / 17 Air portrait
+      {
+        url: '/icons/splash/apple-splash-1206-2622.png',
+        media:
+          '(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPhone 14 Pro Max / 15 Pro Max / 16 Plus portrait
+      {
+        url: '/icons/splash/apple-splash-1290-2796.png',
+        media:
+          '(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      // iPad mini / iPad portrait
+      {
+        url: '/icons/splash/apple-splash-1536-2048.png',
+        media:
+          '(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+      },
+      // iPad Pro 11" / iPad Air portrait
+      {
+        url: '/icons/splash/apple-splash-1668-2388.png',
+        media:
+          '(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+      },
+      // iPad Pro 12.9" portrait
+      {
+        url: '/icons/splash/apple-splash-2048-2732.png',
+        media:
+          '(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+      },
+    ],
   },
   icons: { apple: '/icons/portal-icon-192.png' },
 }
@@ -83,8 +163,10 @@ async function AuthedSidebar() {
     <PortalSidebar
       navItems={visibleNav}
       userName={session?.user?.name}
+      userEmail={session?.user?.email}
       roleLabel={role ? roleLabels[role] : null}
       signOutAction={signOutAction}
+      refreshAction={revalidateAllCaches}
       notificationSlot={isAdminOrHead ? <NotificationToggle /> : null}
     />
   )
@@ -144,7 +226,6 @@ export default function PortalLayout({
 }) {
   return (
     <>
-      <IosSplashLinks />
       <div className="flex min-h-screen bg-gray-100">
         <PwaRegistrar />
         <Suspense fallback={<SidebarLoadingSkeleton />}>

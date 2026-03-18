@@ -7,12 +7,17 @@ vi.mock('@/auth', () => ({
 vi.mock('@/db', () => ({
   savePushSubscription: vi.fn(),
   deletePushSubscription: vi.fn(),
+  pushSubscriptionExists: vi.fn(),
 }))
 
 import { auth } from '@/auth'
-import { savePushSubscription, deletePushSubscription } from '@/db'
+import {
+  savePushSubscription,
+  deletePushSubscription,
+  pushSubscriptionExists,
+} from '@/db'
 
-import { POST, DELETE } from './route'
+import { GET, POST, DELETE } from './route'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -26,10 +31,56 @@ function makeRequest(body: unknown, method = 'POST'): Request {
   })
 }
 
+function makeGetRequest(endpoint?: string): Request {
+  const url = endpoint
+    ? `https://example.com/api/push/subscribe?endpoint=${encodeURIComponent(endpoint)}`
+    : 'https://example.com/api/push/subscribe'
+  return new Request(url, { method: 'GET' })
+}
+
 const validBody = {
   endpoint: 'https://fcm.googleapis.com/fcm/send/abc',
   keys: { p256dh: 'p256dh-key', auth: 'auth-key' },
 }
+
+describe('GET /api/push/subscribe', () => {
+  it('returns exists: true when the subscription is in the database', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(pushSubscriptionExists).mockResolvedValue(true)
+
+    const res = await GET(makeGetRequest(validBody.endpoint))
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body).toEqual({ exists: true })
+    expect(pushSubscriptionExists).toHaveBeenCalledWith(validBody.endpoint)
+  })
+
+  it('returns exists: false when the subscription is not in the database', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(pushSubscriptionExists).mockResolvedValue(false)
+
+    const res = await GET(makeGetRequest(validBody.endpoint))
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body).toEqual({ exists: false })
+  })
+
+  it('returns 401 when there is no session', async () => {
+    vi.mocked(auth).mockResolvedValue(null as any)
+
+    const res = await GET(makeGetRequest(validBody.endpoint))
+    expect(res.status).toBe(401)
+    expect(pushSubscriptionExists).not.toHaveBeenCalled()
+  })
+
+  it('returns 400 when endpoint query param is missing', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+
+    const res = await GET(makeGetRequest())
+    expect(res.status).toBe(400)
+    expect(pushSubscriptionExists).not.toHaveBeenCalled()
+  })
+})
 
 describe('POST /api/push/subscribe', () => {
   it('saves subscription and returns 201 for authenticated user with valid body', async () => {

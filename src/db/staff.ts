@@ -1,8 +1,13 @@
+import { unstable_cache, revalidateTag } from 'next/cache'
+
 import { supabase } from './client'
 
 const STAFF_SELECT =
   'id, email, first_name, last_name, display_name, role, contact_number, created_at'
 
+const OPTS = { revalidate: 60, tags: ['staff'] }
+
+// Not cached — used during auth, must always be fresh
 export async function getStaffByEmail(email: string) {
   const { data } = await supabase
     .from('staff')
@@ -12,30 +17,55 @@ export async function getStaffByEmail(email: string) {
   return data
 }
 
-export async function getStaffById(id: string) {
-  const { data } = await supabase
-    .from('staff')
-    .select(STAFF_SELECT)
-    .eq('id', id)
-    .single()
-  return data
-}
+export const getStaffById = unstable_cache(
+  async (id: string) => {
+    const { data } = await supabase
+      .from('staff')
+      .select(STAFF_SELECT)
+      .eq('id', id)
+      .single()
+    return data
+  },
+  ['staff-by-id'],
+  OPTS,
+)
 
-export async function getAllStaff() {
-  const { data } = await supabase
-    .from('staff')
-    .select(STAFF_SELECT)
-    .order('last_name')
-  return data ?? []
-}
+export const getAllStaff = unstable_cache(
+  async () => {
+    const { data } = await supabase
+      .from('staff')
+      .select(STAFF_SELECT)
+      .order('last_name')
+    return data ?? []
+  },
+  ['all-staff'],
+  OPTS,
+)
 
-export async function getAllStaffWithClasses() {
-  const { data } = await supabase
-    .from('staff')
-    .select('*, classes(id, name, room_number, year_group)')
-    .order('last_name')
-  return data ?? []
-}
+export const getAllStaffWithClasses = unstable_cache(
+  async () => {
+    const { data } = await supabase
+      .from('staff')
+      .select('*, classes(id, name, room_number, year_group)')
+      .order('last_name')
+    return data ?? []
+  },
+  ['all-staff-with-classes'],
+  { revalidate: 60, tags: ['staff', 'classes'] },
+)
+
+export const getTeachers = unstable_cache(
+  async () => {
+    const { data } = await supabase
+      .from('staff')
+      .select('id, first_name, last_name, display_name')
+      .in('role', ['teacher', 'headteacher'])
+      .order('last_name')
+    return data ?? []
+  },
+  ['teachers'],
+  OPTS,
+)
 
 export async function createStaff(input: {
   first_name: string
@@ -51,16 +81,8 @@ export async function createStaff(input: {
     .select()
     .single()
   if (error) throw error
+  revalidateTag('staff', 'max')
   return data
-}
-
-export async function getTeachers() {
-  const { data } = await supabase
-    .from('staff')
-    .select('id, first_name, last_name, display_name')
-    .in('role', ['teacher', 'headteacher'])
-    .order('last_name')
-  return data ?? []
 }
 
 export async function updateStaff(
@@ -76,4 +98,6 @@ export async function updateStaff(
 ) {
   const { error } = await supabase.from('staff').update(input).eq('id', id)
   if (error) throw error
+  revalidateTag('staff', 'max')
+  revalidateTag('classes', 'max') // staff name shown on class pages
 }

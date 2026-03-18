@@ -1,3 +1,5 @@
+import { unstable_cache, revalidateTag } from 'next/cache'
+
 import { supabase } from './client'
 
 const STUDENT_LIST_SELECT = 'id, first_name, last_name, student_code'
@@ -40,15 +42,22 @@ const STUDENT_SELECT_WITH_TEACHER = `
   )
 `
 
-export async function getStudentsForList() {
-  const { data } = await supabase
-    .from('students')
-    .select(STUDENT_LIST_SELECT)
-    .eq('active', true)
-    .order('last_name')
-  return data ?? []
-}
+const OPTS = { revalidate: 60, tags: ['students'] }
 
+export const getStudentsForList = unstable_cache(
+  async () => {
+    const { data } = await supabase
+      .from('students')
+      .select(STUDENT_LIST_SELECT)
+      .eq('active', true)
+      .order('last_name')
+    return data ?? []
+  },
+  ['students-for-list'],
+  OPTS,
+)
+
+// Not cached — dynamic search input
 export async function searchStudents(query: string) {
   const trimmed = query.trim()
   if (!trimmed) return []
@@ -62,101 +71,136 @@ export async function searchStudents(query: string) {
   return data ?? []
 }
 
-export async function getStudentsByTeacher(teacherId: string) {
-  const { data: classes } = await supabase
-    .from('classes')
-    .select('id')
-    .eq('teacher_id', teacherId)
-    .eq('active', true)
+export const getStudentsByTeacher = unstable_cache(
+  async (teacherId: string) => {
+    const { data: classes } = await supabase
+      .from('classes')
+      .select('id')
+      .eq('teacher_id', teacherId)
+      .eq('active', true)
 
-  if (!classes?.length) return []
+    if (!classes?.length) return []
 
-  const classIds = classes.map((c) => c.id)
+    const classIds = classes.map((c) => c.id)
 
-  const { data: enrollments } = await supabase
-    .from('student_classes')
-    .select('student_id')
-    .in('class_id', classIds)
+    const { data: enrollments } = await supabase
+      .from('student_classes')
+      .select('student_id')
+      .in('class_id', classIds)
 
-  if (!enrollments?.length) return []
+    if (!enrollments?.length) return []
 
-  const studentIds = [...new Set(enrollments.map((e) => e.student_id))]
+    const studentIds = [...new Set(enrollments.map((e) => e.student_id))]
 
-  const { data } = await supabase
-    .from('students')
-    .select(STUDENT_SELECT)
-    .in('id', studentIds)
-    .eq('active', true)
-    .order('last_name')
-  return data ?? []
-}
+    const { data } = await supabase
+      .from('students')
+      .select(STUDENT_SELECT)
+      .in('id', studentIds)
+      .eq('active', true)
+      .order('last_name')
+    return data ?? []
+  },
+  ['students-by-teacher'],
+  { revalidate: 60, tags: ['students', 'classes'] },
+)
 
-export async function getStudentIdsByTeacher(
-  teacherId: string,
-): Promise<string[]> {
-  const { data: classes } = await supabase
-    .from('classes')
-    .select('id')
-    .eq('teacher_id', teacherId)
-    .eq('active', true)
+export const getStudentIdsByTeacher = unstable_cache(
+  async (teacherId: string): Promise<string[]> => {
+    const { data: classes } = await supabase
+      .from('classes')
+      .select('id')
+      .eq('teacher_id', teacherId)
+      .eq('active', true)
 
-  if (!classes?.length) return []
+    if (!classes?.length) return []
 
-  const classIds = classes.map((c) => c.id)
+    const classIds = classes.map((c) => c.id)
 
-  const { data: enrollments } = await supabase
-    .from('student_classes')
-    .select('student_id')
-    .in('class_id', classIds)
+    const { data: enrollments } = await supabase
+      .from('student_classes')
+      .select('student_id')
+      .in('class_id', classIds)
 
-  return [...new Set(enrollments?.map((e) => e.student_id) ?? [])]
-}
+    return [...new Set(enrollments?.map((e) => e.student_id) ?? [])]
+  },
+  ['student-ids-by-teacher'],
+  { revalidate: 60, tags: ['students', 'classes'] },
+)
 
-export async function getStudentCount(): Promise<number> {
-  const { count } = await supabase
-    .from('students')
-    .select('*', { count: 'exact', head: true })
-    .eq('active', true)
-  return count ?? 0
-}
+export const getStudentCount = unstable_cache(
+  async (): Promise<number> => {
+    const { count } = await supabase
+      .from('students')
+      .select('*', { count: 'exact', head: true })
+      .eq('active', true)
+    return count ?? 0
+  },
+  ['student-count'],
+  OPTS,
+)
 
-export async function getStudentsWithAllergiesCount(): Promise<number> {
-  const { count } = await supabase
-    .from('students')
-    .select('*', { count: 'exact', head: true })
-    .eq('active', true)
-    .not('allergies', 'is', null)
-    .neq('allergies', '')
-  return count ?? 0
-}
+export const getStudentsWithAllergiesCount = unstable_cache(
+  async (): Promise<number> => {
+    const { count } = await supabase
+      .from('students')
+      .select('*', { count: 'exact', head: true })
+      .eq('active', true)
+      .not('allergies', 'is', null)
+      .neq('allergies', '')
+    return count ?? 0
+  },
+  ['students-allergies-count'],
+  OPTS,
+)
 
-export async function getAllStudents() {
-  const { data } = await supabase
-    .from('students')
-    .select(STUDENT_SELECT)
-    .eq('active', true)
-    .order('last_name')
-  return data ?? []
-}
+export const getAllStudents = unstable_cache(
+  async () => {
+    const { data } = await supabase
+      .from('students')
+      .select(STUDENT_SELECT)
+      .eq('active', true)
+      .order('last_name')
+    return data ?? []
+  },
+  ['all-students'],
+  OPTS,
+)
 
-export async function getStudentsByClass(classId: string) {
-  const { data: enrollments } = await supabase
-    .from('student_classes')
-    .select('student_id')
-    .eq('class_id', classId)
+export const getStudentsByClass = unstable_cache(
+  async (classId: string) => {
+    const { data: enrollments } = await supabase
+      .from('student_classes')
+      .select('student_id')
+      .eq('class_id', classId)
 
-  if (!enrollments?.length) return []
+    if (!enrollments?.length) return []
 
-  const studentIds = enrollments.map((e) => e.student_id)
+    const studentIds = enrollments.map((e) => e.student_id)
 
-  const { data } = await supabase
-    .from('students')
-    .select(STUDENT_SELECT)
-    .in('id', studentIds)
-    .eq('active', true)
-    .order('last_name')
-  return data ?? []
-}
+    const { data } = await supabase
+      .from('students')
+      .select(STUDENT_SELECT)
+      .in('id', studentIds)
+      .eq('active', true)
+      .order('last_name')
+    return data ?? []
+  },
+  ['students-by-class'],
+  { revalidate: 60, tags: ['students', 'classes'] },
+)
+
+export const getStudentById = unstable_cache(
+  async (id: string) => {
+    const { data } = await supabase
+      .from('students')
+      .select(STUDENT_SELECT_WITH_TEACHER)
+      .eq('id', id)
+      .single()
+    return data
+  },
+  ['student-by-id'],
+  OPTS,
+)
 
 type StudentInsert = {
   first_name: string
@@ -187,6 +231,7 @@ export async function createStudent(data: StudentInsert) {
     .select('id')
     .single()
   if (error) throw error
+  revalidateTag('students', 'max')
   return student
 }
 
@@ -201,15 +246,8 @@ export async function enrollStudentInClasses(
       classIds.map((classId) => ({ student_id: studentId, class_id: classId })),
     )
   if (error) throw error
-}
-
-export async function getStudentById(id: string) {
-  const { data } = await supabase
-    .from('students')
-    .select(STUDENT_SELECT_WITH_TEACHER)
-    .eq('id', id)
-    .single()
-  return data
+  revalidateTag('students', 'max')
+  revalidateTag('classes', 'max')
 }
 
 type StudentUpdate = Partial<StudentInsert>
@@ -217,6 +255,7 @@ type StudentUpdate = Partial<StudentInsert>
 export async function updateStudent(id: string, data: StudentUpdate) {
   const { error } = await supabase.from('students').update(data).eq('id', id)
   if (error) throw error
+  revalidateTag('students', 'max')
 }
 
 export async function updateStudentClasses(
@@ -230,5 +269,8 @@ export async function updateStudentClasses(
   if (deleteError) throw deleteError
   if (classIds.length > 0) {
     await enrollStudentInClasses(studentId, classIds)
+  } else {
+    revalidateTag('students', 'max')
+    revalidateTag('classes', 'max')
   }
 }

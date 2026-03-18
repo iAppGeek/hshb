@@ -9,6 +9,7 @@ vi.mock('./client', () => ({
 import {
   getAttendanceByClassAndDate,
   getAttendanceLastUpdatedPerClass,
+  getAttendancePresentAllergyCount,
   saveAttendance,
 } from './attendance'
 
@@ -129,6 +130,42 @@ describe('getAttendanceLastUpdatedPerClass', () => {
 
     const result = await getAttendanceLastUpdatedPerClass('2024-03-08')
     expect(result).toEqual({})
+  })
+})
+
+describe('getAttendancePresentAllergyCount', () => {
+  it('returns count of present/late students with allergies', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          in: vi.fn().mockResolvedValue({
+            data: [
+              { student_id: 'student-1', students: { allergies: 'nuts' } },
+              { student_id: 'student-2', students: { allergies: '' } },
+              { student_id: 'student-3', students: { allergies: null } },
+              { student_id: 'student-4', students: { allergies: 'dairy' } },
+            ],
+          }),
+        }),
+      }),
+    })
+
+    const result = await getAttendancePresentAllergyCount('2024-03-08')
+    expect(result).toBe(2)
+    expect(mockFrom).toHaveBeenCalledWith('attendance')
+  })
+
+  it('returns 0 when no data returned', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          in: vi.fn().mockResolvedValue({ data: null }),
+        }),
+      }),
+    })
+
+    const result = await getAttendancePresentAllergyCount('2024-03-08')
+    expect(result).toBe(0)
   })
 })
 

@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-
-const mockFrom = vi.hoisted(() => vi.fn())
-
-vi.mock('./client', () => ({
-  supabase: { from: mockFrom },
-}))
+import { revalidateTag } from 'next/cache'
 
 import {
   getStaffByEmail,
@@ -19,6 +14,16 @@ import {
 beforeEach(() => {
   vi.clearAllMocks()
 })
+const mockFrom = vi.hoisted(() => vi.fn())
+
+vi.mock('next/cache', () => ({
+  unstable_cache: (fn: (...args: unknown[]) => unknown) => fn,
+  revalidateTag: vi.fn(),
+}))
+
+vi.mock('./client', () => ({
+  supabase: { from: mockFrom },
+}))
 
 describe('getStaffByEmail', () => {
   it('returns staff when email matches', async () => {
@@ -211,6 +216,7 @@ describe('createStaff', () => {
     const result = await createStaff(input)
     expect(result).toEqual(created)
     expect(mockFrom).toHaveBeenCalledWith('staff')
+    expect(revalidateTag).toHaveBeenCalledWith('staff', 'max')
   })
 
   it('throws when supabase returns an error', async () => {
@@ -232,6 +238,7 @@ describe('createStaff', () => {
         role: 'teacher',
       }),
     ).rejects.toThrow('DB error')
+    expect(revalidateTag).not.toHaveBeenCalled()
   })
 })
 
@@ -251,6 +258,8 @@ describe('updateStaff', () => {
 
     expect(mockFrom).toHaveBeenCalledWith('staff')
     expect(mockEq).toHaveBeenCalledWith('id', 'staff-1')
+    expect(revalidateTag).toHaveBeenCalledWith('staff', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('classes', 'max')
   })
 
   it('throws when supabase returns an error', async () => {
@@ -268,6 +277,7 @@ describe('updateStaff', () => {
         role: 'teacher',
       }),
     ).rejects.toThrow('DB error')
+    expect(revalidateTag).not.toHaveBeenCalled()
   })
 })
 

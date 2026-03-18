@@ -7,6 +7,7 @@ import {
   urlBase64ToUint8Array,
   saveSubscription,
   removeSubscription,
+  checkSubscriptionInDb,
 } from '@/lib/push-client'
 
 type Status =
@@ -35,7 +36,12 @@ export default function NotificationToggle() {
 
       const reg = await navigator.serviceWorker.ready
       const sub = await reg.pushManager.getSubscription()
-      setStatus(sub ? 'subscribed' : 'unsubscribed')
+      if (!sub) {
+        setStatus('unsubscribed')
+        return
+      }
+      const inDb = await checkSubscriptionInDb(sub.endpoint)
+      setStatus(inDb ? 'subscribed' : 'unsubscribed')
     }
 
     void checkStatus()
@@ -85,6 +91,11 @@ export default function NotificationToggle() {
   return (
     <button
       onClick={subscribed ? unsubscribe : subscribe}
+      title={
+        subscribed
+          ? 'Notifications on — click to stop receiving push notifications on this device'
+          : 'Notifications off — click to receive push notifications on this device'
+      }
       className={`flex w-full items-center justify-between gap-2 text-xs font-medium transition ${
         subscribed
           ? 'text-green-400 hover:text-green-300'

@@ -30,6 +30,18 @@ export async function deletePushSubscription(endpoint: string): Promise<void> {
   if (error) throw error
 }
 
+export async function pushSubscriptionExists(
+  endpoint: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('push_subscriptions')
+    .select('id')
+    .eq('endpoint', endpoint)
+    .maybeSingle()
+  if (error) throw error
+  return data !== null
+}
+
 export async function getAdminSubscriptions(): Promise<PushSubscriptionRow[]> {
   const { data, error } = await supabase
     .from('push_subscriptions')

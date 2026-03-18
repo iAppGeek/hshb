@@ -7,7 +7,11 @@ const splashScreens = [
   { w: 834, h: 1194, dpr: 2, portrait: '1668-2388', landscape: '2388-1668' },
   // iPad
   { w: 768, h: 1024, dpr: 2, portrait: '1536-2048', landscape: '2048-1536' },
-  // iPhone 14 Pro Max / 15 Pro Max / 15 Plus
+  // iPhone 16 Pro Max / 17 Pro Max
+  { w: 440, h: 956, dpr: 3, portrait: '1320-2868', landscape: '2868-1320' },
+  // iPhone 16 Pro / 17 / 17 Pro / 17 Air
+  { w: 402, h: 874, dpr: 3, portrait: '1206-2622', landscape: '2622-1206' },
+  // iPhone 14 Pro Max / 15 Pro Max / 16 Plus
   { w: 430, h: 932, dpr: 3, portrait: '1290-2796', landscape: '2796-1290' },
   // iPhone 14 Pro / 15 Pro
   { w: 393, h: 852, dpr: 3, portrait: '1179-2556', landscape: '2556-1179' },

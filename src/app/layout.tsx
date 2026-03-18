@@ -4,6 +4,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import clsx from 'clsx'
 
 import '../styles/tailwind.css'
+import IosSplashLinks from './portal/IosSplashLinks'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -69,6 +70,7 @@ export default function RootLayout({
       )}
     >
       <head>
+        <IosSplashLinks />
         <link
           rel="preconnect"
           href="https://cdn.fontshare.com"

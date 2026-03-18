@@ -18,6 +18,17 @@ export async function saveSubscription(sub: PushSubscription): Promise<void> {
   if (!res.ok) throw new Error('Failed to save push subscription')
 }
 
+export async function checkSubscriptionInDb(
+  endpoint: string,
+): Promise<boolean> {
+  const res = await fetch(
+    `/api/push/subscribe?endpoint=${encodeURIComponent(endpoint)}`,
+  )
+  if (!res.ok) return false
+  const json = await res.json()
+  return json.exists === true
+}
+
 export async function removeSubscription(endpoint: string): Promise<void> {
   const res = await fetch('/api/push/subscribe', {
     method: 'DELETE',

@@ -90,6 +90,25 @@ export async function getAttendanceLastUpdatedPerClass(
   return result
 }
 
+export async function getAttendancePresentAllergyCount(
+  date: string,
+): Promise<number> {
+  const { data } = await supabase
+    .from('attendance')
+    .select('student_id, students!inner(allergies)')
+    .eq('date', date)
+    .in('status', ['present', 'late'])
+  if (!data) return 0
+  return (
+    data as Array<{
+      student_id: string
+      students: { allergies: string | null }
+    }>
+  ).filter(
+    (row) => row.students.allergies && row.students.allergies.trim() !== '',
+  ).length
+}
+
 export async function saveAttendance(records: AttendanceInsert[]) {
   const { data, error } = await supabase
     .from('attendance')

@@ -18,6 +18,7 @@ vi.mock('@/db', () => ({
   getAllClasses: vi.fn(),
   getAllStaff: vi.fn(),
   getAttendanceSummaryByDate: vi.fn(),
+  getAttendancePresentAllergyCount: vi.fn(),
 }))
 
 import { auth } from '@/auth'
@@ -28,6 +29,7 @@ import {
   getAllClasses,
   getAllStaff,
   getAttendanceSummaryByDate,
+  getAttendancePresentAllergyCount,
 } from '@/db'
 
 import ReportsPage from './page'
@@ -41,6 +43,7 @@ beforeEach(() => {
   vi.mocked(getAllClasses).mockResolvedValue([])
   vi.mocked(getAllStaff).mockResolvedValue([])
   vi.mocked(getAttendanceSummaryByDate).mockResolvedValue({})
+  vi.mocked(getAttendancePresentAllergyCount).mockResolvedValue(0)
 })
 
 describe('ReportsPage', () => {
@@ -65,18 +68,28 @@ describe('ReportsPage', () => {
     expect(screen.getByText('Reports & Analytics')).toBeTruthy()
   })
 
-  it('displays correct total active student count', async () => {
-    vi.mocked(getStudentCount).mockResolvedValue(5)
+  it("displays today's attendance as fraction and percentage", async () => {
+    vi.mocked(getStudentCount).mockResolvedValue(10)
+    vi.mocked(getAttendanceSummaryByDate).mockResolvedValue({
+      'class-1': {
+        presentCount: 8,
+        createdAt: '2024-03-08T09:00:00Z',
+        updatedAt: '2024-03-08T09:00:00Z',
+      },
+    })
 
     render(await ReportsPage())
-    expect(screen.getByText('5')).toBeTruthy()
+    expect(screen.getByText('8/10')).toBeTruthy()
+    expect(screen.getByText('80%')).toBeTruthy()
   })
 
-  it('counts students with allergies correctly', async () => {
-    vi.mocked(getStudentsWithAllergiesCount).mockResolvedValue(1)
+  it('displays allergy students present stat', async () => {
+    vi.mocked(getStudentsWithAllergiesCount).mockResolvedValue(4)
+    vi.mocked(getAttendancePresentAllergyCount).mockResolvedValue(3)
 
     render(await ReportsPage())
-    expect(screen.getByText('Students with allergies')).toBeTruthy()
+    expect(screen.getByText('Allergy students present')).toBeTruthy()
+    expect(screen.getByText('3/4')).toBeTruthy()
   })
 
   it('renders enrolment by class table', async () => {

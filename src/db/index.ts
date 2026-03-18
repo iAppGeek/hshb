@@ -57,6 +57,7 @@ export type { IncidentType, IncidentRow } from './incidents'
 export {
   savePushSubscription,
   deletePushSubscription,
+  pushSubscriptionExists,
   getAdminSubscriptions,
 } from './push-subscriptions'
 export type {
@@ -67,6 +68,7 @@ export {
   getAttendanceByClassAndDate,
   getAttendanceSummaryByDate,
   getAttendanceLastUpdatedPerClass,
+  getAttendancePresentAllergyCount,
   saveAttendance,
 } from './attendance'
 export type { AttendanceStatus, AttendanceInsert } from './attendance'

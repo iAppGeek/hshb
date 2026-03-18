@@ -9,6 +9,7 @@ import {
   getAllClasses,
   getAllStaff,
   getAttendanceSummaryByDate,
+  getAttendancePresentAllergyCount,
 } from '@/db'
 
 export const metadata: Metadata = { title: 'Reports' }
@@ -29,6 +30,7 @@ export default async function ReportsPage() {
     classes,
     staff,
     attendanceSummary,
+    allergyPresentCount,
   ] = await Promise.all([
     getStudentCount(),
     getStudentsWithAllergiesCount(),
@@ -36,9 +38,15 @@ export default async function ReportsPage() {
     getAllClasses(),
     getAllStaff(),
     getAttendanceSummaryByDate(today),
+    getAttendancePresentAllergyCount(today),
   ])
 
   const teachers = staff.filter((s) => s.role === 'teacher')
+
+  const presentToday = Object.values(attendanceSummary).reduce(
+    (sum, s) => sum + s.presentCount,
+    0,
+  )
 
   const fmt = (ts: string) =>
     new Date(ts).toLocaleTimeString('en-GB', {
@@ -58,11 +66,21 @@ export default async function ReportsPage() {
     }
   })
 
+  const pct = (n: number, total: number) =>
+    total > 0 ? `${Math.round((n / total) * 100)}%` : '—'
+
   const stats = [
-    { label: 'Total active students', value: activeStudentCount },
-    { label: 'Total classes', value: classes.length },
-    { label: 'Teaching staff', value: teachers.length },
-    { label: 'Students with allergies', value: allergiesCount },
+    { label: 'Teaching staff', value: teachers.length, sub: null },
+    {
+      label: "Today's attendance",
+      value: `${presentToday}/${activeStudentCount}`,
+      sub: pct(presentToday, activeStudentCount),
+    },
+    {
+      label: 'Allergy students present',
+      value: `${allergyPresentCount}/${allergiesCount}`,
+      sub: pct(allergyPresentCount, allergiesCount),
+    },
   ]
 
   return (
@@ -72,14 +90,19 @@ export default async function ReportsPage() {
       </h1>
 
       {/* Summary stats */}
-      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {stats.map(({ label, value }) => (
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {stats.map(({ label, value, sub }) => (
           <div
             key={label}
             className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200 sm:p-6"
           >
             <p className="text-sm text-gray-500">{label}</p>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{value}</p>
+            <p className="mt-1 flex items-center gap-2">
+              <span className="text-3xl font-bold text-gray-900">{value}</span>
+              {sub && (
+                <span className="text-sm font-medium text-gray-500">{sub}</span>
+              )}
+            </p>
           </div>
         ))}
       </div>

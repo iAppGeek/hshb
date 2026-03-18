@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-
-const mockFrom = vi.hoisted(() => vi.fn())
-
-vi.mock('./client', () => ({
-  supabase: { from: mockFrom },
-}))
+import { revalidateTag } from 'next/cache'
 
 import {
   getAllGuardians,
@@ -17,6 +12,16 @@ import {
 beforeEach(() => {
   vi.clearAllMocks()
 })
+
+const mockFrom = vi.hoisted(() => vi.fn())
+
+vi.mock('next/cache', () => ({
+  revalidateTag: vi.fn(),
+}))
+
+vi.mock('./client', () => ({
+  supabase: { from: mockFrom },
+}))
 
 describe('getAllGuardians', () => {
   it('returns guardians ordered by last name', async () => {
@@ -190,6 +195,7 @@ describe('updateGuardian', () => {
 
     expect(mockFrom).toHaveBeenCalledWith('guardians')
     expect(mockUpdate).toHaveBeenCalled()
+    expect(revalidateTag).toHaveBeenCalledWith('students', 'max')
   })
 
   it('throws when the database returns an error', async () => {
@@ -206,5 +212,6 @@ describe('updateGuardian', () => {
         phone: '07700',
       }),
     ).rejects.toThrow('DB error')
+    expect(revalidateTag).not.toHaveBeenCalled()
   })
 })

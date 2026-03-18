@@ -5,9 +5,14 @@ vi.mock('@/lib/push-client', () => ({
   urlBase64ToUint8Array: vi.fn(() => new Uint8Array()),
   saveSubscription: vi.fn(),
   removeSubscription: vi.fn(),
+  checkSubscriptionInDb: vi.fn(),
 }))
 
-import { saveSubscription, removeSubscription } from '@/lib/push-client'
+import {
+  saveSubscription,
+  removeSubscription,
+  checkSubscriptionInDb,
+} from '@/lib/push-client'
 
 import NotificationToggle from './NotificationToggle'
 
@@ -30,6 +35,7 @@ beforeEach(() => {
     configurable: true,
   })
   vi.stubGlobal('Notification', { permission: 'default' })
+  vi.mocked(checkSubscriptionInDb).mockResolvedValue(true)
 })
 
 describe('NotificationToggle', () => {
@@ -57,11 +63,20 @@ describe('NotificationToggle', () => {
     })
   })
 
-  it('shows On pill when an active subscription exists', async () => {
-    setupServiceWorker({} as PushSubscription)
+  it('shows On pill when an active subscription exists in browser and database', async () => {
+    setupServiceWorker({ endpoint: 'https://example.com' } as PushSubscription)
     render(<NotificationToggle />)
     await waitFor(() => {
       expect(screen.getByText('On')).toBeDefined()
+    })
+  })
+
+  it('shows Off pill when browser has subscription but database entry is missing', async () => {
+    setupServiceWorker({ endpoint: 'https://example.com' } as PushSubscription)
+    vi.mocked(checkSubscriptionInDb).mockResolvedValue(false)
+    render(<NotificationToggle />)
+    await waitFor(() => {
+      expect(screen.getByText('Off')).toBeDefined()
     })
   })
 
@@ -141,7 +156,9 @@ describe('NotificationToggle', () => {
       const getSubscription = vi
         .fn()
         .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({} as PushSubscription)
+        .mockResolvedValueOnce({
+          endpoint: 'https://example.com',
+        } as PushSubscription)
       Object.defineProperty(navigator, 'serviceWorker', {
         value: {
           ready: Promise.resolve({
@@ -163,7 +180,9 @@ describe('NotificationToggle', () => {
       const getSubscription = vi
         .fn()
         .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({} as PushSubscription)
+        .mockResolvedValueOnce({
+          endpoint: 'https://example.com',
+        } as PushSubscription)
       Object.defineProperty(navigator, 'serviceWorker', {
         value: {
           ready: Promise.resolve({

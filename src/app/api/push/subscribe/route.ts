@@ -1,5 +1,25 @@
 import { auth } from '@/auth'
-import { deletePushSubscription, savePushSubscription } from '@/db'
+import {
+  deletePushSubscription,
+  pushSubscriptionExists,
+  savePushSubscription,
+} from '@/db'
+
+export async function GET(req: Request): Promise<Response> {
+  const session = await auth()
+  if (!session?.user?.staffId) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { searchParams } = new URL(req.url)
+  const endpoint = searchParams.get('endpoint')
+  if (!endpoint) {
+    return Response.json({ error: 'Missing endpoint' }, { status: 400 })
+  }
+
+  const exists = await pushSubscriptionExists(endpoint)
+  return Response.json({ exists })
+}
 
 export async function POST(req: Request): Promise<Response> {
   const session = await auth()

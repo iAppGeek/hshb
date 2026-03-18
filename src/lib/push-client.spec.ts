@@ -7,6 +7,7 @@ import {
   urlBase64ToUint8Array,
   saveSubscription,
   removeSubscription,
+  checkSubscriptionInDb,
 } from './push-client'
 
 beforeEach(() => {
@@ -60,6 +61,41 @@ describe('saveSubscription', () => {
     await expect(saveSubscription(mockSub)).rejects.toThrow(
       'Failed to save push subscription',
     )
+  })
+})
+
+describe('checkSubscriptionInDb', () => {
+  it('returns true when the endpoint exists in the database', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ exists: true }),
+    })
+
+    await expect(
+      checkSubscriptionInDb('https://fcm.googleapis.com/fcm/send/abc'),
+    ).resolves.toBe(true)
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/push/subscribe?endpoint=https%3A%2F%2Ffcm.googleapis.com%2Ffcm%2Fsend%2Fabc',
+    )
+  })
+
+  it('returns false when the endpoint does not exist in the database', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ exists: false }),
+    })
+
+    await expect(
+      checkSubscriptionInDb('https://fcm.googleapis.com/fcm/send/abc'),
+    ).resolves.toBe(false)
+  })
+
+  it('returns false when the fetch response is not ok', async () => {
+    mockFetch.mockResolvedValue({ ok: false, status: 401 })
+
+    await expect(
+      checkSubscriptionInDb('https://fcm.googleapis.com/fcm/send/abc'),
+    ).resolves.toBe(false)
   })
 })
 

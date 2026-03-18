@@ -9,6 +9,7 @@ vi.mock('./client', () => ({
 import {
   savePushSubscription,
   deletePushSubscription,
+  pushSubscriptionExists,
   getAdminSubscriptions,
 } from './push-subscriptions'
 
@@ -84,6 +85,55 @@ describe('deletePushSubscription', () => {
     await expect(
       deletePushSubscription('https://fcm.googleapis.com/fcm/send/abc'),
     ).rejects.toEqual({ message: 'Delete failed' })
+  })
+})
+
+describe('pushSubscriptionExists', () => {
+  it('returns true when the endpoint exists in the database', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi
+            .fn()
+            .mockResolvedValue({ data: { id: 'sub-1' }, error: null }),
+        }),
+      }),
+    })
+
+    await expect(
+      pushSubscriptionExists('https://fcm.googleapis.com/fcm/send/abc'),
+    ).resolves.toBe(true)
+    expect(mockFrom).toHaveBeenCalledWith('push_subscriptions')
+  })
+
+  it('returns false when the endpoint does not exist in the database', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        }),
+      }),
+    })
+
+    await expect(
+      pushSubscriptionExists('https://fcm.googleapis.com/fcm/send/abc'),
+    ).resolves.toBe(false)
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi
+            .fn()
+            .mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+        }),
+      }),
+    })
+
+    await expect(
+      pushSubscriptionExists('https://fcm.googleapis.com/fcm/send/abc'),
+    ).rejects.toEqual({ message: 'DB error' })
   })
 })
 
