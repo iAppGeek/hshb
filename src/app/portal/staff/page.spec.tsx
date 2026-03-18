@@ -101,10 +101,30 @@ describe('StaffPage', () => {
     expect(dashes.length).toBeGreaterThan(0)
   })
 
-  it('shows contact number when present', async () => {
+  it('hides contact column for teachers', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher' } } as any)
     vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
 
     render(await StaffPage())
+    expect(screen.queryByText('Contact')).toBeNull()
+    expect(screen.queryByText('07700 900001')).toBeNull()
+  })
+
+  it('shows contact column for admin', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
+    vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
+
+    render(await StaffPage())
+    expect(screen.getByText('Contact')).toBeTruthy()
+    expect(screen.getByText('07700 900001')).toBeTruthy()
+  })
+
+  it('shows contact column for headteacher', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'headteacher' } } as any)
+    vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
+
+    render(await StaffPage())
+    expect(screen.getByText('Contact')).toBeTruthy()
     expect(screen.getByText('07700 900001')).toBeTruthy()
   })
 })

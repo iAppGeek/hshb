@@ -22,8 +22,22 @@ export default async function StaffPage() {
 
   const role = session.user?.role as StaffRole
   const isAdmin = role === 'admin'
+  const canSeeContact = role === 'admin' || role === 'headteacher'
 
-  const staff = await getAllStaffWithClasses()
+  const staffRaw = await getAllStaffWithClasses()
+
+  const staff = [...staffRaw].sort((a, b) => {
+    const aName = (
+      (a.classes as { name: string }[] | null)?.[0]?.name ?? ''
+    ).toLowerCase()
+    const bName = (
+      (b.classes as { name: string }[] | null)?.[0]?.name ?? ''
+    ).toLowerCase()
+    if (aName === '' && bName === '') return 0
+    if (aName === '') return 1
+    if (bName === '') return -1
+    return aName.localeCompare(bName)
+  })
 
   return (
     <div>
@@ -61,9 +75,11 @@ export default async function StaffPage() {
                   <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     Role
                   </th>
-                  <th className="hidden px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase md:table-cell md:px-6">
-                    Contact
-                  </th>
+                  {canSeeContact && (
+                    <th className="hidden px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase md:table-cell md:px-6">
+                      Contact
+                    </th>
+                  )}
                   <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     Class
                   </th>
@@ -101,9 +117,11 @@ export default async function StaffPage() {
                       <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
                         {roleLabels[member.role] ?? member.role}
                       </td>
-                      <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell md:px-6">
-                        {member.contact_number ?? '—'}
-                      </td>
+                      {canSeeContact && (
+                        <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell md:px-6">
+                          {member.contact_number ?? '—'}
+                        </td>
+                      )}
                       <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
                         {classes.length > 0
                           ? classes.map((c) => c.name).join(', ')

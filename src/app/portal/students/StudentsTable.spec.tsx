@@ -180,10 +180,10 @@ describe('StudentsTable', () => {
     expect(screen.getAllByText('—').length).toBeGreaterThan(0)
   })
 
-  it('renders the Classes and Guardian column headers', () => {
+  it('renders the Classes and Primary Guardian column headers', () => {
     render(<StudentsTable students={students} role="admin" />)
     expect(screen.getByText('Classes')).toBeTruthy()
-    expect(screen.getByText('Guardian')).toBeTruthy()
+    expect(screen.getByText('Primary Guardian')).toBeTruthy()
   })
 
   it('renders a Details button for each student', () => {

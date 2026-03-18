@@ -126,7 +126,7 @@ function SidebarLoadingSkeleton() {
       </div>
 
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col bg-gray-900 md:flex print:hidden">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-gray-900 md:flex print:hidden">
         <div className="flex items-center gap-3 border-b border-gray-700 px-5 py-4">
           <Image src={logo} alt="HSHB Logo" className="h-8 w-auto" />
           <div>
@@ -134,7 +134,9 @@ function SidebarLoadingSkeleton() {
             <p className="text-xs text-gray-400">Staff Portal</p>
           </div>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-4">{allNavItems}</nav>
+        <nav className="sidebar-nav flex-1 space-y-1 overflow-y-scroll px-3 py-4">
+          {allNavItems}
+        </nav>
         <div className="border-t border-gray-700 px-4 py-4">
           <p className="animate-pulse text-sm font-medium text-gray-400">
             Loading...

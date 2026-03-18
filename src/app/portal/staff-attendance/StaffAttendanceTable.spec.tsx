@@ -100,7 +100,7 @@ describe('StaffAttendanceTable', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument()
-    expect(screen.getByText(/Signed Out/)).toBeInTheDocument()
+    expect(screen.getByText(/Out/)).toBeInTheDocument()
   })
 
   it('calls signInAction on sign in form submit', async () => {

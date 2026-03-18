@@ -87,6 +87,21 @@ pre {
   white-space: pre-line;
 }
 
+/* Always-visible scrollbar for sidebar nav (Safari/macOS hides scrollbars by default) */
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: rgb(75 85 99); /* gray-600 */
+  border-radius: 9999px;
+}
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(107 114 128); /* gray-500 */
+}
+
 @media print {
   nav,
   aside {

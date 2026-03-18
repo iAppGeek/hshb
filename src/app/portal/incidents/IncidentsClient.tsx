@@ -19,7 +19,7 @@ const TABS: { type: IncidentType; label: string }[] = [
   { type: 'other', label: 'Other' },
 ]
 
-export default function IncidentsClient({ incidents, canEdit }: Props) {
+export default function IncidentsClient({ incidents, role, canEdit }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeTab = (searchParams.get('tab') as IncidentType) ?? 'medical'
@@ -57,6 +57,11 @@ export default function IncidentsClient({ incidents, canEdit }: Props) {
           </button>
         ))}
       </div>
+      {role === 'teacher' && (
+        <p className="mb-4 text-sm text-gray-500">
+          You can only view and record incidents for students in your class.
+        </p>
+      )}
 
       {filtered.length === 0 ? (
         <div className="rounded-xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-200">

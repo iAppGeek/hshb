@@ -190,7 +190,7 @@ export default function PortalSidebar({
       </aside>
 
       {/* Desktop sidebar — always visible on md+ */}
-      <aside className="hidden w-64 shrink-0 flex-col bg-gray-900 md:flex print:hidden">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-gray-900 md:flex print:hidden">
         <div className="flex items-center gap-3 border-b border-gray-700 px-5 py-4">
           <Link
             href="/"
@@ -204,7 +204,9 @@ export default function PortalSidebar({
             <p className="text-xs text-gray-400">Staff Portal</p>
           </div>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-4">{navLinks}</nav>
+        <nav className="sidebar-nav flex-1 space-y-1 overflow-y-scroll px-3 py-4">
+          {navLinks}
+        </nav>
         {userFooter}
       </aside>
     </>
