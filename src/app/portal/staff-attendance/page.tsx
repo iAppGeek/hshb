@@ -9,8 +9,8 @@ import {
   getStaffAttendanceForToday,
 } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
+import DatePicker from '@/components/DatePicker'
 
-import DatePicker from './DatePicker'
 import PrintButton from './PrintButton'
 import StaffAttendanceTable from './StaffAttendanceTable'
 import { fmtTime } from './utils'
@@ -122,7 +122,10 @@ export default async function StaffAttendancePage({
           <p className="mt-1 text-sm text-gray-500">{formattedDate}</p>
         </div>
         <div className="flex items-end gap-3">
-          <DatePicker selectedDate={selectedDate} />
+          <DatePicker
+            selectedDate={selectedDate}
+            basePath="/portal/staff-attendance"
+          />
           <PrintButton />
         </div>
       </div>

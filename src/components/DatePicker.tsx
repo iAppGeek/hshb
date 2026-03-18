@@ -5,9 +5,10 @@ import { useTransition } from 'react'
 
 type Props = {
   selectedDate: string
+  basePath: string
 }
 
-export default function StaffAttendanceDatePicker({ selectedDate }: Props) {
+export default function DatePicker({ selectedDate, basePath }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -16,14 +17,14 @@ export default function StaffAttendanceDatePicker({ selectedDate }: Props) {
     const date =
       (new FormData(e.currentTarget).get('date') as string) ?? selectedDate
     startTransition(() => {
-      router.push(`/portal/staff-attendance?date=${date}`)
+      router.push(`${basePath}?date=${date}`)
     })
   }
 
   return (
     <div>
       <label
-        htmlFor="staff-date-picker"
+        htmlFor="date-picker"
         className="mb-1 block text-xs font-medium tracking-wide text-gray-500 uppercase"
       >
         Date
@@ -31,7 +32,7 @@ export default function StaffAttendanceDatePicker({ selectedDate }: Props) {
       <form onSubmit={handleSubmit}>
         <div className="flex gap-2">
           <input
-            id="staff-date-picker"
+            id="date-picker"
             type="date"
             name="date"
             defaultValue={selectedDate}

@@ -24,6 +24,7 @@ export {
   updateStudentClasses,
 } from './students'
 export {
+  getGuardianCount,
   getAllGuardians,
   createGuardian,
   getGuardianById,
@@ -48,6 +49,7 @@ export {
 } from './classes'
 export { getAllTimetableSlots, getTimetableByClass } from './timetable'
 export {
+  getIncidentCount,
   getIncidents,
   createIncident,
   updateIncident,
@@ -68,7 +70,7 @@ export {
   getAttendanceByClassAndDate,
   getAttendanceSummaryByDate,
   getAttendanceLastUpdatedPerClass,
-  getAttendancePresentAllergyCount,
+  getAttendanceLateCount,
   saveAttendance,
 } from './attendance'
 export type { AttendanceStatus, AttendanceInsert } from './attendance'

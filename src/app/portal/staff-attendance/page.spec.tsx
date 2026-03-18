@@ -24,7 +24,7 @@ vi.mock('./utils', () => ({
   fmtTime: vi.fn((ts: string) => ts),
 }))
 
-vi.mock('./DatePicker', () => ({
+vi.mock('@/components/DatePicker', () => ({
   default: vi.fn(() => <div data-testid="date-picker" />),
 }))
 

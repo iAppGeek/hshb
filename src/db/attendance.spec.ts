@@ -9,7 +9,7 @@ vi.mock('./client', () => ({
 import {
   getAttendanceByClassAndDate,
   getAttendanceLastUpdatedPerClass,
-  getAttendancePresentAllergyCount,
+  getAttendanceLateCount,
   saveAttendance,
 } from './attendance'
 
@@ -133,39 +133,48 @@ describe('getAttendanceLastUpdatedPerClass', () => {
   })
 })
 
-describe('getAttendancePresentAllergyCount', () => {
-  it('returns count of present/late students with allergies', async () => {
+describe('getAttendanceLateCount', () => {
+  it('returns the count of late students for a given date', async () => {
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          in: vi.fn().mockResolvedValue({
-            data: [
-              { student_id: 'student-1', students: { allergies: 'nuts' } },
-              { student_id: 'student-2', students: { allergies: '' } },
-              { student_id: 'student-3', students: { allergies: null } },
-              { student_id: 'student-4', students: { allergies: 'dairy' } },
-            ],
-          }),
+          eq: vi.fn().mockResolvedValue({ count: 4, error: null }),
         }),
       }),
     })
 
-    const result = await getAttendancePresentAllergyCount('2024-03-08')
-    expect(result).toBe(2)
+    const result = await getAttendanceLateCount('2024-03-08')
+    expect(result).toBe(4)
     expect(mockFrom).toHaveBeenCalledWith('attendance')
   })
 
-  it('returns 0 when no data returned', async () => {
+  it('returns 0 when count is null', async () => {
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          in: vi.fn().mockResolvedValue({ data: null }),
+          eq: vi.fn().mockResolvedValue({ count: null, error: null }),
         }),
       }),
     })
 
-    const result = await getAttendancePresentAllergyCount('2024-03-08')
+    const result = await getAttendanceLateCount('2024-03-08')
     expect(result).toBe(0)
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          eq: vi
+            .fn()
+            .mockResolvedValue({ count: null, error: { message: 'DB error' } }),
+        }),
+      }),
+    })
+
+    await expect(getAttendanceLateCount('2024-03-08')).rejects.toEqual({
+      message: 'DB error',
+    })
   })
 })
 

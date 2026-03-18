@@ -29,6 +29,14 @@ const INCIDENT_SELECT = `
   updater:staff!incidents_updated_by_fkey(id, first_name, last_name)
 `
 
+export async function getIncidentCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from('incidents')
+    .select('*', { count: 'exact', head: true })
+  if (error) throw error
+  return count ?? 0
+}
+
 export async function getIncidents(options?: {
   studentIds?: string[]
   limit?: number

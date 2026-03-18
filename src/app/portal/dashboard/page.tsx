@@ -2,8 +2,10 @@ import { type Metadata } from 'next'
 import Link from 'next/link'
 import {
   UsersIcon,
+  UserGroupIcon,
   CalendarDaysIcon,
   ChartBarIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 
 import { auth } from '@/auth'
@@ -12,6 +14,9 @@ import {
   getStudentsByTeacher,
   getAllClasses,
   getClassesByTeacher,
+  getAllStaff,
+  getIncidentCount,
+  getGuardianCount,
 } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -30,12 +35,16 @@ export default async function DashboardPage() {
 
   const isTeacher = role === 'teacher'
 
-  const [studentCount, classes] = await Promise.all([
-    isTeacher
-      ? getStudentsByTeacher(staffId!).then((s) => s.length)
-      : getStudentCount(),
-    isTeacher ? getClassesByTeacher(staffId!) : getAllClasses(),
-  ])
+  const [studentCount, classes, staffCount, incidentCount, guardianCount] =
+    await Promise.all([
+      isTeacher
+        ? getStudentsByTeacher(staffId!).then((s) => s.length)
+        : getStudentCount(),
+      isTeacher ? getClassesByTeacher(staffId!) : getAllClasses(),
+      isTeacher ? Promise.resolve(null) : getAllStaff().then((s) => s.length),
+      isTeacher ? Promise.resolve(null) : getIncidentCount(),
+      isTeacher ? Promise.resolve(null) : getGuardianCount(),
+    ])
 
   const stats = [
     {
@@ -48,10 +57,28 @@ export default async function DashboardPage() {
       label: isTeacher ? 'My Classes' : 'Total Classes',
       value: classes.length,
       icon: CalendarDaysIcon,
-      href: '/portal/timetables',
+      href: '/portal/classes',
     },
     ...(role === 'admin' || role === 'headteacher'
       ? [
+          {
+            label: 'Total Staff',
+            value: staffCount,
+            icon: UserGroupIcon,
+            href: '/portal/staff',
+          },
+          {
+            label: 'Total Guardians',
+            value: guardianCount,
+            icon: UsersIcon,
+            href: '/portal/students',
+          },
+          {
+            label: 'Total Incidents',
+            value: incidentCount,
+            icon: ExclamationTriangleIcon,
+            href: '/portal/incidents',
+          },
           {
             label: 'Reports',
             value: null,

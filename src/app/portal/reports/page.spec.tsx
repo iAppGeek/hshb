@@ -13,39 +13,42 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/db', () => ({
   getStudentCount: vi.fn(),
-  getStudentsWithAllergiesCount: vi.fn(),
   getEnrollmentCountsByClass: vi.fn(),
   getAllClasses: vi.fn(),
   getAllStaff: vi.fn(),
   getAttendanceSummaryByDate: vi.fn(),
-  getAttendancePresentAllergyCount: vi.fn(),
+  getAttendanceLateCount: vi.fn(),
   getStaffSignedInCount: vi.fn(),
+}))
+
+vi.mock('@/components/DatePicker', () => ({
+  default: vi.fn(() => <div data-testid="date-picker" />),
 }))
 
 import { auth } from '@/auth'
 import {
   getStudentCount,
-  getStudentsWithAllergiesCount,
   getEnrollmentCountsByClass,
   getAllClasses,
   getAllStaff,
   getAttendanceSummaryByDate,
-  getAttendancePresentAllergyCount,
+  getAttendanceLateCount,
   getStaffSignedInCount,
 } from '@/db'
 
 import ReportsPage from './page'
 
+const defaultSearchParams = Promise.resolve({})
+
 beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
   vi.mocked(getStudentCount).mockResolvedValue(0)
-  vi.mocked(getStudentsWithAllergiesCount).mockResolvedValue(0)
   vi.mocked(getEnrollmentCountsByClass).mockResolvedValue({})
   vi.mocked(getAllClasses).mockResolvedValue([])
   vi.mocked(getAllStaff).mockResolvedValue([])
   vi.mocked(getAttendanceSummaryByDate).mockResolvedValue({})
-  vi.mocked(getAttendancePresentAllergyCount).mockResolvedValue(0)
+  vi.mocked(getAttendanceLateCount).mockResolvedValue(0)
   vi.mocked(getStaffSignedInCount).mockResolvedValue(0)
 })
 
@@ -53,25 +56,30 @@ describe('ReportsPage', () => {
   it('redirects to dashboard when not authenticated', async () => {
     vi.mocked(auth).mockResolvedValue(null as any)
 
-    await expect(ReportsPage()).rejects.toThrow(
-      'NEXT_REDIRECT:/portal/dashboard',
-    )
+    await expect(
+      ReportsPage({ searchParams: defaultSearchParams }),
+    ).rejects.toThrow('NEXT_REDIRECT:/portal/dashboard')
   })
 
   it('redirects to dashboard when role is teacher', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher' } } as any)
 
-    await expect(ReportsPage()).rejects.toThrow(
-      'NEXT_REDIRECT:/portal/dashboard',
-    )
+    await expect(
+      ReportsPage({ searchParams: defaultSearchParams }),
+    ).rejects.toThrow('NEXT_REDIRECT:/portal/dashboard')
   })
 
   it('renders the Reports & Analytics heading', async () => {
-    render(await ReportsPage())
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
     expect(screen.getByText('Reports & Analytics')).toBeTruthy()
   })
 
-  it("displays today's attendance as fraction and percentage", async () => {
+  it('renders the date picker', async () => {
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
+    expect(screen.getByTestId('date-picker')).toBeTruthy()
+  })
+
+  it('displays students attendance as fraction and percentage', async () => {
     vi.mocked(getStudentCount).mockResolvedValue(10)
     vi.mocked(getAttendanceSummaryByDate).mockResolvedValue({
       'class-1': {
@@ -81,53 +89,53 @@ describe('ReportsPage', () => {
       },
     })
 
-    render(await ReportsPage())
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
     expect(screen.getByText('8/10')).toBeTruthy()
     expect(screen.getByText('80%')).toBeTruthy()
   })
 
-  it('displays allergy students present stat', async () => {
-    vi.mocked(getStudentsWithAllergiesCount).mockResolvedValue(4)
-    vi.mocked(getAttendancePresentAllergyCount).mockResolvedValue(3)
+  it('displays late count summary card', async () => {
+    vi.mocked(getAttendanceLateCount).mockResolvedValue(3)
 
-    render(await ReportsPage())
-    expect(screen.getByText('Allergy students present')).toBeTruthy()
-    expect(screen.getByText('3/4')).toBeTruthy()
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
+    expect(screen.getByText('Students late')).toBeTruthy()
+    expect(screen.getByText('3')).toBeTruthy()
   })
 
-  it('renders enrolment by class table', async () => {
+  it('passes selected date from searchParams to db queries', async () => {
+    const searchParams = Promise.resolve({ date: '2024-01-15' })
+    render(await ReportsPage({ searchParams }))
+    expect(getAttendanceSummaryByDate).toHaveBeenCalledWith('2024-01-15')
+    expect(getStaffSignedInCount).toHaveBeenCalledWith('2024-01-15')
+    expect(getAttendanceLateCount).toHaveBeenCalledWith('2024-01-15')
+  })
+
+  it('renders the Attendance by Class table heading', async () => {
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
+    expect(screen.getByText('Attendance by Class')).toBeTruthy()
+  })
+
+  it('renders class rows in the attendance table', async () => {
     vi.mocked(getAllClasses).mockResolvedValue([
       { id: 'class-1', name: 'Year 3A', year_group: '3' },
     ] as any)
     vi.mocked(getEnrollmentCountsByClass).mockResolvedValue({ 'class-1': 2 })
 
-    render(await ReportsPage())
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
     expect(screen.getByText('Year 3A')).toBeTruthy()
-    expect(screen.getByText('Todays Attendance')).toBeTruthy()
   })
 
-  it('counts only teaching staff in the teachers stat', async () => {
-    vi.mocked(getAllStaff).mockResolvedValue([
-      { id: 'staff-1', role: 'teacher' },
-      { id: 'staff-2', role: 'admin' },
-      { id: 'staff-3', role: 'teacher' },
-    ] as any)
-
-    render(await ReportsPage())
-    expect(screen.getByText('Teaching staff')).toBeTruthy()
-  })
-
-  it('shows Not Completed when no attendance for a class today', async () => {
+  it('shows Not Completed when no attendance for a class', async () => {
     vi.mocked(getAllClasses).mockResolvedValue([
       { id: 'class-1', name: 'Year 3A', year_group: '3' },
     ] as any)
     vi.mocked(getAttendanceSummaryByDate).mockResolvedValue({})
 
-    render(await ReportsPage())
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
     expect(screen.getAllByText('Not Completed')).toHaveLength(1)
   })
 
-  it('shows created and updated times when attendance exists for a class today', async () => {
+  it('shows record times when attendance exists for a class', async () => {
     vi.mocked(getAllClasses).mockResolvedValue([
       { id: 'class-1', name: 'Year 3A', year_group: '3' },
     ] as any)
@@ -139,7 +147,7 @@ describe('ReportsPage', () => {
       },
     } as any)
 
-    render(await ReportsPage())
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
     expect(screen.queryAllByText('Not Completed')).toHaveLength(0)
   })
 })

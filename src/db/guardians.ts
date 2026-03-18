@@ -21,6 +21,14 @@ export type GuardianSummary = {
   phone: string
 }
 
+export async function getGuardianCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from('guardians')
+    .select('*', { count: 'exact', head: true })
+  if (error) throw error
+  return count ?? 0
+}
+
 export async function getAllGuardians(): Promise<GuardianSummary[]> {
   const { data } = await supabase
     .from('guardians')

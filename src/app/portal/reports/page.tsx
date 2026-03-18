@@ -2,20 +2,24 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
+import DatePicker from '@/components/DatePicker'
 import {
   getStudentCount,
-  getStudentsWithAllergiesCount,
   getEnrollmentCountsByClass,
   getAllClasses,
   getAllStaff,
   getAttendanceSummaryByDate,
-  getAttendancePresentAllergyCount,
+  getAttendanceLateCount,
   getStaffSignedInCount,
 } from '@/db'
 
 export const metadata: Metadata = { title: 'Reports' }
 
-export default async function ReportsPage() {
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string }>
+}) {
   const session = await auth()
   const role = session?.user?.role
   if (!session || (role !== 'admin' && role !== 'headteacher')) {
@@ -23,28 +27,27 @@ export default async function ReportsPage() {
   }
 
   const today = new Date().toISOString().split('T')[0]
+  const { date: qDate } = await searchParams
+  const selectedDate = qDate ?? today
 
   const [
     activeStudentCount,
-    allergiesCount,
     enrollmentCounts,
     classes,
     staff,
     attendanceSummary,
-    allergyPresentCount,
     staffSignedInCount,
+    lateCount,
   ] = await Promise.all([
     getStudentCount(),
-    getStudentsWithAllergiesCount(),
     getEnrollmentCountsByClass(),
     getAllClasses(),
     getAllStaff(),
-    getAttendanceSummaryByDate(today),
-    getAttendancePresentAllergyCount(today),
-    getStaffSignedInCount(today),
+    getAttendanceSummaryByDate(selectedDate),
+    getStaffSignedInCount(selectedDate),
+    getAttendanceLateCount(selectedDate),
   ])
 
-  const teachers = staff.filter((s) => s.role === 'teacher')
   const teachingStaff = staff.filter(
     (s) => s.role === 'teacher' || s.role === 'headteacher',
   )
@@ -76,32 +79,60 @@ export default async function ReportsPage() {
     total > 0 ? `${Math.round((n / total) * 100)}%` : '—'
 
   const stats = [
-    { label: 'Teaching staff', value: teachers.length, sub: null },
     {
       label: 'Staff signed in',
       value: `${staffSignedInCount}/${teachingStaff.length}`,
       sub: pct(staffSignedInCount, teachingStaff.length),
     },
     {
-      label: "Today's attendance",
+      label: 'Students attendance',
       value: `${presentToday}/${activeStudentCount}`,
       sub: pct(presentToday, activeStudentCount),
     },
     {
-      label: 'Allergy students present',
-      value: `${allergyPresentCount}/${allergiesCount}`,
-      sub: pct(allergyPresentCount, allergiesCount),
+      label: 'Students late',
+      value: lateCount,
+      sub: null,
     },
   ]
 
   return (
     <div>
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">
-        Reports & Analytics
-      </h1>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Reports & Analytics
+          </h1>
+          <div className="mt-1 flex items-center gap-2">
+            <p className="text-sm text-gray-500">
+              {new Date(selectedDate + 'T12:00:00').toLocaleDateString(
+                'en-GB',
+                {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                },
+              )}
+            </p>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium text-white print:hidden ${selectedDate === today ? 'bg-green-500' : 'bg-amber-500'}`}
+            >
+              {selectedDate === today
+                ? 'Today'
+                : selectedDate < today
+                  ? 'Historical'
+                  : 'Future'}
+            </span>
+          </div>
+        </div>
+        <div className="print:hidden">
+          <DatePicker selectedDate={selectedDate} basePath="/portal/reports" />
+        </div>
+      </div>
 
-      {/* Summary stats */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Summary cards */}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map(({ label, value, sub }) => (
           <div
             key={label}
@@ -122,7 +153,7 @@ export default async function ReportsPage() {
       <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
           <h2 className="text-sm font-semibold text-gray-900">
-            Todays Attendance
+            Attendance by Class
           </h2>
         </div>
         <div className="overflow-x-auto">

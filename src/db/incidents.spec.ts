@@ -7,6 +7,7 @@ vi.mock('./client', () => ({
 }))
 
 import {
+  getIncidentCount,
   getIncidents,
   getIncidentById,
   createIncident,
@@ -32,6 +33,37 @@ const mockIncident = {
   creator: { id: 'staff-1', first_name: 'Alice', last_name: 'Smith' },
   updater: null,
 }
+
+describe('getIncidentCount', () => {
+  it('returns the total number of incidents', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockResolvedValue({ count: 7, error: null }),
+    })
+
+    const result = await getIncidentCount()
+    expect(result).toBe(7)
+    expect(mockFrom).toHaveBeenCalledWith('incidents')
+  })
+
+  it('returns 0 when count is null', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockResolvedValue({ count: null, error: null }),
+    })
+
+    const result = await getIncidentCount()
+    expect(result).toBe(0)
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi
+        .fn()
+        .mockResolvedValue({ count: null, error: { message: 'DB error' } }),
+    })
+
+    await expect(getIncidentCount()).rejects.toEqual({ message: 'DB error' })
+  })
+})
 
 describe('getIncidents', () => {
   it('returns all incidents when no options provided', async () => {

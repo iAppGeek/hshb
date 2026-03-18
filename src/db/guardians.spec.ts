@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { revalidateTag } from 'next/cache'
 
 import {
+  getGuardianCount,
   getAllGuardians,
   createGuardian,
   getGuardianById,
@@ -22,6 +23,37 @@ vi.mock('next/cache', () => ({
 vi.mock('./client', () => ({
   supabase: { from: mockFrom },
 }))
+
+describe('getGuardianCount', () => {
+  it('returns the total number of guardians', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockResolvedValue({ count: 12, error: null }),
+    })
+
+    const result = await getGuardianCount()
+    expect(result).toBe(12)
+    expect(mockFrom).toHaveBeenCalledWith('guardians')
+  })
+
+  it('returns 0 when count is null', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockResolvedValue({ count: null, error: null }),
+    })
+
+    const result = await getGuardianCount()
+    expect(result).toBe(0)
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi
+        .fn()
+        .mockResolvedValue({ count: null, error: { message: 'DB error' } }),
+    })
+
+    await expect(getGuardianCount()).rejects.toEqual({ message: 'DB error' })
+  })
+})
 
 describe('getAllGuardians', () => {
   it('returns guardians ordered by last name', async () => {
