@@ -87,7 +87,7 @@ describe('StaffAttendanceTable', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Sign Out' })).toBeInTheDocument()
-    expect(screen.getByText(/Signed In/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Signed In/).length).toBeGreaterThan(0)
   })
 
   it('shows Sign In button for staff who have signed out (re-sign-in)', () => {
@@ -100,7 +100,7 @@ describe('StaffAttendanceTable', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument()
-    expect(screen.getByText(/Out/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Out/).length).toBeGreaterThan(0)
   })
 
   it('calls signInAction on sign in form submit', async () => {
@@ -185,5 +185,42 @@ describe('StaffAttendanceTable', () => {
     expect(
       screen.getByText('Failed to sign out. Please try again.'),
     ).toBeInTheDocument()
+  })
+
+  it('renders room and class inline in the name cell for mobile card layout', () => {
+    render(
+      <StaffAttendanceTable
+        rows={[{ staff: staffA, record: null }]}
+        defaultTime="09:00"
+        date="2026-03-18"
+      />,
+    )
+
+    expect(screen.getByText('Room 12 · Year 3A')).toBeInTheDocument()
+  })
+
+  it('omits room/class inline text when both are null', () => {
+    render(
+      <StaffAttendanceTable
+        rows={[{ staff: staffB, record: null }]}
+        defaultTime="09:00"
+        date="2026-03-18"
+      />,
+    )
+
+    expect(screen.queryByText(/Room \d/)).not.toBeInTheDocument()
+  })
+
+  it('renders status badge in the name cell (mobile) and in its own cell (desktop)', () => {
+    render(
+      <StaffAttendanceTable
+        rows={[{ staff: staffA, record: signedInRecord }]}
+        defaultTime="09:00"
+        date="2026-03-18"
+      />,
+    )
+
+    // StatusBadge renders in both the mobile name cell and the hidden desktop cell
+    expect(screen.getAllByText(/Signed In/)).toHaveLength(2)
   })
 })

@@ -271,7 +271,12 @@ function GuardianCard({
       {guardian.email && (
         <p className="text-sm text-gray-600">{guardian.email}</p>
       )}
-      <p className="text-sm text-gray-600">{guardian.phone}</p>
+      <a
+        href={`tel:${guardian.phone}`}
+        className="text-sm text-blue-600 hover:text-blue-800"
+      >
+        {guardian.phone}
+      </a>
       {(guardian.address_line_1 || guardian.city || guardian.postcode) && (
         <AddressBlock
           address_line_1={guardian.address_line_1}
@@ -315,7 +320,12 @@ function ContactCard({
           </Link>
         )}
       </div>
-      <p className="text-sm text-gray-600">{contact.phone}</p>
+      <a
+        href={`tel:${contact.phone}`}
+        className="text-sm text-blue-600 hover:text-blue-800"
+      >
+        {contact.phone}
+      </a>
     </div>
   )
 }

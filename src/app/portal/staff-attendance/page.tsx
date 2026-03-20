@@ -119,7 +119,18 @@ export default async function StaffAttendancePage({
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between print:hidden">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Staff Sign-In</h1>
-          <p className="mt-1 text-sm text-gray-500">{formattedDate}</p>
+          <div className="mt-1 flex items-center gap-2">
+            <p className="text-sm text-gray-500">{formattedDate}</p>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium text-white print:hidden ${selectedDate === today ? 'bg-green-500' : 'bg-amber-500'}`}
+            >
+              {selectedDate === today
+                ? 'Today'
+                : selectedDate < today
+                  ? 'Historical'
+                  : 'Future'}
+            </span>
+          </div>
         </div>
         <div className="flex items-end gap-3">
           <DatePicker

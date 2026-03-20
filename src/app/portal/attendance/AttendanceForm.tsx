@@ -77,19 +77,19 @@ export default function AttendanceForm({
         </div>
       ) : (
         <>
-          {/* Summary bar */}
-          <div className="mb-4 flex gap-4 text-sm">
-            <span className="rounded-full bg-green-100 px-3 py-1 font-medium text-green-800">
+          {/* Summary bar — 2×2 grid on mobile, single row on desktop */}
+          <div className="mb-4 flex flex-wrap gap-2 text-sm sm:flex-nowrap sm:gap-4">
+            <span className="w-[calc(50%-0.25rem)] rounded-full bg-green-100 px-3 py-1 text-center font-medium text-green-800 sm:w-auto sm:text-left">
               {counts.present} present
             </span>
-            <span className="rounded-full bg-yellow-100 px-3 py-1 font-medium text-yellow-800">
+            <span className="w-[calc(50%-0.25rem)] rounded-full bg-yellow-100 px-3 py-1 text-center font-medium text-yellow-800 sm:w-auto sm:text-left">
               {counts.late} late
             </span>
-            <span className="rounded-full bg-red-100 px-3 py-1 font-medium text-red-800">
+            <span className="w-[calc(50%-0.25rem)] rounded-full bg-red-100 px-3 py-1 text-center font-medium text-red-800 sm:w-auto sm:text-left">
               {counts.absent} absent
             </span>
             {counts.unset > 0 && (
-              <span className="rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-500">
+              <span className="w-[calc(50%-0.25rem)] rounded-full bg-gray-100 px-3 py-1 text-center font-medium text-gray-500 sm:w-auto sm:text-left">
                 {counts.unset} unmarked
               </span>
             )}
@@ -98,7 +98,7 @@ export default function AttendanceForm({
           <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="hidden bg-gray-50 sm:table-header-group">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
                       Student
@@ -115,8 +115,12 @@ export default function AttendanceForm({
                   {students.map((student) => {
                     const current = statuses[student.id]
                     return (
-                      <tr key={student.id}>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 sm:whitespace-nowrap">
+                      <tr
+                        key={student.id}
+                        className="block border-b border-gray-200 last:border-0 hover:bg-gray-50 sm:table-row sm:border-0"
+                      >
+                        {/* Name cell — on mobile also contains Details button */}
+                        <td className="block px-4 pt-4 pb-2 text-sm font-medium text-gray-900 sm:table-cell sm:px-6 sm:py-4 sm:align-middle sm:whitespace-nowrap">
                           {/* Hidden inputs carry the data for the server action */}
                           <input
                             type="hidden"
@@ -130,50 +134,61 @@ export default function AttendanceForm({
                               value={current}
                             />
                           )}
-                          {student.last_name}, {student.first_name}
+                          <div className="flex items-center justify-between gap-2 sm:block">
+                            <span>
+                              {student.last_name}, {student.first_name}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedStudent(student)}
+                              className="shrink-0 text-sm text-blue-600 hover:text-blue-800 sm:hidden"
+                            >
+                              Details
+                            </button>
+                          </div>
                         </td>
 
-                        <td className="w-px px-6 py-4 whitespace-nowrap">
-                          <div className="flex overflow-hidden rounded-full ring-1 ring-gray-200">
+                        {/* Status buttons — full width on mobile, compact on desktop */}
+                        <td className="block px-4 pb-4 sm:table-cell sm:w-px sm:px-6 sm:py-4 sm:align-middle sm:whitespace-nowrap">
+                          <div className="flex w-full overflow-hidden rounded-full ring-1 ring-gray-200 sm:w-auto">
                             <button
                               type="button"
                               onClick={() => toggle(student.id, 'present')}
-                              className={`px-4 py-2 text-sm font-medium transition ${
+                              className={`flex-1 px-4 py-2 text-sm font-medium transition sm:flex-none ${
                                 current === 'present'
                                   ? 'bg-green-100 text-green-800'
                                   : 'bg-white text-gray-400 hover:bg-gray-50'
                               }`}
                             >
-                              <span className="sm:hidden">P</span>
-                              <span className="hidden sm:block">Present</span>
+                              Present
                             </button>
                             <button
                               type="button"
                               onClick={() => toggle(student.id, 'late')}
-                              className={`border-x border-gray-200 px-4 py-2 text-sm font-medium transition ${
+                              className={`flex-1 border-x border-gray-200 px-4 py-2 text-sm font-medium transition sm:flex-none ${
                                 current === 'late'
                                   ? 'bg-yellow-100 text-yellow-800'
                                   : 'bg-white text-gray-400 hover:bg-gray-50'
                               }`}
                             >
-                              <span className="sm:hidden">L</span>
-                              <span className="hidden sm:block">Late</span>
+                              Late
                             </button>
                             <button
                               type="button"
                               onClick={() => toggle(student.id, 'absent')}
-                              className={`px-4 py-2 text-sm font-medium transition ${
+                              className={`flex-1 px-4 py-2 text-sm font-medium transition sm:flex-none ${
                                 current === 'absent'
                                   ? 'bg-red-100 text-red-800'
                                   : 'bg-white text-gray-400 hover:bg-gray-50'
                               }`}
                             >
-                              <span className="sm:hidden">A</span>
-                              <span className="hidden sm:block">Absent</span>
+                              Absent
                             </button>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-right text-sm font-medium">
+
+                        {/* Details — hidden on mobile (shown in name cell), visible on desktop */}
+                        <td className="hidden sm:table-cell sm:px-6 sm:py-4 sm:text-right sm:align-middle sm:text-sm sm:font-medium">
                           <button
                             type="button"
                             onClick={() => setSelectedStudent(student)}

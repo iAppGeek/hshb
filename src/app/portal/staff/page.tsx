@@ -61,22 +61,19 @@ export default async function StaffPage() {
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="hidden bg-gray-50 sm:table-header-group">
                 <tr>
                   <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                    First name
+                    Full name
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                    Last name
-                  </th>
-                  <th className="hidden px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:table-cell sm:px-6">
                     Display name
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                     Role
                   </th>
                   {canSeeContact && (
-                    <th className="hidden px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase md:table-cell md:px-6">
+                    <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
                       Contact
                     </th>
                   )}
@@ -103,37 +100,96 @@ export default async function StaffPage() {
                           room_number: string | null
                         }[]
                       | null) ?? []
+                  const classesText =
+                    classes.length > 0
+                      ? classes.map((c) => c.name).join(', ')
+                      : '—'
+                  const roomText =
+                    classes.length > 0
+                      ? classes.map((c) => c.room_number ?? '—').join(', ')
+                      : '—'
+
                   return (
-                    <tr key={member.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-4 text-sm font-medium text-gray-900 sm:px-6">
-                        {member.first_name}
+                    <tr
+                      key={member.id}
+                      className="block border-b border-gray-200 last:border-0 hover:bg-gray-50 sm:table-row sm:border-0"
+                    >
+                      {/* Full name — on mobile: name left, Edit link right */}
+                      <td className="block px-4 pt-4 pb-0 text-sm font-medium text-gray-900 sm:table-cell sm:px-6 sm:py-4 sm:whitespace-nowrap">
+                        <div className="flex items-center justify-between gap-2 sm:block">
+                          <span>
+                            {member.first_name} {member.last_name}
+                          </span>
+                          {isAdmin && (
+                            <Link
+                              href={`/portal/staff/${member.id}/edit`}
+                              className="shrink-0 text-sm text-blue-600 hover:text-blue-800 sm:hidden"
+                            >
+                              Edit
+                            </Link>
+                          )}
+                        </div>
                       </td>
-                      <td className="px-3 py-4 text-sm font-medium text-gray-900 sm:px-6">
-                        {member.last_name}
+
+                      {/* Mobile secondary: all other fields */}
+                      <td className="block px-4 py-2 text-xs text-gray-500 sm:hidden">
+                        <div className="space-y-0.5">
+                          <span className="block">
+                            {member.display_name ?? '—'}
+                            {' · '}
+                            {roleLabels[member.role] ?? member.role}
+                          </span>
+                          <span className="block">
+                            {classesText}
+                            {' · '}
+                            {roomText}
+                          </span>
+                          {canSeeContact && (
+                            <span className="block">
+                              {member.contact_number ? (
+                                <a
+                                  href={`tel:${member.contact_number}`}
+                                  className="text-blue-600 hover:text-blue-800"
+                                >
+                                  {member.contact_number}
+                                </a>
+                              ) : (
+                                '—'
+                              )}
+                            </span>
+                          )}
+                        </div>
                       </td>
+
+                      {/* Desktop-only columns */}
                       <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
                         {member.display_name ?? '—'}
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
+                      <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
                         {roleLabels[member.role] ?? member.role}
                       </td>
                       {canSeeContact && (
-                        <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell md:px-6">
-                          {member.contact_number ?? '—'}
+                        <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
+                          {member.contact_number ? (
+                            <a
+                              href={`tel:${member.contact_number}`}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              {member.contact_number}
+                            </a>
+                          ) : (
+                            <span className="text-gray-500">—</span>
+                          )}
                         </td>
                       )}
-                      <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
-                        {classes.length > 0
-                          ? classes.map((c) => c.name).join(', ')
-                          : '—'}
+                      <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
+                        {classesText}
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500 sm:px-6">
-                        {classes.length > 0
-                          ? classes.map((c) => c.room_number ?? '—').join(', ')
-                          : '—'}
+                      <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
+                        {roomText}
                       </td>
                       {isAdmin && (
-                        <td className="px-3 py-4 text-sm sm:px-6">
+                        <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
                           <Link
                             href={`/portal/staff/${member.id}/edit`}
                             className="text-blue-600 hover:text-blue-800"

@@ -27,14 +27,25 @@ export default async function AttendanceRegister({
     existing[row.student_id] = row.status as AttendanceStatus
   }
 
+  const today = new Date().toISOString().split('T')[0]
+  const dateLabel =
+    date === today ? 'Today' : date < today ? 'Historical' : 'Future'
+
   return (
     <>
-      <p className="mb-4 text-sm text-gray-500">
-        {className} &mdash; {date}
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+        <span>
+          {className} &mdash; {date}
+        </span>
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs font-medium text-white ${date === today ? 'bg-green-500' : 'bg-amber-500'}`}
+        >
+          {dateLabel}
+        </span>
         {existingRows.length > 0 && (
-          <span className="ml-2 text-green-600">(register already taken)</span>
+          <span className="text-green-600">(register already taken)</span>
         )}
-      </p>
+      </div>
       <AttendanceForm
         classId={classId}
         date={date}

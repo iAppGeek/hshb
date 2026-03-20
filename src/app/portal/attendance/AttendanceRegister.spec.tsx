@@ -136,4 +136,54 @@ describe('AttendanceRegister', () => {
 
     expect(screen.queryByText('(register already taken)')).toBeNull()
   })
+
+  it('shows Historical label for a past date', async () => {
+    vi.mocked(getStudentsByClass).mockResolvedValue([])
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
+
+    render(
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: '2024-06-15',
+        className: 'Year 3A',
+        role: 'admin',
+      }),
+    )
+
+    expect(screen.getByText('Historical')).toBeTruthy()
+  })
+
+  it('shows Future label for a future date', async () => {
+    vi.mocked(getStudentsByClass).mockResolvedValue([])
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
+
+    render(
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: '2099-01-01',
+        className: 'Year 3A',
+        role: 'admin',
+      }),
+    )
+
+    expect(screen.getByText('Future')).toBeTruthy()
+  })
+
+  it("shows Today label for today's date", async () => {
+    vi.mocked(getStudentsByClass).mockResolvedValue([])
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
+
+    const today = new Date().toISOString().split('T')[0]
+
+    render(
+      await AttendanceRegister({
+        classId: 'class-1',
+        date: today,
+        className: 'Year 3A',
+        role: 'admin',
+      }),
+    )
+
+    expect(screen.getByText('Today')).toBeTruthy()
+  })
 })

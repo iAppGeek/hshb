@@ -74,61 +74,89 @@ function StaffRowInteractive({
     })
   }
 
+  const actionForm = isSignedIn ? (
+    <form onSubmit={handleSignOut} className="flex items-center gap-2">
+      <input type="hidden" name="staffId" value={staff.id} />
+      <input type="hidden" name="date" value={date} />
+      <input
+        type="time"
+        name="time"
+        defaultValue={defaultTime}
+        required
+        disabled={isPending}
+        className="min-w-0 flex-1 rounded-md border border-gray-200 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-60 sm:flex-none"
+      />
+      <button
+        type="submit"
+        disabled={isPending}
+        className="w-24 shrink-0 rounded-lg bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-800 transition hover:bg-amber-200 disabled:opacity-60"
+      >
+        {isPending ? 'Saving…' : 'Sign Out'}
+      </button>
+    </form>
+  ) : (
+    <form onSubmit={handleSignIn} className="flex items-center gap-2">
+      <input type="hidden" name="staffId" value={staff.id} />
+      <input type="hidden" name="date" value={date} />
+      <input
+        type="time"
+        name="time"
+        defaultValue={defaultTime}
+        required
+        disabled={isPending}
+        className="min-w-0 flex-1 rounded-md border border-gray-200 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-60 sm:flex-none"
+      />
+      <button
+        type="submit"
+        disabled={isPending}
+        className="w-24 shrink-0 rounded-lg bg-green-100 px-3 py-1.5 text-sm font-medium text-green-800 transition hover:bg-green-200 disabled:opacity-60"
+      >
+        {isPending ? 'Saving…' : 'Sign In'}
+      </button>
+    </form>
+  )
+
   return (
-    <tr className="hover:bg-gray-50">
-      <td className="px-6 py-3 text-sm font-medium text-gray-900">{name}</td>
-      <td className="px-6 py-3 text-sm text-gray-600">
-        {staff.class_name ?? '—'}
+    <tr className="block border-b border-gray-200 last:border-0 hover:bg-gray-50 sm:table-row sm:border-0">
+      {/* Name cell — on mobile also shows status (top-right) and room/class (second line) */}
+      <td className="block px-4 pt-4 pb-0 sm:table-cell sm:px-6 sm:py-3 sm:align-top">
+        <div className="flex items-start justify-between gap-2 sm:block">
+          <span className="text-sm font-medium text-gray-900">{name}</span>
+          <span className="shrink-0 sm:hidden">
+            <StatusBadge record={record} />
+          </span>
+        </div>
+        {(staff.room_number || staff.class_name) && (
+          <p className="mt-0.5 text-xs text-gray-500 sm:hidden">
+            {[
+              staff.room_number && `Room ${staff.room_number}`,
+              staff.class_name,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        )}
       </td>
-      <td className="px-6 py-3 text-sm text-gray-600">
-        {staff.room_number ?? '—'}
+
+      {/* Action cell */}
+      <td className="block px-4 pt-2 pb-4 sm:table-cell sm:px-6 sm:py-3 sm:align-top">
+        {error && <p className="mb-1 text-xs text-red-600">{error}</p>}
+        {actionForm}
       </td>
-      <td className="px-6 py-3 text-sm">
+
+      {/* Status — hidden on mobile (rendered inside Name cell), visible on desktop */}
+      <td className="hidden sm:table-cell sm:px-6 sm:py-3 sm:align-top">
         <StatusBadge record={record} />
       </td>
-      <td className="px-6 py-3 text-sm">
-        {error && <p className="mb-1 text-xs text-red-600">{error}</p>}
-        {isSignedIn ? (
-          <form onSubmit={handleSignOut} className="flex items-center gap-2">
-            <input type="hidden" name="staffId" value={staff.id} />
-            <input type="hidden" name="date" value={date} />
-            <input
-              type="time"
-              name="time"
-              defaultValue={defaultTime}
-              required
-              disabled={isPending}
-              className="rounded-md border border-gray-200 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-60"
-            />
-            <button
-              type="submit"
-              disabled={isPending}
-              className="rounded-lg bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-800 transition hover:bg-amber-200 disabled:opacity-60"
-            >
-              {isPending ? 'Saving…' : 'Sign Out'}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleSignIn} className="flex items-center gap-2">
-            <input type="hidden" name="staffId" value={staff.id} />
-            <input type="hidden" name="date" value={date} />
-            <input
-              type="time"
-              name="time"
-              defaultValue={record?.signed_out_at ? defaultTime : defaultTime}
-              required
-              disabled={isPending}
-              className="rounded-md border border-gray-200 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-60"
-            />
-            <button
-              type="submit"
-              disabled={isPending}
-              className="rounded-lg bg-green-100 px-3 py-1.5 text-sm font-medium text-green-800 transition hover:bg-green-200 disabled:opacity-60"
-            >
-              {isPending ? 'Saving…' : 'Sign In'}
-            </button>
-          </form>
-        )}
+
+      {/* Room — hidden on mobile (rendered inside Name cell), visible on desktop */}
+      <td className="hidden text-sm text-gray-600 sm:table-cell sm:px-6 sm:py-3 sm:align-top">
+        {staff.room_number ?? '—'}
+      </td>
+
+      {/* Class — hidden on mobile (rendered inside Name cell), visible on desktop */}
+      <td className="hidden text-sm text-gray-600 sm:table-cell sm:px-6 sm:py-3 sm:align-top">
+        {staff.class_name ?? '—'}
       </td>
     </tr>
   )
@@ -148,9 +176,9 @@ export default function StaffAttendanceTable({
   return (
     <div className="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+        <thead className="hidden bg-gray-50 sm:table-header-group">
           <tr>
-            {['Name', 'Class', 'Room', 'Status', 'Action'].map((h) => (
+            {['Name', 'Action', 'Status', 'Room', 'Class'].map((h) => (
               <th
                 key={h}
                 className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase"

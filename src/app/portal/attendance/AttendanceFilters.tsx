@@ -49,7 +49,7 @@ export default function AttendanceFilters({
               type="button"
               onClick={() => navigate(cls.id, selectedDate)}
               disabled={isPending}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition disabled:opacity-60 ${
+              className={`min-w-24 flex-1 rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition disabled:opacity-60 sm:w-24 sm:flex-none ${
                 cls.id === selectedClassId
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50'

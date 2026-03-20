@@ -75,12 +75,11 @@ describe('StaffPage', () => {
     vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
 
     render(await StaffPage())
-    expect(screen.getByText('Jane')).toBeTruthy()
-    expect(screen.getByText('Smith')).toBeTruthy()
-    expect(screen.getByText('Jane Smith')).toBeTruthy()
+    // Full name shown in primary td; 'Jane Smith' also matches display_name column
+    expect(screen.getAllByText('Jane Smith').length).toBeGreaterThan(0)
+    // Bob has no display_name so full name only appears in the primary td
+    expect(screen.getByText('Bob Jones')).toBeTruthy()
     expect(screen.getByText('Teacher')).toBeTruthy()
-    expect(screen.getByText('Bob')).toBeTruthy()
-    expect(screen.getByText('Jones')).toBeTruthy()
     expect(screen.getByText('Admin')).toBeTruthy()
   })
 
@@ -116,7 +115,8 @@ describe('StaffPage', () => {
 
     render(await StaffPage())
     expect(screen.getByText('Contact')).toBeTruthy()
-    expect(screen.getByText('07700 900001')).toBeTruthy()
+    // Contact number appears in both mobile card and desktop column
+    expect(screen.getAllByText('07700 900001').length).toBeGreaterThan(0)
   })
 
   it('shows contact column for headteacher', async () => {
@@ -125,6 +125,7 @@ describe('StaffPage', () => {
 
     render(await StaffPage())
     expect(screen.getByText('Contact')).toBeTruthy()
-    expect(screen.getByText('07700 900001')).toBeTruthy()
+    // Contact number appears in both mobile card and desktop column
+    expect(screen.getAllByText('07700 900001').length).toBeGreaterThan(0)
   })
 })

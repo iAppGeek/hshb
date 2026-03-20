@@ -40,6 +40,7 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: '/portal/dashboard', label: 'Dashboard', Icon: HomeIcon },
+  { href: '/portal/staff', label: 'Staff', Icon: UserGroupIcon },
   { href: '/portal/students', label: 'Students', Icon: UsersIcon },
   { href: '/portal/classes', label: 'Classes', Icon: AcademicCapIcon },
   {
@@ -57,7 +58,6 @@ const navItems = [
     label: 'Incidents',
     Icon: ExclamationTriangleIcon,
   },
-  { href: '/portal/staff', label: 'Staff', Icon: UserGroupIcon },
   {
     href: '/portal/reports',
     label: 'Reports',

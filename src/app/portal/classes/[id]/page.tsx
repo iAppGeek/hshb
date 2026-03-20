@@ -93,7 +93,12 @@ export default async function ClassRegisterPage({
             {teacherName}
           </p>
           {teacher?.contact_number && (
-            <p className="text-sm text-gray-500">{teacher.contact_number}</p>
+            <a
+              href={`tel:${teacher.contact_number}`}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              {teacher.contact_number}
+            </a>
           )}
         </div>
         <div>
@@ -172,9 +177,12 @@ export default async function ClassRegisterPage({
                           {student.primary_guardian.last_name}
                         </span>
                         {student.primary_guardian.phone && (
-                          <span className="block text-gray-500">
+                          <a
+                            href={`tel:${student.primary_guardian.phone}`}
+                            className="block text-blue-600 hover:text-blue-800"
+                          >
                             {student.primary_guardian.phone}
-                          </span>
+                          </a>
                         )}
                       </>
                     ) : (

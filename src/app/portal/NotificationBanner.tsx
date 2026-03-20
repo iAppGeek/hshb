@@ -51,7 +51,7 @@ export default function NotificationBanner() {
   if (!visible) return null
 
   return (
-    <div className="mb-4 flex items-center justify-between gap-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+    <div className="mb-4 flex items-center justify-between gap-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 print:hidden">
       <div className="flex items-center gap-2">
         <BellIcon className="h-4 w-4 shrink-0" />
         <span>Enable notifications to be alerted when attendance is saved</span>

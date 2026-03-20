@@ -186,9 +186,10 @@ describe('StudentsTable', () => {
     expect(screen.getByText('Primary Guardian')).toBeTruthy()
   })
 
-  it('renders a Details button for each student', () => {
+  it('renders a Details button for each student (mobile + desktop)', () => {
     render(<StudentsTable students={students} role="admin" />)
-    expect(screen.getAllByRole('button', { name: 'Details' })).toHaveLength(2)
+    // Each student has a Details button in both the mobile card and desktop actions cell
+    expect(screen.getAllByRole('button', { name: 'Details' })).toHaveLength(4)
   })
 
   it('opens modal for the clicked student', () => {
@@ -203,7 +204,8 @@ describe('StudentsTable', () => {
 
   it('opens modal for the correct student when second row is clicked', () => {
     render(<StudentsTable students={students} role="admin" />)
-    fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[1])
+    // Order: [0]=Papadopoulos secondary, [1]=Papadopoulos desktop, [2]=Georgiou secondary, [3]=Georgiou desktop
+    fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[2])
     expect(
       within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick'),
     ).toBeTruthy()
@@ -221,7 +223,7 @@ describe('StudentsTable', () => {
   it('only shows one modal at a time', () => {
     render(<StudentsTable students={students} role="admin" />)
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])
-    fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[1])
+    fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[2])
     expect(screen.getAllByTestId('student-modal')).toHaveLength(1)
     expect(
       within(screen.getByTestId('student-modal')).getByText('Georgiou, Nick'),
@@ -231,11 +233,13 @@ describe('StudentsTable', () => {
   it('shows Edit links for admin with correct hrefs', () => {
     render(<StudentsTable students={students} role="admin" />)
     const editLinks = screen.getAllByRole('link', { name: 'Edit' })
-    expect(editLinks).toHaveLength(2)
+    // Each student has an Edit link in both the mobile name cell and desktop actions cell
+    expect(editLinks).toHaveLength(4)
+    // Order: [0]=student-1 mobile, [1]=student-1 desktop, [2]=student-2 mobile, [3]=student-2 desktop
     expect(editLinks[0].getAttribute('href')).toBe(
       '/portal/students/student-1/edit',
     )
-    expect(editLinks[1].getAttribute('href')).toBe(
+    expect(editLinks[2].getAttribute('href')).toBe(
       '/portal/students/student-2/edit',
     )
   })

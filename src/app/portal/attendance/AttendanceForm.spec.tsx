@@ -175,8 +175,7 @@ describe('AttendanceForm', () => {
 
     expect(screen.getByText('1 unmarked')).toBeTruthy()
 
-    const absentButtons = screen.getAllByText('Absent')
-    fireEvent.click(absentButtons[0])
+    fireEvent.click(screen.getAllByRole('button', { name: 'Absent' })[0])
 
     expect(screen.getByText('0 present')).toBeTruthy()
     expect(screen.getByText('1 absent')).toBeTruthy()
@@ -223,7 +222,8 @@ describe('AttendanceForm', () => {
         role="admin"
       />,
     )
-    expect(screen.getAllByRole('button', { name: 'Details' })).toHaveLength(2)
+    // Details button renders twice per student (mobile card + desktop column)
+    expect(screen.getAllByRole('button', { name: 'Details' })).toHaveLength(4)
   })
 
   it('opens the modal when Details is clicked', () => {
