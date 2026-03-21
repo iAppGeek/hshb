@@ -228,6 +228,61 @@ export type Database = {
           },
         ]
       }
+      lesson_plans: {
+        Row: {
+          class_id: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          lesson_date: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          lesson_date: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          lesson_date?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'lesson_plans_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'lesson_plans_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'staff'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'lesson_plans_updated_by_fkey'
+            columns: ['updated_by']
+            isOneToOne: false
+            referencedRelation: 'staff'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       push_subscriptions: {
         Row: {
           auth: string

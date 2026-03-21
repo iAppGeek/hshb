@@ -10,6 +10,7 @@ import {
   ChartBarIcon,
   ExclamationTriangleIcon,
   ClockIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline'
 
 import { auth, signOut } from '@/auth'
@@ -49,6 +50,11 @@ const navItems = [
     href: '/portal/attendance',
     label: 'Attendance',
     Icon: ClipboardDocumentCheckIcon,
+  },
+  {
+    href: '/portal/lesson-plans',
+    label: 'Lesson Plans',
+    Icon: DocumentTextIcon,
   },
   {
     href: '/portal/staff-attendance',

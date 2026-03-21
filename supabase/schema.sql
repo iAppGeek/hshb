@@ -218,6 +218,30 @@ CREATE INDEX ON incidents (type);
 CREATE INDEX ON incidents (incident_date DESC);
 
 
+-- ─── Lesson Plans ───────────────────────────────────────────────────────────
+-- One lesson plan per class per calendar day.
+
+CREATE TABLE lesson_plans (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  class_id      UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+  lesson_date   DATE NOT NULL,
+  description   TEXT NOT NULL,
+  created_by    UUID NOT NULL REFERENCES staff(id),
+  updated_by    UUID REFERENCES staff(id),
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (class_id, lesson_date)
+);
+
+CREATE TRIGGER lesson_plans_updated_at
+  BEFORE UPDATE ON lesson_plans
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+ALTER TABLE lesson_plans ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX ON lesson_plans (lesson_date DESC);
+CREATE INDEX ON lesson_plans (class_id);
+
 -- ─── Staff Attendance ─────────────────────────────────────────────────────────
 -- One record per staff member per date. signed_in_at is user-provided (not auto
 -- NOW()) so admins can backfill accurate arrival times for past dates.

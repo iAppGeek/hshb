@@ -57,6 +57,14 @@ export {
 } from './incidents'
 export type { IncidentType, IncidentRow } from './incidents'
 export {
+  getLessonPlanCount,
+  getLessonPlans,
+  getLessonPlanById,
+  createLessonPlan,
+  updateLessonPlan,
+} from './lesson-plans'
+export type { LessonPlanRow } from './lesson-plans'
+export {
   savePushSubscription,
   deletePushSubscription,
   pushSubscriptionExists,

@@ -17,6 +17,7 @@ import {
   ChartBarIcon,
   ExclamationTriangleIcon,
   ClockIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline'
 
 import logo from '@/images/logo.png'
@@ -29,6 +30,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   '/portal/staff-attendance': ClockIcon,
   '/portal/incidents': ExclamationTriangleIcon,
   '/portal/staff': UserGroupIcon,
+  '/portal/lesson-plans': DocumentTextIcon,
   '/portal/reports': ChartBarIcon,
 }
 
