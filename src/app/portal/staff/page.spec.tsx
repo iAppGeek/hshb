@@ -77,8 +77,8 @@ describe('StaffPage', () => {
     render(await StaffPage())
     // Full name shown in primary td; 'Jane Smith' also matches display_name column
     expect(screen.getAllByText('Jane Smith').length).toBeGreaterThan(0)
-    // Bob has no display_name so full name only appears in the primary td
-    expect(screen.getByText('Bob Jones')).toBeTruthy()
+    // Bob has no display_name; last name appears directly in the desktop-only column
+    expect(screen.getAllByText('Jones').length).toBeGreaterThan(0)
     expect(screen.getByText('Teacher')).toBeTruthy()
     expect(screen.getByText('Admin')).toBeTruthy()
   })

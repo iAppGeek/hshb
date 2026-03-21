@@ -1,4 +1,5 @@
-const CACHE_NAME = 'hshb-portal-v1'
+const CACHE_NAME = 'hshb-portal-v2'
+
 const PRECACHE_URLS = [
   '/manifest.portal.json',
   '/portal-offline.html',
@@ -41,8 +42,12 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Static assets (_next/static): cache-first (content-hashed, immutable)
-  if (url.pathname.startsWith('/_next/static/')) {
+  // Fonts and CSS only: cache-first (content-hashed, immutable, small set)
+  // JS chunks are already handled by browser HTTP cache (Cache-Control: immutable)
+  if (
+    url.pathname.startsWith('/_next/static/media/') ||
+    url.pathname.startsWith('/_next/static/css/')
+  ) {
     event.respondWith(
       caches.match(event.request).then(
         (cached) =>

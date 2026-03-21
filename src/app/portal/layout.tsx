@@ -14,13 +14,14 @@ import {
 
 import { auth, signOut } from '@/auth'
 import logo from '@/images/logo.png'
+import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
 
 import { revalidateAllCaches } from './actions'
-import NotificationBanner from './NotificationBanner'
-import NotificationToggle from './NotificationToggle'
-import PortalSidebar from './PortalSidebar'
-import PwaRegistrar from './PwaRegistrar'
+import NotificationBanner from './_components/NotificationBanner'
+import NotificationToggle from './_components/NotificationToggle'
+import PortalSidebar from './_components/PortalSidebar'
+import PwaRegistrar from './_components/PwaRegistrar'
 
 export const viewport: Viewport = {
   themeColor: '#1e40af',
@@ -65,12 +66,6 @@ const navItems = [
     roles: ['admin', 'headteacher'] as StaffRole[],
   },
 ]
-
-const roleLabels: Record<StaffRole, string> = {
-  teacher: 'Teacher',
-  admin: 'Admin',
-  headteacher: 'Headteacher',
-}
 
 async function AuthedSidebar() {
   const session = await auth()
@@ -153,21 +148,19 @@ export default function PortalLayout({
   children: React.ReactNode
 }) {
   return (
-    <>
-      <div className="flex min-h-screen bg-gray-100 print:min-h-0">
-        <PwaRegistrar />
-        <Suspense fallback={<SidebarLoadingSkeleton />}>
-          <AuthedSidebar />
-        </Suspense>
+    <div className="flex min-h-screen bg-gray-100 print:min-h-0">
+      <PwaRegistrar />
+      <Suspense fallback={<SidebarLoadingSkeleton />}>
+        <AuthedSidebar />
+      </Suspense>
 
-        {/* pt-20 on mobile clears the fixed top bar; reverts to p-8 on md+ */}
-        <main className="flex-1 overflow-auto px-4 py-6 pt-20 md:p-8">
-          <Suspense fallback={null}>
-            <AuthedNotificationBanner />
-          </Suspense>
-          {children}
-        </main>
-      </div>
-    </>
+      {/* pt-20 on mobile clears the fixed top bar; reverts to p-8 on md+ */}
+      <main className="flex-1 overflow-auto px-4 py-6 pt-20 md:p-8">
+        <Suspense fallback={null}>
+          <AuthedNotificationBanner />
+        </Suspense>
+        {children}
+      </main>
+    </div>
   )
 }

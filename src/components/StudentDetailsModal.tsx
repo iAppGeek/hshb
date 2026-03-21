@@ -2,8 +2,12 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 
 import type { StaffRole } from '@/types/next-auth'
+
+const SECTION_H =
+  'mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase'
 
 type GuardianInfo = {
   first_name: string
@@ -92,28 +96,14 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
             className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
             aria-label="Close"
           >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
         <div className="flex-1 space-y-4 overflow-y-auto px-6 py-4">
           {hasStudentAddress && (
             <section>
-              <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Student Address
-              </h3>
+              <h3 className={SECTION_H}>Student Address</h3>
               <AddressBlock
                 address_line_1={student.address_line_1}
                 address_line_2={student.address_line_2}
@@ -128,15 +118,20 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
               hasStudentAddress ? 'border-t border-gray-100 pt-4' : undefined
             }
           >
-            <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-              Primary Guardian
-            </h3>
+            <h3 className={SECTION_H}>Primary Guardian</h3>
             {student.primary_guardian ? (
-              <GuardianCard
-                guardian={student.primary_guardian}
-                guardianId={student.primary_guardian_id}
+              <PersonCard
+                firstName={student.primary_guardian.first_name}
+                lastName={student.primary_guardian.last_name}
+                phone={student.primary_guardian.phone}
+                id={student.primary_guardian_id}
                 relationship={student.primary_guardian_relationship}
                 role={role}
+                email={student.primary_guardian.email}
+                addressLine1={student.primary_guardian.address_line_1}
+                addressLine2={student.primary_guardian.address_line_2}
+                city={student.primary_guardian.city}
+                postcode={student.primary_guardian.postcode}
               />
             ) : (
               <p className="text-sm text-gray-400">No details recorded.</p>
@@ -145,26 +140,31 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
 
           {student.secondary_guardian && (
             <section className="border-t border-gray-100 pt-4">
-              <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Secondary Guardian
-              </h3>
-              <GuardianCard
-                guardian={student.secondary_guardian}
-                guardianId={student.secondary_guardian_id}
+              <h3 className={SECTION_H}>Secondary Guardian</h3>
+              <PersonCard
+                firstName={student.secondary_guardian.first_name}
+                lastName={student.secondary_guardian.last_name}
+                phone={student.secondary_guardian.phone}
+                id={student.secondary_guardian_id}
                 relationship={student.secondary_guardian_relationship}
                 role={role}
+                email={student.secondary_guardian.email}
+                addressLine1={student.secondary_guardian.address_line_1}
+                addressLine2={student.secondary_guardian.address_line_2}
+                city={student.secondary_guardian.city}
+                postcode={student.secondary_guardian.postcode}
               />
             </section>
           )}
 
           {student.additional_contact_1 && (
             <section className="border-t border-gray-100 pt-4">
-              <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Additional Contact 1
-              </h3>
-              <ContactCard
-                contact={student.additional_contact_1}
-                contactId={student.additional_contact_1_id}
+              <h3 className={SECTION_H}>Additional Contact 1</h3>
+              <PersonCard
+                firstName={student.additional_contact_1.first_name}
+                lastName={student.additional_contact_1.last_name}
+                phone={student.additional_contact_1.phone}
+                id={student.additional_contact_1_id}
                 relationship={student.additional_contact_1_relationship}
                 role={role}
               />
@@ -173,12 +173,12 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
 
           {student.additional_contact_2 && (
             <section className="border-t border-gray-100 pt-4">
-              <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Additional Contact 2
-              </h3>
-              <ContactCard
-                contact={student.additional_contact_2}
-                contactId={student.additional_contact_2_id}
+              <h3 className={SECTION_H}>Additional Contact 2</h3>
+              <PersonCard
+                firstName={student.additional_contact_2.first_name}
+                lastName={student.additional_contact_2.last_name}
+                phone={student.additional_contact_2.phone}
+                id={student.additional_contact_2_id}
                 relationship={student.additional_contact_2_relationship}
                 role={role}
               />
@@ -186,9 +186,7 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
           )}
 
           <section className="border-t border-gray-100 pt-4">
-            <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-              Classes
-            </h3>
+            <h3 className={SECTION_H}>Classes</h3>
             <p className="text-sm text-gray-600">
               {student.student_classes.length > 0
                 ? student.student_classes
@@ -205,9 +203,7 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
           </section>
 
           <section className="border-t border-gray-100 pt-4">
-            <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-              Allergies
-            </h3>
+            <h3 className={SECTION_H}>Allergies</h3>
             <p className="text-sm text-gray-600">
               {student.allergies ?? 'N/A'}
             </p>
@@ -216,17 +212,13 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
           {(role === 'admin' || role === 'headteacher') && (
             <>
               <section className="border-t border-gray-100 pt-4">
-                <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Medical Details
-                </h3>
+                <h3 className={SECTION_H}>Medical Details</h3>
                 <p className="text-sm text-gray-600">
                   {student.medical_details ?? '—'}
                 </p>
               </section>
               <section className="border-t border-gray-100 pt-4">
-                <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Notes
-                </h3>
+                <h3 className={SECTION_H}>Notes</h3>
                 <p className="text-sm text-gray-600">{student.notes ?? '—'}</p>
               </section>
             </>
@@ -237,95 +229,68 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
   )
 }
 
-function GuardianCard({
-  guardian,
-  guardianId,
-  relationship,
-  role,
-}: {
-  guardian: GuardianInfo
-  guardianId: string | null
+type PersonCardProps = {
+  firstName: string
+  lastName: string
+  phone: string
+  id: string | null
   relationship: string | null
   role: StaffRole
-}) {
-  return (
-    <div className="space-y-0.5">
-      <div className="flex items-center gap-2">
-        <p className="text-sm font-medium text-gray-900">
-          {guardian.first_name} {guardian.last_name}
-          {relationship && (
-            <span className="ml-1 font-normal text-gray-500">
-              ({relationship})
-            </span>
-          )}
-        </p>
-        {role === 'admin' && guardianId && (
-          <Link
-            href={`/portal/guardians/${guardianId}/edit`}
-            className="text-xs text-blue-600 hover:text-blue-800"
-          >
-            Edit
-          </Link>
-        )}
-      </div>
-      {guardian.email && (
-        <p className="text-sm text-gray-600">{guardian.email}</p>
-      )}
-      <a
-        href={`tel:${guardian.phone}`}
-        className="text-sm text-blue-600 hover:text-blue-800"
-      >
-        {guardian.phone}
-      </a>
-      {(guardian.address_line_1 || guardian.city || guardian.postcode) && (
-        <AddressBlock
-          address_line_1={guardian.address_line_1}
-          address_line_2={guardian.address_line_2}
-          city={guardian.city}
-          postcode={guardian.postcode}
-        />
-      )}
-    </div>
-  )
+  email?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  postcode?: string | null
 }
 
-function ContactCard({
-  contact,
-  contactId,
+function PersonCard({
+  firstName,
+  lastName,
+  phone,
+  id,
   relationship,
   role,
-}: {
-  contact: AdditionalContact
-  contactId: string | null
-  relationship: string | null
-  role: StaffRole
-}) {
+  email,
+  addressLine1,
+  addressLine2,
+  city,
+  postcode,
+}: PersonCardProps) {
   return (
     <div className="space-y-0.5">
       <div className="flex items-center gap-2">
         <p className="text-sm font-medium text-gray-900">
-          {contact.first_name} {contact.last_name}
+          {firstName} {lastName}
           {relationship && (
             <span className="ml-1 font-normal text-gray-500">
               ({relationship})
             </span>
           )}
         </p>
-        {role === 'admin' && contactId && (
+        {role === 'admin' && id && (
           <Link
-            href={`/portal/guardians/${contactId}/edit`}
+            href={`/portal/guardians/${id}/edit`}
             className="text-xs text-blue-600 hover:text-blue-800"
           >
             Edit
           </Link>
         )}
       </div>
+      {email && <p className="text-sm text-gray-600">{email}</p>}
       <a
-        href={`tel:${contact.phone}`}
+        href={`tel:${phone}`}
         className="text-sm text-blue-600 hover:text-blue-800"
       >
-        {contact.phone}
+        {phone}
       </a>
+      {(addressLine1 || city || postcode) && (
+        <AddressBlock
+          address_line_1={addressLine1 ?? null}
+          address_line_2={addressLine2 ?? null}
+          city={city ?? null}
+          postcode={postcode ?? null}
+        />
+      )}
     </div>
   )
 }

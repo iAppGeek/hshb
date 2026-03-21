@@ -535,4 +535,62 @@ describe('StudentDetailsModal', () => {
     )
     expect(screen.getByText('Year 1A')).toBeTruthy()
   })
+
+  it('renders additional contact phone as a tel link', () => {
+    render(
+      <StudentDetailsModal
+        student={{
+          ...baseStudent,
+          additional_contact_1: {
+            first_name: 'Uncle',
+            last_name: 'Bob',
+            phone: '07700 900099',
+          },
+          additional_contact_1_relationship: 'Uncle',
+        }}
+        role="admin"
+        onClose={onClose}
+      />,
+    )
+    const link = screen.getByRole('link', { name: '07700 900099' })
+    expect(link.getAttribute('href')).toBe('tel:07700 900099')
+  })
+
+  it('renders additional contact relationship when provided', () => {
+    render(
+      <StudentDetailsModal
+        student={{
+          ...baseStudent,
+          additional_contact_1: {
+            first_name: 'Uncle',
+            last_name: 'Bob',
+            phone: '07700 900099',
+          },
+          additional_contact_1_relationship: 'Uncle',
+        }}
+        role="admin"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.getByText('(Uncle)')).toBeTruthy()
+  })
+
+  it('does not show Edit link for additional contact when role is teacher', () => {
+    render(
+      <StudentDetailsModal
+        student={{
+          ...baseStudent,
+          additional_contact_1_id: 'contact-99',
+          additional_contact_1: {
+            first_name: 'Uncle',
+            last_name: 'Bob',
+            phone: '07700 900099',
+          },
+        }}
+        role="teacher"
+        onClose={onClose}
+      />,
+    )
+    expect(screen.queryByRole('link', { name: 'Edit' })).toBeNull()
+  })
 })

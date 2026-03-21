@@ -41,7 +41,7 @@ export default function IosSplashLinks() {
       {/* Fallback for unrecognised future screen sizes */}
       <link
         rel="apple-touch-startup-image"
-        href="/icons/splash/apple-splash-1290-2796.png"
+        href="/icons/splash/apple-splash-1320-2868.png"
       />
       {splashScreens.map(({ w, h, dpr, portrait, landscape }) => (
         <React.Fragment key={portrait}>

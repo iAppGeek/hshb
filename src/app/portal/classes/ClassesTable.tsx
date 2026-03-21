@@ -22,6 +22,10 @@ type Props = {
   canEdit: boolean
 }
 
+const TH =
+  'px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6'
+const TD = 'hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6'
+
 function StatusBadge({ active }: { active: boolean }) {
   return active ? (
     <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
@@ -41,27 +45,13 @@ export default function ClassesTable({ classes, canEdit }: Props) {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="hidden bg-gray-50 sm:table-header-group">
             <tr>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                Name
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                Year Group
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                Room
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                Teacher
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                Academic Year
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                Status
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                Actions
-              </th>
+              <th className={TH}>Name</th>
+              <th className={TH}>Year Group</th>
+              <th className={TH}>Room</th>
+              <th className={TH}>Teacher</th>
+              <th className={TH}>Academic Year</th>
+              <th className={TH}>Status</th>
+              <th className={TH}>Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
@@ -77,17 +67,15 @@ export default function ClassesTable({ classes, canEdit }: Props) {
                 >
                   {/* Name — on mobile: name + status left, Edit link right */}
                   <td className="block px-4 pt-4 pb-0 text-sm font-medium text-gray-900 sm:table-cell sm:px-6 sm:py-4 sm:whitespace-nowrap">
-                    <div className="flex items-center justify-between gap-2 sm:block">
-                      <div className="flex items-center gap-2">
-                        <span>{cls.name}</span>
-                        <span className="sm:hidden">
-                          <StatusBadge active={cls.active} />
-                        </span>
-                      </div>
+                    <div className="flex items-center gap-2 sm:block">
+                      {cls.name}
+                      <span className="sm:hidden">
+                        <StatusBadge active={cls.active} />
+                      </span>
                       {canEdit && (
                         <Link
                           href={`/portal/classes/${cls.id}/edit`}
-                          className="shrink-0 text-sm text-gray-500 hover:text-gray-700 sm:hidden"
+                          className="ml-auto shrink-0 text-sm text-gray-500 hover:text-gray-700 sm:hidden"
                         >
                           Edit
                         </Link>
@@ -118,18 +106,10 @@ export default function ClassesTable({ classes, canEdit }: Props) {
                   </td>
 
                   {/* Desktop-only columns */}
-                  <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
-                    {cls.year_group}
-                  </td>
-                  <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
-                    {cls.room_number ?? '—'}
-                  </td>
-                  <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
-                    {teacherName}
-                  </td>
-                  <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
-                    {cls.academic_year ?? '—'}
-                  </td>
+                  <td className={TD}>{cls.year_group}</td>
+                  <td className={TD}>{cls.room_number ?? '—'}</td>
+                  <td className={TD}>{teacherName}</td>
+                  <td className={TD}>{cls.academic_year ?? '—'}</td>
                   <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
                     <StatusBadge active={cls.active} />
                   </td>

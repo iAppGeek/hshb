@@ -18,15 +18,10 @@ import {
   getIncidentCount,
   getGuardianCount,
 } from '@/db'
+import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
 
 export const metadata: Metadata = { title: 'Dashboard' }
-
-const roleLabels: Record<StaffRole, string> = {
-  teacher: 'Teacher',
-  admin: 'Admin',
-  headteacher: 'Headteacher',
-}
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -90,7 +85,7 @@ export default async function DashboardPage() {
   ]
 
   return (
-    <div>
+    <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
           Welcome back, {session?.user?.name?.split(' ')[0]}
@@ -117,6 +112,6 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </div>
-    </div>
+    </>
   )
 }

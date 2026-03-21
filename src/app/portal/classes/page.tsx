@@ -6,6 +6,9 @@ import { auth } from '@/auth'
 import { getAllClassesIncludingInactive, getClassesByTeacher } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
+import EmptyState from '../_components/EmptyState'
+import PageHeader from '../_components/PageHeader'
+
 import ClassesTable, { type ClassRow } from './ClassesTable'
 
 export const metadata: Metadata = { title: 'Classes' }
@@ -24,26 +27,26 @@ export default async function ClassesPage() {
     : await getClassesByTeacher(session.user.staffId)
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Classes</h1>
-        {canEdit && (
-          <Link
-            href="/portal/classes/new"
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
-          >
-            Add Class
-          </Link>
-        )}
-      </div>
+    <>
+      <PageHeader
+        title="Classes"
+        action={
+          canEdit && (
+            <Link
+              href="/portal/classes/new"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+            >
+              Add Class
+            </Link>
+          )
+        }
+      />
 
       {classes.length === 0 ? (
-        <div className="rounded-xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-200">
-          <p className="text-gray-500">No classes found.</p>
-        </div>
+        <EmptyState message="No classes found." />
       ) : (
         <ClassesTable classes={classes as ClassRow[]} canEdit={canEdit} />
       )}
-    </div>
+    </>
   )
 }

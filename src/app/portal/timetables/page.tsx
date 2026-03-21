@@ -9,6 +9,10 @@ import {
 } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
+import EmptyState from '../_components/EmptyState'
+import PageHeader from '../_components/PageHeader'
+import SectionCard from '../_components/SectionCard'
+
 export const metadata: Metadata = { title: 'Timetables' }
 
 const DAYS = [
@@ -20,6 +24,9 @@ const DAYS = [
   'Saturday',
   'Sunday',
 ] as const
+
+const TH =
+  'px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase'
 
 export default async function TimetablesPage() {
   const session = await auth()
@@ -46,49 +53,35 @@ export default async function TimetablesPage() {
   })).filter((d) => d.slots.length > 0)
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Timetables</h1>
-        {(role === 'admin' || role === 'headteacher') && (
-          <button
-            disabled
-            title="Timetable slot creation coming soon"
-            className="cursor-not-allowed rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50 shadow-sm"
-          >
-            Add slot
-          </button>
-        )}
-      </div>
+    <>
+      <PageHeader
+        title="Timetables"
+        action={
+          (role === 'admin' || role === 'headteacher') && (
+            <button
+              disabled
+              title="Timetable slot creation coming soon"
+              className="cursor-not-allowed rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50 shadow-sm"
+            >
+              Add slot
+            </button>
+          )
+        }
+      />
 
       {slotsByDay.length === 0 ? (
-        <div className="rounded-xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-200">
-          <p className="text-gray-500">No timetable slots found.</p>
-        </div>
+        <EmptyState message="No timetable slots found." />
       ) : (
         <div className="space-y-6">
           {slotsByDay.map(({ day, slots: daySlots }) => (
-            <div
-              key={day}
-              className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200"
-            >
-              <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
-                <h2 className="text-sm font-semibold text-gray-700">{day}</h2>
-              </div>
+            <SectionCard key={day} title={day}>
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                      Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                      Class
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                      Subject
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                      Room
-                    </th>
+                    <th className={TH}>Time</th>
+                    <th className={TH}>Class</th>
+                    <th className={TH}>Subject</th>
+                    <th className={TH}>Room</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -114,10 +107,10 @@ export default async function TimetablesPage() {
                   })}
                 </tbody>
               </table>
-            </div>
+            </SectionCard>
           ))}
         </div>
       )}
-    </div>
+    </>
   )
 }

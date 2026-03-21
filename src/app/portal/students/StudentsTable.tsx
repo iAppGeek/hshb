@@ -17,6 +17,10 @@ type Props = {
   role: StaffRole
 }
 
+const TH =
+  'px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6'
+const TD = 'hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6'
+
 export default function StudentsTable({ students, role }: Props) {
   const [selected, setSelected] = useState<Student | null>(null)
   const [query, setQuery] = useState('')
@@ -37,32 +41,22 @@ export default function StudentsTable({ students, role }: Props) {
 
   return (
     <>
-      <div className="mb-4">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search students…"
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:max-w-xs"
-        />
-      </div>
+      <input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search students…"
+        className="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:max-w-xs"
+      />
       <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="hidden bg-gray-50 sm:table-header-group">
               <tr>
-                <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                  Name
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                  Code
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                  Classes
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6">
-                  Primary Guardian
-                </th>
+                <th className={TH}>Name</th>
+                <th className={TH}>Code</th>
+                <th className={TH}>Classes</th>
+                <th className={TH}>Primary Guardian</th>
                 <th className="relative px-3 py-3 sm:px-6">
                   <span className="sr-only">Actions</span>
                 </th>
@@ -121,15 +115,9 @@ export default function StudentsTable({ students, role }: Props) {
                     </td>
 
                     {/* Desktop-only columns */}
-                    <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
-                      {student.student_code ?? '—'}
-                    </td>
-                    <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
-                      {classNames}
-                    </td>
-                    <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6">
-                      {guardianName}
-                    </td>
+                    <td className={TD}>{student.student_code ?? '—'}</td>
+                    <td className={TD}>{classNames}</td>
+                    <td className={TD}>{guardianName}</td>
                     <td className="hidden px-3 py-4 text-right text-sm font-medium sm:table-cell sm:px-6">
                       <div className="flex items-center justify-end gap-3">
                         {role === 'admin' && (

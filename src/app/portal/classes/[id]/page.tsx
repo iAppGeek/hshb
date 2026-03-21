@@ -6,6 +6,8 @@ import { auth } from '@/auth'
 import { getClassWithStudents } from '@/db'
 import type { StaffRole } from '@/types/next-auth'
 
+import EmptyState from '../../_components/EmptyState'
+
 import PrintButton from './PrintButton'
 
 export const metadata: Metadata = { title: 'Class Register' }
@@ -59,6 +61,9 @@ export default async function ClassRegisterPage({
       return lnc !== 0 ? lnc : a.first_name.localeCompare(b.first_name)
     })
 
+  const LABEL =
+    'text-xs font-medium tracking-wide text-gray-500 uppercase print:font-bold print:text-gray-900'
+
   return (
     <div className="max-w-5xl print:max-w-none">
       <style>{`@page { size: A4 portrait; margin: 10mm; } @media print { a[href]::after { content: none !important; } }`}</style>
@@ -86,9 +91,7 @@ export default async function ClassRegisterPage({
       {/* Class info */}
       <div className="mb-6 grid grid-cols-2 gap-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 sm:grid-cols-4 print:mb-4 print:rounded-none print:p-px print:shadow-none print:ring-0">
         <div>
-          <p className="text-xs font-medium tracking-wide text-gray-500 uppercase print:font-bold print:text-gray-900">
-            Teacher
-          </p>
+          <p className={LABEL}>Teacher</p>
           <p className="mt-1 text-sm font-medium text-gray-900">
             {teacherName}
           </p>
@@ -102,25 +105,19 @@ export default async function ClassRegisterPage({
           )}
         </div>
         <div>
-          <p className="text-xs font-medium tracking-wide text-gray-500 uppercase print:font-bold print:text-gray-900">
-            Year Group
-          </p>
+          <p className={LABEL}>Year Group</p>
           <p className="mt-1 text-sm font-medium text-gray-900">
             Year {cls.year_group}
           </p>
         </div>
         <div>
-          <p className="text-xs font-medium tracking-wide text-gray-500 uppercase print:font-bold print:text-gray-900">
-            Academic Year
-          </p>
+          <p className={LABEL}>Academic Year</p>
           <p className="mt-1 text-sm font-medium text-gray-900">
             {cls.academic_year ?? '—'}
           </p>
         </div>
         <div>
-          <p className="text-xs font-medium tracking-wide text-gray-500 uppercase print:font-bold print:text-gray-900">
-            Date
-          </p>
+          <p className={LABEL}>Date</p>
           <p className="mt-1 min-w-[100px] border-b border-gray-300 pb-1 text-sm">
             &nbsp;
           </p>
@@ -129,8 +126,8 @@ export default async function ClassRegisterPage({
 
       {/* Students */}
       {students.length === 0 ? (
-        <div className="rounded-xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-200 print:hidden">
-          <p className="text-gray-500">No students enrolled in this class.</p>
+        <div className="print:hidden">
+          <EmptyState message="No students enrolled in this class." />
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-gray-200 print:overflow-visible print:rounded-none print:shadow-none print:ring-0">

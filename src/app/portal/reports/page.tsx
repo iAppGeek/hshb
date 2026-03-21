@@ -13,7 +13,12 @@ import {
   getStaffSignedInCount,
 } from '@/db'
 
+import SectionCard from '../_components/SectionCard'
+
 export const metadata: Metadata = { title: 'Reports' }
+
+const TH =
+  'px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase'
 
 export default async function ReportsPage({
   searchParams,
@@ -97,7 +102,7 @@ export default async function ReportsPage({
   ]
 
   return (
-    <div>
+    <>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -150,25 +155,14 @@ export default async function ReportsPage({
       </div>
 
       {/* Enrolment by class */}
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
-        <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
-          <h2 className="text-sm font-semibold text-gray-900">
-            Attendance by Class
-          </h2>
-        </div>
+      <SectionCard title="Attendance by Class">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Class
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Attendance
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Record Times
-                </th>
+                <th className={TH}>Class</th>
+                <th className={TH}>Attendance</th>
+                <th className={TH}>Record Times</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -199,7 +193,7 @@ export default async function ReportsPage({
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </SectionCard>
+    </>
   )
 }

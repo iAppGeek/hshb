@@ -4,7 +4,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import clsx from 'clsx'
 
 import '../styles/tailwind.css'
-import IosSplashLinks from './portal/IosSplashLinks'
+import IosSplashLinks from './portal/_components/IosSplashLinks'
 
 const inter = Inter({
   subsets: ['latin'],
