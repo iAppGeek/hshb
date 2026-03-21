@@ -7,6 +7,7 @@ import {
   getClassesByTeacher,
   getAllClasses,
 } from '@/db'
+import { isTeacher, canEditTimetables } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import EmptyState from '../_components/EmptyState'
@@ -32,11 +33,11 @@ export default async function TimetablesPage() {
   const session = await auth()
   const role = session?.user?.role as StaffRole
   const staffId = session?.user?.staffId
-  const isTeacher = role === 'teacher'
+  const teacherOnly = isTeacher(role)
 
   const [classes, slots] = await Promise.all([
-    isTeacher ? getClassesByTeacher(staffId!) : getAllClasses(),
-    isTeacher
+    teacherOnly ? getClassesByTeacher(staffId!) : getAllClasses(),
+    teacherOnly
       ? (async () => {
           const myClasses = await getClassesByTeacher(staffId!)
           const perClass = await Promise.all(
@@ -57,7 +58,7 @@ export default async function TimetablesPage() {
       <PageHeader
         title="Timetables"
         action={
-          (role === 'admin' || role === 'headteacher') && (
+          canEditTimetables(role) && (
             <button
               disabled
               title="Timetable slot creation coming soon"

@@ -56,6 +56,8 @@ describe('StaffAttendanceTable', () => {
         ]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -71,6 +73,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: null }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -83,6 +87,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: signedInRecord }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -96,6 +102,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: signedOutRecord }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -111,6 +119,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: null }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -131,6 +141,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: signedInRecord }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -151,6 +163,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: null }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -173,6 +187,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: signedInRecord }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -193,6 +209,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: null }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -205,6 +223,8 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffB, record: null }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
@@ -217,10 +237,63 @@ describe('StaffAttendanceTable', () => {
         rows={[{ staff: staffA, record: signedInRecord }]}
         defaultTime="09:00"
         date="2026-03-18"
+        role="admin"
+        currentStaffId="admin-1"
       />,
     )
 
     // StatusBadge renders in both the mobile name cell and the hidden desktop cell
     expect(screen.getAllByText(/Signed In/)).toHaveLength(2)
+  })
+
+  it('allows secretary to interact with own row (sign in)', async () => {
+    vi.mocked(signInAction).mockResolvedValue(undefined)
+
+    render(
+      <StaffAttendanceTable
+        rows={[
+          { staff: staffA, record: null },
+          { staff: staffB, record: null },
+        ]}
+        defaultTime="09:00"
+        date="2026-03-18"
+        role="secretary"
+        currentStaffId="staff-1"
+      />,
+    )
+
+    // staffA is current user (secretary) — should have a Sign In button
+    const signInButtons = screen.getAllByRole('button', { name: 'Sign In' })
+    expect(signInButtons).toHaveLength(1)
+
+    await act(async () => {
+      fireEvent.submit(signInButtons[0].closest('form')!)
+    })
+
+    expect(signInAction).toHaveBeenCalled()
+  })
+
+  it('disables interaction for secretary on other staff rows', () => {
+    render(
+      <StaffAttendanceTable
+        rows={[
+          { staff: staffA, record: null },
+          { staff: staffB, record: null },
+        ]}
+        defaultTime="09:00"
+        date="2026-03-18"
+        role="secretary"
+        currentStaffId="staff-1"
+      />,
+    )
+
+    // Only one Sign In button (for secretary's own row), other row shows disabled state
+    const signInButtons = screen.getAllByRole('button', { name: 'Sign In' })
+    expect(signInButtons).toHaveLength(1)
+
+    // The disabled row renders tooltip text instead of a form
+    expect(
+      screen.getByText('You can only sign yourself in/out'),
+    ).toBeInTheDocument()
   })
 })

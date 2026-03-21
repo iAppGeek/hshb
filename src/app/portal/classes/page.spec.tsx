@@ -143,4 +143,30 @@ describe('ClassesPage', () => {
     expect(screen.getByTestId('classes-table')).toBeTruthy()
     expect(screen.getByText('Year 1A')).toBeTruthy()
   })
+
+  it('fetches all classes for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getAllClassesIncludingInactive).mockResolvedValue(
+      mockClasses as any,
+    )
+
+    render(await ClassesPage())
+    expect(getAllClassesIncludingInactive).toHaveBeenCalled()
+    expect(getClassesByTeacher).not.toHaveBeenCalled()
+    expect(screen.getByTestId('classes-table')).toBeTruthy()
+  })
+
+  it('does not show Add Class button for secretary', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getAllClassesIncludingInactive).mockResolvedValue(
+      mockClasses as any,
+    )
+
+    render(await ClassesPage())
+    expect(screen.queryByRole('link', { name: 'Add Class' })).toBeNull()
+  })
 })

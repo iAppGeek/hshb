@@ -5,6 +5,8 @@ import { useState, useTransition } from 'react'
 import StudentDetailsModal, {
   type StudentForModal,
 } from '@/components/StudentDetailsModal'
+import Tooltip from '@/components/Tooltip'
+import { canUpdateAttendance } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import { saveAttendanceAction } from './actions'
@@ -21,6 +23,7 @@ type Props = {
   students: Student[]
   existing: Record<string, AttendanceStatus>
   role: StaffRole
+  hasExisting: boolean
 }
 
 export default function AttendanceForm({
@@ -29,6 +32,7 @@ export default function AttendanceForm({
   students,
   existing,
   role,
+  hasExisting,
 }: Props) {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [statuses, setStatuses] = useState<
@@ -41,7 +45,9 @@ export default function AttendanceForm({
     return initial
   })
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const readOnly = hasExisting && !canUpdateAttendance(role)
 
   function toggle(studentId: string, status: AttendanceStatus) {
     setSaved(false)
@@ -50,10 +56,15 @@ export default function AttendanceForm({
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError(null)
     const form = e.currentTarget
     startTransition(async () => {
-      await saveAttendanceAction(new FormData(form))
-      setSaved(true)
+      const result = await saveAttendanceAction(new FormData(form))
+      if (result?.error) {
+        setError(result.error)
+      } else {
+        setSaved(true)
+      }
     })
   }
 
@@ -206,25 +217,34 @@ export default function AttendanceForm({
           </div>
 
           <div className="mt-4 flex items-center gap-4">
-            <span
-              title={
-                !allSelected
-                  ? `${counts.unset} student${counts.unset === 1 ? '' : 's'} still unmarked`
-                  : undefined
-              }
-              className={!allSelected ? 'cursor-not-allowed' : undefined}
-            >
-              <button
-                type="submit"
-                disabled={isPending || !allSelected}
-                className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50"
+            {readOnly ? (
+              <Tooltip text="You cannot update existing attendance records">
+                <span className="cursor-not-allowed rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white opacity-50 shadow-sm">
+                  Save register
+                </span>
+              </Tooltip>
+            ) : (
+              <span
+                title={
+                  !allSelected
+                    ? `${counts.unset} student${counts.unset === 1 ? '' : 's'} still unmarked`
+                    : undefined
+                }
+                className={!allSelected ? 'cursor-not-allowed' : undefined}
               >
-                {isPending ? 'Saving…' : 'Save register'}
-              </button>
-            </span>
+                <button
+                  type="submit"
+                  disabled={isPending || !allSelected}
+                  className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50"
+                >
+                  {isPending ? 'Saving…' : 'Save register'}
+                </button>
+              </span>
+            )}
             {saved && (
               <span className="text-sm text-green-600">Register saved.</span>
             )}
+            {error && <span className="text-sm text-red-600">{error}</span>}
           </div>
         </>
       )}

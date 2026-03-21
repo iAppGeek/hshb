@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getTeachers, getStudentsForList } from '@/db'
+import { canCreateClasses } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import ClassForm, {
@@ -18,9 +19,7 @@ export default async function AddClassPage() {
   const session = await auth()
   const role = session?.user?.role as StaffRole
 
-  if (role === 'admin' || role === 'headteacher') {
-    // authorised — continue
-  } else {
+  if (!canCreateClasses(role)) {
     redirect('/portal/classes')
   }
 

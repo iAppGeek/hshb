@@ -1,5 +1,7 @@
 import { unstable_cache, revalidateTag } from 'next/cache'
 
+import { TEACHING_ROLES } from '@/lib/permissions'
+
 import { supabase } from './client'
 
 const STAFF_SELECT =
@@ -59,7 +61,7 @@ export const getTeachers = unstable_cache(
     const { data } = await supabase
       .from('staff')
       .select('id, first_name, last_name, display_name')
-      .in('role', ['teacher', 'headteacher'])
+      .in('role', TEACHING_ROLES)
       .order('last_name')
     return data ?? []
   },

@@ -101,14 +101,16 @@ describe('StudentsPage', () => {
     expect(screen.queryByText('Add student')).toBeNull()
   })
 
-  it('hides Add student button for headteacher', async () => {
+  it('shows disabled Add student button for headteacher', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'headteacher', staffId: 'staff-3' },
     } as any)
     vi.mocked(getAllStudents).mockResolvedValue([])
 
     render(await StudentsPage())
-    expect(screen.queryByText('Add student')).toBeNull()
+    const btn = screen.getByText('Add student')
+    expect(btn.tagName).toBe('SPAN')
+    expect(btn.className).toContain('cursor-not-allowed')
   })
 
   it('renders student rows in the table', async () => {
@@ -140,5 +142,29 @@ describe('StudentsPage', () => {
     await StudentsPage()
     expect(getStudentsByTeacher).toHaveBeenCalledWith('staff-2')
     expect(getAllStudents).not.toHaveBeenCalled()
+  })
+
+  it('fetches all students for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getAllStudents).mockResolvedValue([mockStudent] as any)
+
+    render(await StudentsPage())
+    expect(getAllStudents).toHaveBeenCalled()
+    expect(getStudentsByTeacher).not.toHaveBeenCalled()
+    expect(screen.getByText(/StudentsTable/)).toBeTruthy()
+  })
+
+  it('shows disabled Add student button for secretary', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getAllStudents).mockResolvedValue([])
+
+    render(await StudentsPage())
+    const btn = screen.getByText('Add student')
+    expect(btn.tagName).toBe('SPAN')
+    expect(btn.className).toContain('cursor-not-allowed')
   })
 })

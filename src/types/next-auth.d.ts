@@ -1,6 +1,6 @@
 import { DefaultSession } from 'next-auth'
 
-export type StaffRole = 'teacher' | 'admin' | 'headteacher'
+export type StaffRole = 'teacher' | 'admin' | 'headteacher' | 'secretary'
 
 declare module 'next-auth' {
   interface Session {

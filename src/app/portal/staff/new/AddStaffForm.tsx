@@ -3,15 +3,20 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 
+import { roleDescriptions } from '@/lib/roleLabels'
+import type { StaffRole } from '@/types/next-auth'
+
 import { createStaffAction } from './actions'
 
 const ROLES = [
   { value: 'teacher', label: 'Teacher' },
   { value: 'admin', label: 'Admin' },
   { value: 'headteacher', label: 'Headteacher' },
+  { value: 'secretary', label: 'Secretary' },
 ]
 
 export default function AddStaffForm() {
+  const [selectedRole, setSelectedRole] = useState<StaffRole | ''>('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -47,6 +52,10 @@ export default function AddStaffForm() {
               id="role"
               name="role"
               required
+              value={selectedRole}
+              onChange={(e) =>
+                setSelectedRole(e.target.value as StaffRole | '')
+              }
               className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             >
               <option value="">Select a role…</option>
@@ -56,6 +65,11 @@ export default function AddStaffForm() {
                 </option>
               ))}
             </select>
+            {selectedRole && (
+              <p className="mt-1.5 text-sm text-gray-500">
+                {roleDescriptions[selectedRole]}
+              </p>
+            )}
           </div>
           <Field label="Display name" name="display_name" />
           <Field label="Contact number" name="contact_number" type="tel" />

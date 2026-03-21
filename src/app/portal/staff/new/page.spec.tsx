@@ -30,6 +30,12 @@ describe('AddStaffPage', () => {
     await expect(AddStaffPage()).rejects.toThrow('NEXT_REDIRECT:/portal/staff')
   })
 
+  it('redirects to /portal/staff for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'secretary' } } as any)
+
+    await expect(AddStaffPage()).rejects.toThrow('NEXT_REDIRECT:/portal/staff')
+  })
+
   it('redirects to /portal/staff when not authenticated', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: undefined } } as any)
 

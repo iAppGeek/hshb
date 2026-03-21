@@ -119,4 +119,26 @@ describe('IncidentsPage', () => {
     expect(getIncidents).toHaveBeenCalledWith({ limit: 50 })
     expect(getStudentIdsByTeacher).not.toHaveBeenCalled()
   })
+
+  it('renders IncidentsClient for secretary with all incidents and canEdit=false', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getIncidents).mockResolvedValue([mockIncident] as any)
+
+    render(await IncidentsPage())
+    expect(screen.getByText(/IncidentsClient/)).toBeTruthy()
+    expect(screen.getByText(/canEdit=false/)).toBeTruthy()
+  })
+
+  it('fetches all incidents for secretary without scoping', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getIncidents).mockResolvedValue([])
+
+    await IncidentsPage()
+    expect(getIncidents).toHaveBeenCalledWith({ limit: 50 })
+    expect(getStudentIdsByTeacher).not.toHaveBeenCalled()
+  })
 })

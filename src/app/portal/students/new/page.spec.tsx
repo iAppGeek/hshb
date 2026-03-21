@@ -71,4 +71,16 @@ describe('AddStudentPage', () => {
     await expect(AddStudentPage()).rejects.toThrow('NEXT_REDIRECT')
     expect(redirect).toHaveBeenCalledWith('/portal/students')
   })
+
+  it('redirects secretary to students list', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(redirect).mockImplementation(() => {
+      throw new Error('NEXT_REDIRECT')
+    })
+
+    await expect(AddStudentPage()).rejects.toThrow('NEXT_REDIRECT')
+    expect(redirect).toHaveBeenCalledWith('/portal/students')
+  })
 })

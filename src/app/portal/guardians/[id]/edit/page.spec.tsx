@@ -85,6 +85,18 @@ describe('EditGuardianPage', () => {
     expect(redirect).toHaveBeenCalledWith('/portal/students')
   })
 
+  it('redirects secretary to students list', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'secretary' } } as any)
+    vi.mocked(redirect).mockImplementation(() => {
+      throw new Error('NEXT_REDIRECT')
+    })
+
+    await expect(
+      EditGuardianPage({ params: Promise.resolve({ id: 'guardian-1' }) }),
+    ).rejects.toThrow('NEXT_REDIRECT')
+    expect(redirect).toHaveBeenCalledWith('/portal/students')
+  })
+
   it('redirects to students list when guardian not found', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
     vi.mocked(getGuardianById).mockResolvedValue(null)

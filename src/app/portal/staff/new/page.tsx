@@ -2,6 +2,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
+import { canCreateStaff } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import AddStaffForm from './AddStaffForm'
@@ -12,9 +13,7 @@ export default async function AddStaffPage() {
   const session = await auth()
   const role = session?.user?.role as StaffRole
 
-  if (role === 'admin') {
-    // authorised — continue
-  } else {
+  if (!canCreateStaff(role)) {
     redirect('/portal/staff')
   }
 

@@ -6,6 +6,8 @@ import Link from 'next/link'
 import StudentDetailsModal, {
   type StudentForModal,
 } from '@/components/StudentDetailsModal'
+import Tooltip from '@/components/Tooltip'
+import { canEditStudents, canSeeAllData } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 type Student = StudentForModal & {
@@ -84,13 +86,21 @@ export default function StudentsTable({ students, role }: Props) {
                         <span>
                           {student.last_name}, {student.first_name}
                         </span>
-                        {role === 'admin' && (
+                        {canEditStudents(role) ? (
                           <Link
                             href={`/portal/students/${student.id}/edit`}
                             className="shrink-0 text-sm text-gray-500 hover:text-gray-700 sm:hidden"
                           >
                             Edit
                           </Link>
+                        ) : (
+                          canSeeAllData(role) && (
+                            <Tooltip text="You don't have permission to edit students">
+                              <span className="shrink-0 cursor-not-allowed text-sm text-gray-400 sm:hidden">
+                                Edit
+                              </span>
+                            </Tooltip>
+                          )
                         )}
                       </div>
                     </td>
@@ -120,13 +130,21 @@ export default function StudentsTable({ students, role }: Props) {
                     <td className={TD}>{guardianName}</td>
                     <td className="hidden px-3 py-4 text-right text-sm font-medium sm:table-cell sm:px-6">
                       <div className="flex items-center justify-end gap-3">
-                        {role === 'admin' && (
+                        {canEditStudents(role) ? (
                           <Link
                             href={`/portal/students/${student.id}/edit`}
                             className="text-gray-500 hover:text-gray-700"
                           >
                             Edit
                           </Link>
+                        ) : (
+                          canSeeAllData(role) && (
+                            <Tooltip text="You don't have permission to edit students">
+                              <span className="cursor-not-allowed text-gray-400">
+                                Edit
+                              </span>
+                            </Tooltip>
+                          )
                         )}
                         <button
                           onClick={() => setSelected(student)}

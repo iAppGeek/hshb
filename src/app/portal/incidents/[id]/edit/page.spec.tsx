@@ -58,6 +58,14 @@ describe('EditIncidentPage', () => {
     )
   })
 
+  it('redirects to /portal/incidents for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'secretary' } } as any)
+
+    await expect(EditIncidentPage({ params })).rejects.toThrow(
+      'NEXT_REDIRECT:/portal/incidents',
+    )
+  })
+
   it('redirects to /portal/incidents when incident not found', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
     vi.mocked(getIncidentById).mockResolvedValue(null as any)

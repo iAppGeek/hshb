@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { getIncidents, getStudentIdsByTeacher } from '@/db'
 import type { IncidentRow } from '@/db'
+import { isTeacher, canEditIncidents } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import IncidentsClient from './IncidentsClient'
@@ -16,12 +17,12 @@ export default async function IncidentsPage() {
 
   const role = session.user.role as StaffRole
   const staffId = session.user.staffId!
-  const isTeacher = role === 'teacher'
-  const canEdit = role === 'admin' || role === 'headteacher'
+  const teacherOnly = isTeacher(role)
+  const canEdit = canEditIncidents(role)
 
   let incidents: IncidentRow[]
 
-  if (isTeacher) {
+  if (teacherOnly) {
     const studentIds = await getStudentIdsByTeacher(staffId)
     incidents = await getIncidents({ studentIds, limit: 50 })
   } else {

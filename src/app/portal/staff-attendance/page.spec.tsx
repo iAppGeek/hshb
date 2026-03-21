@@ -135,6 +135,39 @@ describe('StaffAttendancePage', () => {
     })
   })
 
+  describe('secretary view', () => {
+    const secretarySession = {
+      user: { staffId: 'sec-1', role: 'secretary', name: 'Sue Secretary' },
+    }
+
+    beforeEach(() => {
+      vi.mocked(auth).mockResolvedValue(secretarySession as any)
+      vi.mocked(getAllStaff).mockResolvedValue(mockStaff as any)
+      vi.mocked(getStaffAttendanceByDate).mockResolvedValue([mockRecord])
+      vi.mocked(getAllClasses).mockResolvedValue([])
+    })
+
+    it('renders Staff Sign-In heading (not teacher view)', async () => {
+      render(await StaffAttendancePage({ searchParams: makeSearchParams() }))
+
+      expect(screen.getByText('Staff Sign-In')).toBeTruthy()
+    })
+
+    it('calls getStaffAttendanceByDate (full staff list, not teacher-only)', async () => {
+      render(await StaffAttendancePage({ searchParams: makeSearchParams() }))
+
+      const today = new Date().toISOString().split('T')[0]
+      expect(getStaffAttendanceByDate).toHaveBeenCalledWith(today)
+      expect(getStaffAttendanceForToday).not.toHaveBeenCalled()
+    })
+
+    it('renders the date picker for secretary', async () => {
+      render(await StaffAttendancePage({ searchParams: makeSearchParams() }))
+
+      expect(screen.getByTestId('date-picker')).toBeTruthy()
+    })
+  })
+
   describe('admin view', () => {
     beforeEach(() => {
       vi.mocked(auth).mockResolvedValue(adminSession as any)

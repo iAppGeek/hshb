@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
+import { canAccessReports } from '@/lib/permissions'
+import type { StaffRole } from '@/types/next-auth'
 
 export default auth((req) => {
   const { pathname } = req.nextUrl
@@ -16,10 +18,9 @@ export default auth((req) => {
     return NextResponse.redirect(new URL('/portal/dashboard', req.url))
   }
 
-  // Only admin and headteacher can access reports
   if (isReportsPage) {
-    const role = req.auth?.user?.role
-    if (role !== 'admin' && role !== 'headteacher') {
+    const role = req.auth?.user?.role as StaffRole | undefined
+    if (!role || !canAccessReports(role)) {
       return NextResponse.redirect(new URL('/portal/dashboard', req.url))
     }
   }

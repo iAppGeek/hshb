@@ -8,6 +8,7 @@ import {
   getStaffAttendanceByDate,
   getStaffAttendanceForToday,
 } from '@/db'
+import { isTeacher, showsOnSignInSheet } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 import DatePicker from '@/components/DatePicker'
 
@@ -32,7 +33,7 @@ export default async function StaffAttendancePage({
   const now = new Date()
   const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 
-  if (role === 'teacher') {
+  if (isTeacher(role)) {
     // Teachers always see today only, for themselves
     const [record, classes] = await Promise.all([
       getStaffAttendanceForToday(staffId, today),
@@ -57,6 +58,8 @@ export default async function StaffAttendancePage({
           rows={[{ staff: staffRow, record }]}
           defaultTime={currentTime}
           date={today}
+          role={role}
+          currentStaffId={staffId}
         />
       </div>
     )
@@ -82,7 +85,7 @@ export default async function StaffAttendancePage({
   )
 
   const rows = allStaff
-    .filter((s) => s.role !== 'admin')
+    .filter((s) => showsOnSignInSheet(s.role as StaffRole))
     .map((s) => {
       const cls = classByTeacherId[s.id]
       return {
@@ -160,6 +163,8 @@ export default async function StaffAttendancePage({
           rows={rows}
           defaultTime={defaultTime}
           date={selectedDate}
+          role={role}
+          currentStaffId={staffId}
         />
       </div>
 

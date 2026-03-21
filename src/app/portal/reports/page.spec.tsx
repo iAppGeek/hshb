@@ -69,6 +69,15 @@ describe('ReportsPage', () => {
     ).rejects.toThrow('NEXT_REDIRECT:/portal/dashboard')
   })
 
+  it('does not redirect secretary (can access reports)', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary' },
+    } as any)
+
+    render(await ReportsPage({ searchParams: defaultSearchParams }))
+    expect(screen.getByText('Reports & Analytics')).toBeTruthy()
+  })
+
   it('renders the Reports & Analytics heading', async () => {
     render(await ReportsPage({ searchParams: defaultSearchParams }))
     expect(screen.getByText('Reports & Analytics')).toBeTruthy()

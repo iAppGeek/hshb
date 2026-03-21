@@ -3,6 +3,8 @@ import Link from 'next/link'
 
 import { auth } from '@/auth'
 import { getAllStudents, getStudentsByTeacher } from '@/db'
+import Tooltip from '@/components/Tooltip'
+import { isTeacher, canSeeAllData, canCreateStudents } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import EmptyState from '../_components/EmptyState'
@@ -17,9 +19,7 @@ export default async function StudentsPage() {
   const role = session?.user?.role as StaffRole
   const staffId = session?.user?.staffId
 
-  const isTeacher = role === 'teacher'
-
-  const students = isTeacher
+  const students = isTeacher(role)
     ? await getStudentsByTeacher(staffId!)
     : await getAllStudents()
 
@@ -28,14 +28,20 @@ export default async function StudentsPage() {
       <PageHeader
         title="Students"
         action={
-          role === 'admin' && (
+          canCreateStudents(role) ? (
             <Link
               href="/portal/students/new"
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
             >
               Add student
             </Link>
-          )
+          ) : canSeeAllData(role) ? (
+            <Tooltip text="You don't have permission to add students">
+              <span className="cursor-not-allowed rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50 shadow-sm">
+                Add student
+              </span>
+            </Tooltip>
+          ) : null
         }
       />
 

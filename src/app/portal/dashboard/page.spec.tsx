@@ -110,6 +110,48 @@ describe('DashboardPage', () => {
     expect(screen.getByText('18')).toBeTruthy()
   })
 
+  it('shows all admin cards for secretary', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: {
+        name: 'Secretary User',
+        role: 'secretary',
+        staffId: 'staff-4',
+      },
+    } as any)
+    vi.mocked(getStudentCount).mockResolvedValue(0)
+    vi.mocked(getAllClasses).mockResolvedValue([])
+    vi.mocked(getAllStaff).mockResolvedValue([])
+    vi.mocked(getIncidentCount).mockResolvedValue(0)
+    vi.mocked(getGuardianCount).mockResolvedValue(0)
+
+    render(await DashboardPage())
+    expect(screen.getByText('Total Students')).toBeTruthy()
+    expect(screen.getByText('Total Classes')).toBeTruthy()
+    expect(screen.getByText('Total Staff')).toBeTruthy()
+    expect(screen.getByText('Total Guardians')).toBeTruthy()
+    expect(screen.getByText('Total Incidents')).toBeTruthy()
+    expect(screen.getByText('Reports')).toBeTruthy()
+  })
+
+  it('calls getStudentCount for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: {
+        name: 'Secretary User',
+        role: 'secretary',
+        staffId: 'staff-4',
+      },
+    } as any)
+    vi.mocked(getStudentCount).mockResolvedValue(10)
+    vi.mocked(getAllClasses).mockResolvedValue([])
+    vi.mocked(getAllStaff).mockResolvedValue([])
+    vi.mocked(getIncidentCount).mockResolvedValue(0)
+    vi.mocked(getGuardianCount).mockResolvedValue(0)
+
+    await DashboardPage()
+    expect(getStudentCount).toHaveBeenCalled()
+    expect(getStudentsByTeacher).not.toHaveBeenCalled()
+  })
+
   it('does not show admin cards for teacher', async () => {
     mockTeacher()
     render(await DashboardPage())

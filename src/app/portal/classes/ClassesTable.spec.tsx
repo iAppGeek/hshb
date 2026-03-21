@@ -40,30 +40,30 @@ const mockClasses: ClassRow[] = [
 
 describe('ClassesTable', () => {
   it('renders class names', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={false} />)
+    render(<ClassesTable classes={mockClasses} canEdit={false} role="admin" />)
     expect(screen.getByText('Year 1A')).toBeTruthy()
     expect(screen.getByText('Year 2B')).toBeTruthy()
   })
 
   it('renders teacher name', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={false} />)
+    render(<ClassesTable classes={mockClasses} canEdit={false} role="admin" />)
     // Appears in both mobile secondary and desktop column
     expect(screen.getAllByText('Smith, Jane').length).toBeGreaterThan(0)
   })
 
   it('renders active status badge', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={false} />)
+    render(<ClassesTable classes={mockClasses} canEdit={false} role="admin" />)
     // StatusBadge renders in both mobile secondary and desktop status column
     expect(screen.getAllByText('Active').length).toBeGreaterThan(0)
   })
 
   it('renders inactive status badge', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={false} />)
+    render(<ClassesTable classes={mockClasses} canEdit={false} role="admin" />)
     expect(screen.getAllByText('Inactive').length).toBeGreaterThan(0)
   })
 
   it('shows Details links for all classes (mobile secondary + desktop)', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={false} />)
+    render(<ClassesTable classes={mockClasses} canEdit={false} role="admin" />)
     // Each class has a Details link in both the mobile secondary cell and desktop actions cell
     const detailsLinks = screen.getAllByRole('link', { name: 'Details' })
     expect(detailsLinks).toHaveLength(4)
@@ -72,12 +72,12 @@ describe('ClassesTable', () => {
   })
 
   it('does not show Edit links when canEdit is false', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={false} />)
+    render(<ClassesTable classes={mockClasses} canEdit={false} role="admin" />)
     expect(screen.queryByRole('link', { name: 'Edit' })).toBeNull()
   })
 
   it('shows Edit links when canEdit is true', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={true} />)
+    render(<ClassesTable classes={mockClasses} canEdit={true} role="admin" />)
     const editLinks = screen.getAllByRole('link', { name: 'Edit' })
     // Each class has an Edit link in both the mobile name cell and desktop actions cell
     expect(editLinks).toHaveLength(4)
@@ -90,12 +90,12 @@ describe('ClassesTable', () => {
   })
 
   it('shows dash when no teacher assigned', () => {
-    render(<ClassesTable classes={mockClasses} canEdit={false} />)
+    render(<ClassesTable classes={mockClasses} canEdit={false} role="admin" />)
     expect(screen.getAllByText('—').length).toBeGreaterThan(0)
   })
 
   it('renders empty table when no classes provided', () => {
-    render(<ClassesTable classes={[]} canEdit={false} />)
+    render(<ClassesTable classes={[]} canEdit={false} role="admin" />)
     expect(screen.queryByRole('link', { name: 'Details' })).toBeNull()
   })
 })

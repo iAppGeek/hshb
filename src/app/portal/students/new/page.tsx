@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getAllGuardians } from '@/db'
+import { canCreateStudents } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import AddStudentForm from './AddStudentForm'
@@ -13,9 +14,7 @@ export default async function AddStudentPage() {
   const session = await auth()
   const role = session?.user?.role as StaffRole
 
-  if (role === 'admin') {
-    // authorised — continue
-  } else {
+  if (!canCreateStudents(role)) {
     redirect('/portal/students')
   }
 

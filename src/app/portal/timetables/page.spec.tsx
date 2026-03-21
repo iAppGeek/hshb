@@ -84,4 +84,19 @@ describe('TimetablesPage', () => {
     expect(getClassesByTeacher).toHaveBeenCalledWith('staff-2')
     expect(getAllTimetableSlots).not.toHaveBeenCalled()
   })
+
+  it('fetches all timetable slots for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getAllTimetableSlots).mockResolvedValue([mockSlot] as any)
+    vi.mocked(getAllClasses).mockResolvedValue([
+      { id: 'class-1', name: 'Year 3A', room_number: 'R12' },
+    ] as any)
+
+    render(await TimetablesPage())
+    expect(getAllTimetableSlots).toHaveBeenCalled()
+    expect(getClassesByTeacher).not.toHaveBeenCalled()
+    expect(screen.getByText('Saturday')).toBeTruthy()
+  })
 })

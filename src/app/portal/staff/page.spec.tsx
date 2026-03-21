@@ -128,4 +128,14 @@ describe('StaffPage', () => {
     // Contact number appears in both mobile card and desktop column
     expect(screen.getAllByText('07700 900001').length).toBeGreaterThan(0)
   })
+
+  it('shows contact column for secretary', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'secretary' } } as any)
+    vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
+
+    render(await StaffPage())
+    expect(screen.getByText('Contact')).toBeTruthy()
+    // Contact number appears in both mobile card and desktop column
+    expect(screen.getAllByText('07700 900001').length).toBeGreaterThan(0)
+  })
 })

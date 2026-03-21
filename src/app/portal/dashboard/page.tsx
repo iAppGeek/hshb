@@ -18,6 +18,7 @@ import {
   getIncidentCount,
   getGuardianCount,
 } from '@/db'
+import { isTeacher, canSeeAllData } from '@/lib/permissions'
 import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -28,33 +29,33 @@ export default async function DashboardPage() {
   const role = session?.user?.role as StaffRole
   const staffId = session?.user?.staffId
 
-  const isTeacher = role === 'teacher'
+  const teacherOnly = isTeacher(role)
 
   const [studentCount, classes, staffCount, incidentCount, guardianCount] =
     await Promise.all([
-      isTeacher
+      teacherOnly
         ? getStudentsByTeacher(staffId!).then((s) => s.length)
         : getStudentCount(),
-      isTeacher ? getClassesByTeacher(staffId!) : getAllClasses(),
-      isTeacher ? Promise.resolve(null) : getAllStaff().then((s) => s.length),
-      isTeacher ? Promise.resolve(null) : getIncidentCount(),
-      isTeacher ? Promise.resolve(null) : getGuardianCount(),
+      teacherOnly ? getClassesByTeacher(staffId!) : getAllClasses(),
+      teacherOnly ? Promise.resolve(null) : getAllStaff().then((s) => s.length),
+      teacherOnly ? Promise.resolve(null) : getIncidentCount(),
+      teacherOnly ? Promise.resolve(null) : getGuardianCount(),
     ])
 
   const stats = [
     {
-      label: isTeacher ? 'My Students' : 'Total Students',
+      label: teacherOnly ? 'My Students' : 'Total Students',
       value: studentCount,
       icon: UsersIcon,
       href: '/portal/students',
     },
     {
-      label: isTeacher ? 'My Classes' : 'Total Classes',
+      label: teacherOnly ? 'My Classes' : 'Total Classes',
       value: classes.length,
       icon: CalendarDaysIcon,
       href: '/portal/classes',
     },
-    ...(role === 'admin' || role === 'headteacher'
+    ...(canSeeAllData(role)
       ? [
           {
             label: 'Total Staff',

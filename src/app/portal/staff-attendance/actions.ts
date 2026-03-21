@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
 import { signInStaff, signOutStaff } from '@/db'
+import { canManageStaffAttendance } from '@/lib/permissions'
+import type { StaffRole } from '@/types/next-auth'
 
 function buildTimestamp(date: string, time: string): string {
   // Combine date (YYYY-MM-DD) and time (HH:MM) into a full ISO timestamp.
@@ -23,9 +25,8 @@ export async function signInAction(
 
   if (!staffId || !date || !time) return { error: 'Missing required fields' }
 
-  // Teachers and headteachers can only sign themselves in
-  const role = session.user.role
-  if (role === 'teacher' && staffId !== session.user.staffId) {
+  const role = session.user.role as StaffRole
+  if (!canManageStaffAttendance(role) && staffId !== session.user.staffId) {
     return { error: 'Not authorised' }
   }
 
@@ -49,8 +50,8 @@ export async function signOutAction(
 
   if (!staffId || !date || !time) return { error: 'Missing required fields' }
 
-  const role = session.user.role
-  if (role === 'teacher' && staffId !== session.user.staffId) {
+  const role = session.user.role as StaffRole
+  if (!canManageStaffAttendance(role) && staffId !== session.user.staffId) {
     return { error: 'Not authorised' }
   }
 

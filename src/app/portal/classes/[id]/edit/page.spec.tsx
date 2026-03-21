@@ -74,6 +74,16 @@ describe('EditClassPage', () => {
     ).rejects.toThrow('NEXT_REDIRECT:/portal/classes')
   })
 
+  it('redirects secretary to /portal/classes', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-1' },
+    } as any)
+
+    await expect(
+      EditClassPage({ params: Promise.resolve({ id: 'class-1' }) }),
+    ).rejects.toThrow('NEXT_REDIRECT:/portal/classes')
+  })
+
   it('redirects to /portal/classes when class not found', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },

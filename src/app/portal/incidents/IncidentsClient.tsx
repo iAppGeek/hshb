@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import type { IncidentRow, IncidentType } from '@/db'
+import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
+import Tooltip from '@/components/Tooltip'
 
 type Props = {
   incidents: IncidentRow[]
@@ -57,7 +59,7 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
           </button>
         ))}
       </div>
-      {role === 'teacher' && (
+      {isTeacher(role) && (
         <p className="mb-4 text-sm text-gray-500">
           You can only view and record incidents for students in your class.
         </p>
@@ -88,13 +90,21 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                       )}
                     </p>
                   </div>
-                  {canEdit && (
+                  {canEdit ? (
                     <Link
                       href={`/portal/incidents/${incident.id}/edit`}
                       className="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-800"
                     >
                       Edit
                     </Link>
+                  ) : (
+                    !isTeacher(role) && (
+                      <Tooltip text="You don't have permission to edit incidents">
+                        <span className="shrink-0 cursor-not-allowed text-xs font-medium text-gray-400">
+                          Edit
+                        </span>
+                      </Tooltip>
+                    )
                   )}
                 </div>
                 <p className="text-sm font-medium text-gray-800">
@@ -143,7 +153,7 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                       'Recorded by',
                       'Last updated',
                       'Guardians notified',
-                      ...(canEdit ? [''] : []),
+                      ...(!isTeacher(role) ? [''] : []),
                     ].map((h) => (
                       <th
                         key={h}
@@ -195,7 +205,7 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                             ? 'Yes'
                             : '—'}
                       </td>
-                      {canEdit && (
+                      {canEdit ? (
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           <Link
                             href={`/portal/incidents/${incident.id}/edit`}
@@ -204,6 +214,16 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                             Edit
                           </Link>
                         </td>
+                      ) : (
+                        !isTeacher(role) && (
+                          <td className="px-6 py-4 text-sm whitespace-nowrap">
+                            <Tooltip text="You don't have permission to edit incidents">
+                              <span className="cursor-not-allowed font-medium text-gray-400">
+                                Edit
+                              </span>
+                            </Tooltip>
+                          </td>
+                        )
                       )}
                     </tr>
                   ))}

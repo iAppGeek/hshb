@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getIncidentById } from '@/db'
+import { canEditIncidents } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import EditIncidentForm from './EditIncidentForm'
@@ -17,7 +18,7 @@ export default async function EditIncidentPage({
   const session = await auth()
   const role = session?.user?.role as StaffRole
 
-  if (role === 'teacher') {
+  if (!canEditIncidents(role)) {
     redirect('/portal/incidents')
   }
 

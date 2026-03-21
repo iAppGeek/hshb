@@ -197,7 +197,9 @@ describe('saveAttendanceAction', () => {
   })
 
   it('sends "updated" in body when attendance already exists', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({
+      user: { staffId: 'staff-1', role: 'teacher' },
+    } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
       { id: 'att-1' },
     ] as any)
@@ -290,5 +292,62 @@ describe('saveAttendanceAction', () => {
 
     await saveAttendanceAction(fd)
     expect(revalidatePath).toHaveBeenCalledWith('/portal/attendance')
+  })
+
+  it('allows secretary to save new attendance (no existing records)', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { staffId: 'secretary-1', role: 'secretary' },
+    } as any)
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
+    vi.mocked(saveAttendance).mockResolvedValue([] as any)
+    vi.mocked(getClassById).mockResolvedValue({
+      id: 'class-1',
+      name: 'Class A',
+    } as any)
+    vi.mocked(getAdminSubscriptions).mockResolvedValue([])
+
+    const fd = makeFormData({
+      classId: 'class-1',
+      date: '2024-03-08',
+      studentId: 'student-1',
+      'status_student-1': 'present',
+    })
+
+    const result = await saveAttendanceAction(fd)
+
+    expect(result).toBeUndefined()
+    expect(saveAttendance).toHaveBeenCalledWith([
+      expect.objectContaining({
+        class_id: 'class-1',
+        date: '2024-03-08',
+        recorded_by: 'secretary-1',
+      }),
+    ])
+    expect(revalidatePath).toHaveBeenCalledWith('/portal/attendance')
+  })
+
+  it('blocks secretary from updating existing attendance records', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { staffId: 'secretary-1', role: 'secretary' },
+    } as any)
+    vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
+      { id: 'att-1' },
+    ] as any)
+
+    const fd = makeFormData({
+      classId: 'class-1',
+      date: '2024-03-08',
+      studentId: 'student-1',
+      'status_student-1': 'present',
+    })
+
+    const result = await saveAttendanceAction(fd)
+
+    expect(result).toEqual({
+      error:
+        'You do not have permission to update existing attendance records.',
+    })
+    expect(saveAttendance).not.toHaveBeenCalled()
+    expect(revalidatePath).not.toHaveBeenCalled()
   })
 })

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { getStudentsForList, getStudentsByTeacher } from '@/db'
 import type { IncidentType } from '@/db'
+import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import AddIncidentForm from './AddIncidentForm'
@@ -24,10 +25,9 @@ export default async function AddIncidentPage({
   const incidentType: IncidentType =
     type === 'behaviour' ? 'behaviour' : 'medical'
 
-  const students =
-    role === 'teacher'
-      ? await getStudentsByTeacher(staffId)
-      : await getStudentsForList()
+  const students = isTeacher(role)
+    ? await getStudentsByTeacher(staffId)
+    : await getStudentsForList()
 
   return (
     <div className="max-w-2xl">

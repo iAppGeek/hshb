@@ -53,6 +53,16 @@ describe('AddClassPage', () => {
     )
   })
 
+  it('redirects secretary to /portal/classes', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-1' },
+    } as any)
+
+    await expect(AddClassPage()).rejects.toThrow(
+      'NEXT_REDIRECT:/portal/classes',
+    )
+  })
+
   it('renders heading for admin', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
+import { canSeeStudentMedical, canEditGuardians } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 const SECTION_H =
@@ -209,7 +210,7 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
             </p>
           </section>
 
-          {(role === 'admin' || role === 'headteacher') && (
+          {canSeeStudentMedical(role) && (
             <>
               <section className="border-t border-gray-100 pt-4">
                 <h3 className={SECTION_H}>Medical Details</h3>
@@ -267,7 +268,7 @@ function PersonCard({
             </span>
           )}
         </p>
-        {role === 'admin' && id && (
+        {canEditGuardians(role) && id && (
           <Link
             href={`/portal/guardians/${id}/edit`}
             className="text-xs text-blue-600 hover:text-blue-800"

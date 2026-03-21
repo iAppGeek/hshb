@@ -70,6 +70,18 @@ describe('AddIncidentPage', () => {
     expect(screen.getByText('AddIncidentForm type=behaviour')).toBeTruthy()
   })
 
+  it('renders AddIncidentForm for secretary with all students', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getStudentsForList).mockResolvedValue([mockStudent] as any)
+
+    render(await AddIncidentPage({ searchParams: Promise.resolve({}) }))
+    expect(screen.getByText('AddIncidentForm type=medical')).toBeTruthy()
+    expect(getStudentsForList).toHaveBeenCalled()
+    expect(getStudentsByTeacher).not.toHaveBeenCalled()
+  })
+
   it('scopes students for teacher role', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'teacher', staffId: 'staff-3' },

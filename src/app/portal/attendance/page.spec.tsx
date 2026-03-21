@@ -176,6 +176,17 @@ describe('AttendancePage', () => {
     )
   })
 
+  it('fetches all classes for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { role: 'secretary', staffId: 'staff-4' },
+    } as any)
+    vi.mocked(getAllClasses).mockResolvedValue([mockClass] as any)
+
+    await AttendancePage({ searchParams: Promise.resolve({}) })
+    expect(getAllClasses).toHaveBeenCalled()
+    expect(getClassesByTeacher).not.toHaveBeenCalled()
+  })
+
   it('keeps filters visible and hides register content while AttendanceRegister is loading', async () => {
     vi.mocked(auth).mockResolvedValue({
       user: { role: 'admin', staffId: 'staff-1' },

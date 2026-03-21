@@ -1,3 +1,5 @@
+import { NOTIFICATION_ROLES } from '@/lib/permissions'
+
 import type { TablesInsert } from '../types/database'
 
 import { supabase } from './client'
@@ -48,7 +50,7 @@ export async function getAdminSubscriptions(): Promise<PushSubscriptionRow[]> {
     .select(
       'id, staff_id, endpoint, p256dh, auth, created_at, staff!inner(role)',
     )
-    .in('staff.role', ['admin', 'headteacher'])
+    .in('staff.role', NOTIFICATION_ROLES)
   if (error) throw error
   return (data ?? []) as unknown as PushSubscriptionRow[]
 }

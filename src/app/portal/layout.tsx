@@ -14,6 +14,7 @@ import {
 
 import { auth, signOut } from '@/auth'
 import logo from '@/images/logo.png'
+import { canAccessReports, receivesNotifications } from '@/lib/permissions'
 import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -63,16 +64,15 @@ const navItems = [
     href: '/portal/reports',
     label: 'Reports',
     Icon: ChartBarIcon,
-    roles: ['admin', 'headteacher'] as StaffRole[],
+    filter: canAccessReports,
   },
 ]
 
 async function AuthedSidebar() {
   const session = await auth()
   const role = session?.user?.role
-  const isAdminOrHead = role === 'admin' || role === 'headteacher'
   const visibleNav = navItems
-    .filter((item) => !item.roles || item.roles.includes(role as StaffRole))
+    .filter((item) => !item.filter || item.filter(role as StaffRole))
     .map(({ href, label }) => ({ href, label }))
 
   const signOutAction = async () => {
@@ -88,16 +88,17 @@ async function AuthedSidebar() {
       roleLabel={role ? roleLabels[role] : null}
       signOutAction={signOutAction}
       refreshAction={revalidateAllCaches}
-      notificationSlot={isAdminOrHead ? <NotificationToggle /> : null}
+      notificationSlot={
+        receivesNotifications(role as StaffRole) ? <NotificationToggle /> : null
+      }
     />
   )
 }
 
 async function AuthedNotificationBanner() {
   const session = await auth()
-  const role = session?.user?.role
-  const isAdminOrHead = role === 'admin' || role === 'headteacher'
-  return isAdminOrHead ? <NotificationBanner /> : null
+  const role = session?.user?.role as StaffRole | undefined
+  return role && receivesNotifications(role) ? <NotificationBanner /> : null
 }
 
 function SidebarLoadingSkeleton() {

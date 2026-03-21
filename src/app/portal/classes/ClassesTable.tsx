@@ -2,6 +2,10 @@
 
 import Link from 'next/link'
 
+import Tooltip from '@/components/Tooltip'
+import { canSeeAllData } from '@/lib/permissions'
+import type { StaffRole } from '@/types/next-auth'
+
 type Teacher = {
   first_name: string
   last_name: string
@@ -20,6 +24,7 @@ export type ClassRow = {
 type Props = {
   classes: ClassRow[]
   canEdit: boolean
+  role: StaffRole
 }
 
 const TH =
@@ -38,7 +43,7 @@ function StatusBadge({ active }: { active: boolean }) {
   )
 }
 
-export default function ClassesTable({ classes, canEdit }: Props) {
+export default function ClassesTable({ classes, canEdit, role }: Props) {
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
       <div className="overflow-x-auto">
@@ -72,13 +77,21 @@ export default function ClassesTable({ classes, canEdit }: Props) {
                       <span className="sm:hidden">
                         <StatusBadge active={cls.active} />
                       </span>
-                      {canEdit && (
+                      {canEdit ? (
                         <Link
                           href={`/portal/classes/${cls.id}/edit`}
                           className="ml-auto shrink-0 text-sm text-gray-500 hover:text-gray-700 sm:hidden"
                         >
                           Edit
                         </Link>
+                      ) : (
+                        canSeeAllData(role) && (
+                          <Tooltip text="You don't have permission to edit classes">
+                            <span className="ml-auto shrink-0 cursor-not-allowed text-sm text-gray-400 sm:hidden">
+                              Edit
+                            </span>
+                          </Tooltip>
+                        )
                       )}
                     </div>
                   </td>
@@ -115,13 +128,21 @@ export default function ClassesTable({ classes, canEdit }: Props) {
                   </td>
                   <td className="hidden px-3 py-4 text-right text-sm font-medium sm:table-cell sm:px-6">
                     <div className="flex items-center justify-end gap-3">
-                      {canEdit && (
+                      {canEdit ? (
                         <Link
                           href={`/portal/classes/${cls.id}/edit`}
                           className="text-gray-500 hover:text-gray-700"
                         >
                           Edit
                         </Link>
+                      ) : (
+                        canSeeAllData(role) && (
+                          <Tooltip text="You don't have permission to edit classes">
+                            <span className="cursor-not-allowed text-gray-400">
+                              Edit
+                            </span>
+                          </Tooltip>
+                        )
                       )}
                       <Link
                         href={`/portal/classes/${cls.id}`}

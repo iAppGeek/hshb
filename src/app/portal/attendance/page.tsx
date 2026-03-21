@@ -3,6 +3,7 @@ import { type Metadata } from 'next'
 
 import { auth } from '@/auth'
 import { getAllClasses, getClassesByTeacher } from '@/db'
+import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import AttendanceFilters from './AttendanceFilters'
@@ -59,10 +60,9 @@ export default async function AttendancePage({
   const today = new Date().toISOString().split('T')[0]
   const selectedDate = qDate ?? today
 
-  const classes =
-    role === 'teacher'
-      ? await getClassesByTeacher(staffId)
-      : await getAllClasses()
+  const classes = isTeacher(role)
+    ? await getClassesByTeacher(staffId)
+    : await getAllClasses()
 
   const selectedClassId = qClassId ?? classes[0]?.id ?? null
   const selectedClass = classes.find((c) => c.id === selectedClassId)

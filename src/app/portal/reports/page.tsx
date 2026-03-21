@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import DatePicker from '@/components/DatePicker'
+import { canAccessReports, isTeachingStaff } from '@/lib/permissions'
+import type { StaffRole } from '@/types/next-auth'
 import {
   getStudentCount,
   getEnrollmentCountsByClass,
@@ -26,8 +28,8 @@ export default async function ReportsPage({
   searchParams: Promise<{ date?: string }>
 }) {
   const session = await auth()
-  const role = session?.user?.role
-  if (!session || (role !== 'admin' && role !== 'headteacher')) {
+  const role = session?.user?.role as StaffRole | undefined
+  if (!session || !role || !canAccessReports(role)) {
     redirect('/portal/dashboard')
   }
 
@@ -53,8 +55,8 @@ export default async function ReportsPage({
     getAttendanceLateCount(selectedDate),
   ])
 
-  const teachingStaff = staff.filter(
-    (s) => s.role === 'teacher' || s.role === 'headteacher',
+  const teachingStaff = staff.filter((s) =>
+    isTeachingStaff(s.role as StaffRole),
   )
 
   const presentToday = Object.values(attendanceSummary).reduce(

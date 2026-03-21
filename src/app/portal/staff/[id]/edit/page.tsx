@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getStaffById } from '@/db'
+import { canEditStaff } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import EditStaffForm from './EditStaffForm'
@@ -17,9 +18,7 @@ export default async function EditStaffPage({
   const session = await auth()
   const role = session?.user?.role as StaffRole
 
-  if (role === 'admin') {
-    // authorised — continue
-  } else {
+  if (!canEditStaff(role)) {
     redirect('/portal/staff')
   }
 

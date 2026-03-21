@@ -4,6 +4,13 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getAllStaffWithClasses } from '@/db'
+import Tooltip from '@/components/Tooltip'
+import {
+  canEditStaff,
+  canCreateStaff,
+  canSeeStaffContact,
+  canSeeAllData,
+} from '@/lib/permissions'
 import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -23,8 +30,9 @@ export default async function StaffPage() {
   }
 
   const role = session.user?.role as StaffRole
-  const isAdmin = role === 'admin'
-  const canSeeContact = role === 'admin' || role === 'headteacher'
+  const canEdit = canEditStaff(role)
+  const canCreate = canCreateStaff(role)
+  const canSeeContact = canSeeStaffContact(role)
 
   const staffRaw = await getAllStaffWithClasses()
 
@@ -46,14 +54,20 @@ export default async function StaffPage() {
       <PageHeader
         title="Staff"
         action={
-          isAdmin && (
+          canCreate ? (
             <Link
               href="/portal/staff/new"
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
             >
               Add Staff
             </Link>
-          )
+          ) : canSeeAllData(role) ? (
+            <Tooltip text="You don't have permission to add staff">
+              <span className="cursor-not-allowed rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50 shadow-sm">
+                Add Staff
+              </span>
+            </Tooltip>
+          ) : null
         }
       />
 
@@ -72,7 +86,9 @@ export default async function StaffPage() {
                   {canSeeContact && <th className={TH}>Contact</th>}
                   <th className={TH}>Class</th>
                   <th className={TH}>Room</th>
-                  {isAdmin && <th className={TH}>Actions</th>}
+                  {(canEdit || canSeeAllData(role)) && (
+                    <th className={TH}>Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -109,13 +125,21 @@ export default async function StaffPage() {
                               {member.last_name}
                             </span>
                           </span>
-                          {isAdmin && (
+                          {canEdit ? (
                             <Link
                               href={`/portal/staff/${member.id}/edit`}
                               className="shrink-0 text-sm text-blue-600 hover:text-blue-800 sm:hidden"
                             >
                               Edit
                             </Link>
+                          ) : (
+                            canSeeAllData(role) && (
+                              <Tooltip text="You don't have permission to edit staff">
+                                <span className="shrink-0 cursor-not-allowed text-sm text-gray-400 sm:hidden">
+                                  Edit
+                                </span>
+                              </Tooltip>
+                            )
                           )}
                         </div>
                       </td>
@@ -175,7 +199,7 @@ export default async function StaffPage() {
                       )}
                       <td className={TD}>{classesText}</td>
                       <td className={TD}>{roomText}</td>
-                      {isAdmin && (
+                      {canEdit ? (
                         <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
                           <Link
                             href={`/portal/staff/${member.id}/edit`}
@@ -184,6 +208,16 @@ export default async function StaffPage() {
                             Edit
                           </Link>
                         </td>
+                      ) : (
+                        canSeeAllData(role) && (
+                          <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
+                            <Tooltip text="You don't have permission to edit staff">
+                              <span className="cursor-not-allowed text-gray-400">
+                                Edit
+                              </span>
+                            </Tooltip>
+                          </td>
+                        )
                       )}
                     </tr>
                   )

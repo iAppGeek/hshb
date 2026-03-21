@@ -3,6 +3,9 @@
 import { useTransition, useState } from 'react'
 
 import type { StaffAttendanceRow } from '@/db'
+import Tooltip from '@/components/Tooltip'
+import { canManageStaffAttendance } from '@/lib/permissions'
+import type { StaffRole } from '@/types/next-auth'
 
 import { signInAction, signOutAction } from './actions'
 import { fmtTime } from './utils'
@@ -42,17 +45,24 @@ function StaffRowInteractive({
   record,
   defaultTime,
   date,
+  role,
+  currentStaffId,
 }: {
   staff: StaffMember
   record: StaffAttendanceRow | null
   defaultTime: string
   date: string
+  role: StaffRole
+  currentStaffId: string
 }) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
   const isSignedIn = !!record && !record.signed_out_at
   const name = staff.display_name ?? `${staff.first_name} ${staff.last_name}`
+  const canManageOthers = canManageStaffAttendance(role)
+  const isSelf = staff.id === currentStaffId
+  const disabled = !canManageOthers && !isSelf
 
   function handleSignIn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -74,7 +84,11 @@ function StaffRowInteractive({
     })
   }
 
-  const actionForm = isSignedIn ? (
+  const actionForm = disabled ? (
+    <Tooltip text="You can only sign yourself in/out">
+      <span className="text-sm text-gray-400">—</span>
+    </Tooltip>
+  ) : isSignedIn ? (
     <form onSubmit={handleSignOut} className="flex items-center gap-2">
       <input type="hidden" name="staffId" value={staff.id} />
       <input type="hidden" name="date" value={date} />
@@ -166,12 +180,16 @@ type Props = {
   rows: TableRow[]
   defaultTime: string
   date: string
+  role: StaffRole
+  currentStaffId: string
 }
 
 export default function StaffAttendanceTable({
   rows,
   defaultTime,
   date,
+  role,
+  currentStaffId,
 }: Props) {
   return (
     <div className="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
@@ -196,6 +214,8 @@ export default function StaffAttendanceTable({
               record={record}
               defaultTime={defaultTime}
               date={date}
+              role={role}
+              currentStaffId={currentStaffId}
             />
           ))}
         </tbody>

@@ -26,6 +26,9 @@ const teacherSession = {
 const adminSession = {
   user: { staffId: 'admin-1', role: 'admin' },
 }
+const secretarySession = {
+  user: { staffId: 'secretary-1', role: 'secretary' },
+}
 
 // ─── signInAction ─────────────────────────────────────────────────────────────
 
@@ -124,6 +127,42 @@ describe('signInAction', () => {
     expect(result).toEqual({ error: 'Missing required fields' })
     expect(signInStaff).not.toHaveBeenCalled()
   })
+
+  it('allows secretary to sign themselves in', async () => {
+    vi.mocked(auth).mockResolvedValue(secretarySession as any)
+    vi.mocked(signInStaff).mockResolvedValue(undefined)
+
+    const fd = makeFormData({
+      staffId: 'secretary-1',
+      date: '2026-03-18',
+      time: '09:00',
+    })
+
+    const result = await signInAction(fd)
+
+    expect(result).toBeUndefined()
+    expect(signInStaff).toHaveBeenCalledWith(
+      'secretary-1',
+      '2026-03-18',
+      '2026-03-18T09:00:00',
+    )
+    expect(revalidatePath).toHaveBeenCalledWith('/portal/staff-attendance')
+  })
+
+  it('returns error when secretary tries to sign in another staff member', async () => {
+    vi.mocked(auth).mockResolvedValue(secretarySession as any)
+
+    const fd = makeFormData({
+      staffId: 'staff-1',
+      date: '2026-03-18',
+      time: '09:00',
+    })
+
+    const result = await signInAction(fd)
+
+    expect(result).toEqual({ error: 'Not authorised' })
+    expect(signInStaff).not.toHaveBeenCalled()
+  })
 })
 
 // ─── signOutAction ────────────────────────────────────────────────────────────
@@ -192,5 +231,40 @@ describe('signOutAction', () => {
 
     expect(result).toEqual({ error: 'Failed to sign out. Please try again.' })
     expect(revalidatePath).not.toHaveBeenCalled()
+  })
+
+  it('allows secretary to sign themselves out', async () => {
+    vi.mocked(auth).mockResolvedValue(secretarySession as any)
+    vi.mocked(signOutStaff).mockResolvedValue(undefined)
+
+    const fd = makeFormData({
+      staffId: 'secretary-1',
+      date: '2026-03-18',
+      time: '17:00',
+    })
+
+    const result = await signOutAction(fd)
+
+    expect(result).toBeUndefined()
+    expect(signOutStaff).toHaveBeenCalledWith(
+      'secretary-1',
+      '2026-03-18',
+      '2026-03-18T17:00:00',
+    )
+    expect(revalidatePath).toHaveBeenCalledWith('/portal/staff-attendance')
+  })
+
+  it('returns error when secretary tries to sign out another staff member', async () => {
+    vi.mocked(auth).mockResolvedValue(secretarySession as any)
+
+    const fd = makeFormData({
+      staffId: 'staff-1',
+      date: '2026-03-18',
+      time: '17:00',
+    })
+    const result = await signOutAction(fd)
+
+    expect(result).toEqual({ error: 'Not authorised' })
+    expect(signOutStaff).not.toHaveBeenCalled()
   })
 })

@@ -6,6 +6,8 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { createIncident, updateIncident } from '@/db'
 import type { IncidentType } from '@/db'
+import { canEditIncidents } from '@/lib/permissions'
+import type { StaffRole } from '@/types/next-auth'
 
 function str(formData: FormData, key: string): string {
   return (formData.get(key) as string | null)?.trim() ?? ''
@@ -53,7 +55,7 @@ export async function updateIncidentAction(
   formData: FormData,
 ): Promise<{ error: string } | void> {
   const session = await auth()
-  if (!session || session.user.role === 'teacher')
+  if (!session || !canEditIncidents(session.user.role as StaffRole))
     return { error: 'Unauthorised' }
 
   const type = str(formData, 'type') as IncidentType

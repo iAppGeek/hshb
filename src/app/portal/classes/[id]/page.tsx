@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getClassWithStudents } from '@/db'
+import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import EmptyState from '../../_components/EmptyState'
@@ -38,7 +39,7 @@ export default async function ClassRegisterPage({
   const cls = await getClassWithStudents(id)
   if (!cls) redirect('/portal/classes')
 
-  if (role === 'teacher' && cls.teacher_id !== session.user.staffId) {
+  if (isTeacher(role) && cls.teacher_id !== session.user.staffId) {
     redirect('/portal/classes')
   }
 

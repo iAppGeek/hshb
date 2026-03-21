@@ -113,6 +113,7 @@ describe('AttendanceForm', () => {
         students={students}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
 
@@ -128,6 +129,7 @@ describe('AttendanceForm', () => {
         students={[]}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
     expect(screen.getByText('No students in this class.')).toBeTruthy()
@@ -141,6 +143,7 @@ describe('AttendanceForm', () => {
         students={students}
         existing={{ 'student-1': 'absent', 'student-2': 'late' }}
         role="admin"
+        hasExisting={false}
       />,
     )
     expect(screen.getByText('0 present')).toBeTruthy()
@@ -156,6 +159,7 @@ describe('AttendanceForm', () => {
         students={students}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
     expect(screen.getByText('0 present')).toBeTruthy()
@@ -170,6 +174,7 @@ describe('AttendanceForm', () => {
         students={[students[0]]}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
 
@@ -189,6 +194,7 @@ describe('AttendanceForm', () => {
         students={students}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
     expect(screen.getByText('Save register')).toBeTruthy()
@@ -202,6 +208,7 @@ describe('AttendanceForm', () => {
         students={[students[0]]}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
 
@@ -220,6 +227,7 @@ describe('AttendanceForm', () => {
         students={students}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
     // Details button renders twice per student (mobile card + desktop column)
@@ -234,6 +242,7 @@ describe('AttendanceForm', () => {
         students={students}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
     expect(screen.queryByTestId('student-modal')).toBeNull()
@@ -255,6 +264,7 @@ describe('AttendanceForm', () => {
         students={students}
         existing={{}}
         role="admin"
+        hasExisting={false}
       />,
     )
     fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0])
@@ -262,5 +272,42 @@ describe('AttendanceForm', () => {
 
     fireEvent.click(screen.getByText('Close modal'))
     expect(screen.queryByTestId('student-modal')).toBeNull()
+  })
+
+  it('shows disabled save button for secretary when hasExisting is true', () => {
+    render(
+      <AttendanceForm
+        classId="class-1"
+        date="2024-03-08"
+        students={students}
+        existing={{ 'student-1': 'present', 'student-2': 'present' }}
+        role="secretary"
+        hasExisting
+      />,
+    )
+
+    // The save button is rendered as a non-interactive span (not a <button>)
+    const saveText = screen.getByText('Save register')
+    expect(saveText.tagName).not.toBe('BUTTON')
+    expect(saveText.closest('span')).toBeTruthy()
+  })
+
+  it('shows enabled save button for secretary when hasExisting is false', () => {
+    render(
+      <AttendanceForm
+        classId="class-1"
+        date="2024-03-08"
+        students={[students[0]]}
+        existing={{}}
+        role="secretary"
+        hasExisting={false}
+      />,
+    )
+
+    // Mark student so button is enabled
+    fireEvent.click(screen.getAllByRole('button', { name: 'Present' })[0])
+
+    const saveButton = screen.getByText('Save register')
+    expect(saveButton.tagName).toBe('BUTTON')
   })
 })

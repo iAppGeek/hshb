@@ -52,6 +52,7 @@ export default async function AttendanceRegister({
         students={students}
         existing={existing}
         role={role}
+        hasExisting={existingRows.length > 0}
       />
     </>
   )

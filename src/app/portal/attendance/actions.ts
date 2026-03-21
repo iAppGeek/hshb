@@ -11,9 +11,13 @@ import {
   saveAttendance,
 } from '@/db'
 import type { AttendanceStatus } from '@/db'
+import { canUpdateAttendance } from '@/lib/permissions'
+import type { StaffRole } from '@/types/next-auth'
 import { sendPushNotification } from '@/lib/push'
 
-export async function saveAttendanceAction(formData: FormData) {
+export async function saveAttendanceAction(
+  formData: FormData,
+): Promise<{ error: string } | void> {
   const session = await auth()
   const staffId = session?.user?.staffId ?? null
 
@@ -34,6 +38,14 @@ export async function saveAttendanceAction(formData: FormData) {
   // Check before save — after upsert records always exist, so we can't detect updates afterwards
   const existing = await getAttendanceByClassAndDate(classId, date)
   const isUpdate = existing.length > 0
+
+  const role = session?.user?.role as StaffRole
+  if (isUpdate && !canUpdateAttendance(role)) {
+    return {
+      error:
+        'You do not have permission to update existing attendance records.',
+    }
+  }
 
   await saveAttendance(records)
   revalidatePath('/portal/attendance')

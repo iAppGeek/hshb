@@ -58,6 +58,14 @@ describe('EditStaffPage', () => {
     )
   })
 
+  it('redirects to /portal/staff for secretary role', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { role: 'secretary' } } as any)
+
+    await expect(EditStaffPage({ params })).rejects.toThrow(
+      'NEXT_REDIRECT:/portal/staff',
+    )
+  })
+
   it('redirects to /portal/staff when staff not found', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
     vi.mocked(getStaffById).mockResolvedValue(null as any)
