@@ -30,6 +30,15 @@ export async function getLessonPlanCount(): Promise<number> {
   return count ?? 0
 }
 
+export async function getLessonPlanCountByDate(date: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('lesson_plans')
+    .select('*', { count: 'exact', head: true })
+    .eq('lesson_date', date)
+  if (error) throw error
+  return count ?? 0
+}
+
 export async function getLessonPlans(options?: {
   classIds?: string[]
   limit?: number

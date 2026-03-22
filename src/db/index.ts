@@ -58,6 +58,7 @@ export {
 export type { IncidentType, IncidentRow } from './incidents'
 export {
   getLessonPlanCount,
+  getLessonPlanCountByDate,
   getLessonPlans,
   getLessonPlanById,
   createLessonPlan,
