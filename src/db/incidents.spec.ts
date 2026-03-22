@@ -10,6 +10,7 @@ import {
   getIncidentCount,
   getIncidents,
   getIncidentById,
+  getIncidentCountsByDateRange,
   createIncident,
   updateIncident,
 } from './incidents'
@@ -156,6 +157,74 @@ describe('getIncidentById', () => {
     })
   })
 })
+
+// ─── getIncidentCountsByDateRange ────────────────────────────────────────────
+
+describe('getIncidentCountsByDateRange', () => {
+  it('returns counts grouped by type', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockResolvedValue({
+            data: [
+              { type: 'medical' },
+              { type: 'medical' },
+              { type: 'behaviour' },
+              { type: 'other' },
+            ],
+            error: null,
+          }),
+        }),
+      }),
+    })
+
+    const result = await getIncidentCountsByDateRange(
+      '2026-03-01',
+      '2026-03-31',
+    )
+    expect(result).toEqual({
+      medical: 2,
+      behaviour: 1,
+      other: 1,
+      total: 4,
+    })
+    expect(mockFrom).toHaveBeenCalledWith('incidents')
+  })
+
+  it('returns zeros when no data', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockResolvedValue({ data: null, error: null }),
+        }),
+      }),
+    })
+
+    const result = await getIncidentCountsByDateRange(
+      '2026-03-01',
+      '2026-03-31',
+    )
+    expect(result).toEqual({ medical: 0, behaviour: 0, other: 0, total: 0 })
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi
+            .fn()
+            .mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+        }),
+      }),
+    })
+
+    await expect(
+      getIncidentCountsByDateRange('2026-03-01', '2026-03-31'),
+    ).rejects.toEqual({ message: 'DB error' })
+  })
+})
+
+// ─── createIncident ─────────────────────────────────────────────────────────
 
 describe('createIncident', () => {
   it('inserts a new incident and returns it', async () => {

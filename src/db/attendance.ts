@@ -100,6 +100,35 @@ export async function getAttendanceLateCount(date: string): Promise<number> {
   return count ?? 0
 }
 
+/** Fetch attendance rows across a date range for aggregation (class_id, date, status). */
+export async function getAttendanceByDateRange(
+  startDate: string,
+  endDate: string,
+) {
+  const { data, error } = await supabase
+    .from('attendance')
+    .select('class_id, date, status')
+    .gte('date', startDate)
+    .lte('date', endDate)
+  if (error) throw error
+  return data ?? []
+}
+
+/** Count late students across a date range. */
+export async function getAttendanceLateCountByDateRange(
+  startDate: string,
+  endDate: string,
+): Promise<number> {
+  const { count, error } = await supabase
+    .from('attendance')
+    .select('*', { count: 'exact', head: true })
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .eq('status', 'late')
+  if (error) throw error
+  return count ?? 0
+}
+
 export async function saveAttendance(records: AttendanceInsert[]) {
   const { data, error } = await supabase
     .from('attendance')

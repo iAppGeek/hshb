@@ -9,6 +9,7 @@ vi.mock('./client', () => ({
 import {
   getStaffAttendanceForToday,
   getStaffAttendanceByDate,
+  getStaffAttendanceByDateRange,
   signInStaff,
   signOutStaff,
   getStaffSignedInCount,
@@ -122,6 +123,66 @@ describe('getStaffAttendanceByDate', () => {
     await expect(getStaffAttendanceByDate('2026-03-18')).rejects.toEqual({
       message: 'DB error',
     })
+  })
+})
+
+// ─── getStaffAttendanceByDateRange ────────────────────────────────────────────
+
+describe('getStaffAttendanceByDateRange', () => {
+  it('returns all attendance records within a date range', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: [mockRow], error: null }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await getStaffAttendanceByDateRange(
+      '2026-03-01',
+      '2026-03-31',
+    )
+    expect(result).toEqual([mockRow])
+    expect(mockFrom).toHaveBeenCalledWith('staff_attendance')
+  })
+
+  it('returns empty array when data is null', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: null, error: null }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await getStaffAttendanceByDateRange(
+      '2026-03-01',
+      '2026-03-31',
+    )
+    expect(result).toEqual([])
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'DB error' },
+            }),
+          }),
+        }),
+      }),
+    })
+
+    await expect(
+      getStaffAttendanceByDateRange('2026-03-01', '2026-03-31'),
+    ).rejects.toEqual({ message: 'DB error' })
   })
 })
 

@@ -10,6 +10,8 @@ import {
   getAttendanceByClassAndDate,
   getAttendanceLastUpdatedPerClass,
   getAttendanceLateCount,
+  getAttendanceByDateRange,
+  getAttendanceLateCountByDateRange,
   saveAttendance,
 } from './attendance'
 
@@ -177,6 +179,119 @@ describe('getAttendanceLateCount', () => {
     })
   })
 })
+
+// ─── getAttendanceByDateRange ────────────────────────────────────────────────
+
+describe('getAttendanceByDateRange', () => {
+  it('returns attendance rows for a date range', async () => {
+    const rows = [
+      { class_id: 'class-1', date: '2024-03-08', status: 'present' },
+      { class_id: 'class-1', date: '2024-03-09', status: 'late' },
+    ]
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockResolvedValue({ data: rows, error: null }),
+        }),
+      }),
+    })
+
+    const result = await getAttendanceByDateRange('2024-03-08', '2024-03-09')
+    expect(result).toEqual(rows)
+    expect(mockFrom).toHaveBeenCalledWith('attendance')
+  })
+
+  it('returns empty array when data is null', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockResolvedValue({ data: null, error: null }),
+        }),
+      }),
+    })
+
+    const result = await getAttendanceByDateRange('2024-03-08', '2024-03-09')
+    expect(result).toEqual([])
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi
+            .fn()
+            .mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+        }),
+      }),
+    })
+
+    await expect(
+      getAttendanceByDateRange('2024-03-08', '2024-03-09'),
+    ).rejects.toEqual({ message: 'DB error' })
+  })
+})
+
+// ─── getAttendanceLateCountByDateRange ──────────────────────────────────────
+
+describe('getAttendanceLateCountByDateRange', () => {
+  it('returns the count of late students in a date range', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({ count: 5, error: null }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await getAttendanceLateCountByDateRange(
+      '2024-03-01',
+      '2024-03-31',
+    )
+    expect(result).toBe(5)
+    expect(mockFrom).toHaveBeenCalledWith('attendance')
+  })
+
+  it('returns 0 when count is null', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({ count: null, error: null }),
+          }),
+        }),
+      }),
+    })
+
+    const result = await getAttendanceLateCountByDateRange(
+      '2024-03-01',
+      '2024-03-31',
+    )
+    expect(result).toBe(0)
+  })
+
+  it('throws on database error', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        gte: vi.fn().mockReturnValue({
+          lte: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              count: null,
+              error: { message: 'DB error' },
+            }),
+          }),
+        }),
+      }),
+    })
+
+    await expect(
+      getAttendanceLateCountByDateRange('2024-03-01', '2024-03-31'),
+    ).rejects.toEqual({ message: 'DB error' })
+  })
+})
+
+// ─── saveAttendance ─────────────────────────────────────────────────────────
 
 describe('saveAttendance', () => {
   it('upserts attendance records and returns saved rows', async () => {

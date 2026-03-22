@@ -72,6 +72,21 @@ export async function signOutStaff(
   if (error) throw error
 }
 
+/** Fetch all staff attendance records within a date range (inclusive). */
+export async function getStaffAttendanceByDateRange(
+  startDate: string,
+  endDate: string,
+): Promise<StaffAttendanceRow[]> {
+  const { data, error } = await supabase
+    .from('staff_attendance')
+    .select('*')
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: true })
+  if (error) throw error
+  return data ?? []
+}
+
 /** Count of staff currently signed in (signed_in_at set, signed_out_at null) for a date. */
 export async function getStaffSignedInCount(date: string): Promise<number> {
   const { count, error } = await supabase

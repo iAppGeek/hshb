@@ -51,11 +51,12 @@ export { getAllTimetableSlots, getTimetableByClass } from './timetable'
 export {
   getIncidentCount,
   getIncidents,
+  getIncidentCountsByDateRange,
   createIncident,
   updateIncident,
   getIncidentById,
 } from './incidents'
-export type { IncidentType, IncidentRow } from './incidents'
+export type { IncidentType, IncidentRow, IncidentCounts } from './incidents'
 export {
   getLessonPlanCount,
   getLessonPlanCountByDate,
@@ -80,12 +81,15 @@ export {
   getAttendanceSummaryByDate,
   getAttendanceLastUpdatedPerClass,
   getAttendanceLateCount,
+  getAttendanceByDateRange,
+  getAttendanceLateCountByDateRange,
   saveAttendance,
 } from './attendance'
 export type { AttendanceStatus, AttendanceInsert } from './attendance'
 export {
   getStaffAttendanceForToday,
   getStaffAttendanceByDate,
+  getStaffAttendanceByDateRange,
   signInStaff,
   signOutStaff,
   getStaffSignedInCount,

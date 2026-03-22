@@ -93,6 +93,38 @@ export async function createIncident(data: {
   return row as IncidentRow
 }
 
+export type IncidentCounts = {
+  medical: number
+  behaviour: number
+  other: number
+  total: number
+}
+
+/** Count incidents by type across a date range (inclusive). */
+export async function getIncidentCountsByDateRange(
+  startDate: string,
+  endDate: string,
+): Promise<IncidentCounts> {
+  const { data, error } = await supabase
+    .from('incidents')
+    .select('type')
+    .gte('incident_date', startDate)
+    .lte('incident_date', endDate)
+  if (error) throw error
+  const counts: IncidentCounts = {
+    medical: 0,
+    behaviour: 0,
+    other: 0,
+    total: 0,
+  }
+  for (const row of data ?? []) {
+    const t = row.type as IncidentType
+    counts[t]++
+    counts.total++
+  }
+  return counts
+}
+
 export async function updateIncident(
   id: string,
   data: {
