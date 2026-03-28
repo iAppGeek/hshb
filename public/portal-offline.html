@@ -54,12 +54,18 @@
         margin-bottom: 1.5rem;
       }
       .message {
-        background: #fef3c7;
         border-radius: 0.5rem;
         padding: 0.75rem 1rem;
         font-size: 0.875rem;
-        color: #92400e;
         margin-bottom: 1.5rem;
+      }
+      .message-offline {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .message-loading {
+        background: #dbeafe;
+        color: #1e40af;
       }
       button {
         display: inline-flex;
@@ -85,6 +91,25 @@
         font-size: 0.75rem;
         color: #9ca3af;
       }
+      .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid #93c5fd;
+        border-top-color: #1e40af;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+        margin-right: 0.25rem;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -92,12 +117,41 @@
       <img src="/icons/portal-icon-192.png" alt="HSHB Logo" />
       <h1>Staff Portal</h1>
       <p class="subtitle">Hellenic School of High Barnet</p>
-      <div class="message">
-        You appear to be offline. Please check your internet connection and try
-        again.
+
+      <div id="loading-state" class="hidden">
+        <div class="message message-loading">
+          <span class="spinner"></span>
+          Still loading&hellip; this is taking longer than usual.
+        </div>
+        <p class="footer">Please wait or check your connection.</p>
       </div>
-      <button onclick="location.reload()">Try again</button>
-      <p class="footer">This portal requires an internet connection.</p>
+
+      <div id="offline-state" class="hidden">
+        <div class="message message-offline">
+          You appear to be offline. Please check your internet connection and
+          try again.
+        </div>
+        <button onclick="location.reload()">Try again</button>
+        <p class="footer">This portal requires an internet connection.</p>
+      </div>
     </div>
+
+    <script>
+      function update() {
+        var online = navigator.onLine
+        document.getElementById('loading-state').className = online
+          ? ''
+          : 'hidden'
+        document.getElementById('offline-state').className = online
+          ? 'hidden'
+          : ''
+      }
+
+      update()
+      window.addEventListener('online', function () {
+        location.reload()
+      })
+      window.addEventListener('offline', update)
+    </script>
   </body>
 </html>

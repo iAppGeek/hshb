@@ -1,3 +1,5 @@
+import 'server-only'
+
 import * as contentful from 'contentful'
 
 export const contentfulClient = contentful.createClient({

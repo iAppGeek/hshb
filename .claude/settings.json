@@ -1,11 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Read(//Users/anthroponiadas/Development/hshb/src/app/api/push/subscribe/**)",
-      "Read(//Users/anthropony/Development/hshb/src/app/portal/lesson-plans/new/**)",
+      "Read(//Users/anthropicdev/Development/hshb/**)",
       "Bash(npm run:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(grep -E \"\\\\.\\(env|pem|key|json|toml\\)$\")",
+      "Bash(grep -E \"\\\\.\\(pem|key|p8|p12|pfx\\)$\")",
+      "Bash(grep -r \"SUPABASE\\\\|supabase\\\\|AZURE\\\\|azure\" /Users/anthonyladas/Development/hshb --include=*.ts --include=*.tsx --include=*.js --include=*.jsx --include=*.json --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=coverage)",
+      "Bash(grep -r \"https://.*\\\\.supabase\\\\.co\\\\|zfznuscqncvujhzjzinc\" /Users/anthonyladas/Development/hshb --include=*.ts --include=*.tsx --include=*.js --include=*.json --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=coverage)",
+      "Bash(git check-ignore:*)",
+      "Bash(grep -r \"G-[A-Z0-9]\\\\{10,\\\\}\\\\|sk_live_\\\\|pk_live_\\\\|auth0\\\\|firebase\" /Users/anthonyladas/Development/hshb/src --include=*.ts --include=*.tsx --include=*.js)"
     ]
   }
 }

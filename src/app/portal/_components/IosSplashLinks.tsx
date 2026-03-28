@@ -9,8 +9,10 @@ const splashScreens = [
   { w: 768, h: 1024, dpr: 2, portrait: '1536-2048', landscape: '2048-1536' },
   // iPhone 16 Pro Max / 17 Pro Max
   { w: 440, h: 956, dpr: 3, portrait: '1320-2868', landscape: '2868-1320' },
-  // iPhone 16 Pro / 17 / 17 Pro / 17 Air
+  // iPhone 16 Pro / 17 / 17 Pro
   { w: 402, h: 874, dpr: 3, portrait: '1206-2622', landscape: '2622-1206' },
+  // iPhone 17 Air
+  { w: 420, h: 912, dpr: 3, portrait: '1260-2736', landscape: '2736-1260' },
   // iPhone 14 Pro Max / 15 Pro Max / 16 Plus
   { w: 430, h: 932, dpr: 3, portrait: '1290-2796', landscape: '2796-1290' },
   // iPhone 14 Pro / 15 Pro

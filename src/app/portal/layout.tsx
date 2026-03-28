@@ -27,6 +27,7 @@ import PwaRegistrar from './_components/PwaRegistrar'
 
 export const viewport: Viewport = {
   themeColor: '#1e40af',
+  viewportFit: 'cover',
 }
 
 export const metadata: Metadata = {
@@ -39,6 +40,9 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
   },
   icons: { apple: '/icons/portal-icon-192.png' },
+  other: {
+    'apple-mobile-web-app-capable': 'yes',
+  },
 }
 
 const navItems = [

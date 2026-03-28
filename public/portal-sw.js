@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hshb-portal-v2'
+const CACHE_NAME = 'hshb-portal-v3'
 
 const PRECACHE_URLS = [
   '/manifest.portal.json',
@@ -34,10 +34,24 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Navigation requests (HTML pages): network-first, offline fallback
+  // Navigation requests (HTML pages): stale-while-revalidate
+  // Serve cached HTML instantly, then update cache in the background.
+  // This eliminates the blank screen on PWA cold-start.
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match('/portal-offline.html')),
+      caches.match(event.request).then((cached) => {
+        const fetchPromise = fetch(event.request)
+          .then((response) => {
+            const clone = response.clone()
+            caches
+              .open(CACHE_NAME)
+              .then((cache) => cache.put(event.request, clone))
+            return response
+          })
+          .catch(() => cached || caches.match('/portal-offline.html'))
+
+        return cached || fetchPromise
+      }),
     )
     return
   }
