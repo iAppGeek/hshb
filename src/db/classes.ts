@@ -124,6 +124,7 @@ export async function updateClass(
   const { error } = await supabase.from('classes').update(data).eq('id', id)
   if (error) throw error
   revalidateTag('classes', 'max')
+  revalidateTag('students', 'max')
 }
 
 export async function setClassStudents(classId: string, studentIds: string[]) {

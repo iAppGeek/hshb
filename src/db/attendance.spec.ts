@@ -8,7 +8,6 @@ vi.mock('./client', () => ({
 
 import {
   getAttendanceByClassAndDate,
-  getAttendanceLastUpdatedPerClass,
   getAttendanceLateCount,
   getAttendanceByDateRange,
   getAttendanceLateCountByDateRange,
@@ -75,63 +74,6 @@ describe('getAttendanceByClassAndDate', () => {
     ).rejects.toEqual({
       message: 'DB error',
     })
-  })
-})
-
-describe('getAttendanceLastUpdatedPerClass', () => {
-  it('returns earliest createdAt and latest updatedAt per class', async () => {
-    mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockResolvedValue({
-          data: [
-            {
-              class_id: 'class-1',
-              created_at: '2024-03-08T09:00:00Z',
-              updated_at: '2024-03-08T09:00:00Z',
-              status: 'present',
-            },
-            {
-              class_id: 'class-1',
-              created_at: '2024-03-08T09:05:00Z',
-              updated_at: '2024-03-08T10:30:00Z',
-              status: 'late',
-            },
-            {
-              class_id: 'class-2',
-              created_at: '2024-03-08T08:00:00Z',
-              updated_at: '2024-03-08T08:00:00Z',
-              status: 'absent',
-            },
-          ],
-          error: null,
-        }),
-      }),
-    })
-
-    const result = await getAttendanceLastUpdatedPerClass('2024-03-08')
-    expect(result).toEqual({
-      'class-1': {
-        createdAt: '2024-03-08T09:00:00Z',
-        updatedAt: '2024-03-08T10:30:00Z',
-        presentCount: 2,
-      },
-      'class-2': {
-        createdAt: '2024-03-08T08:00:00Z',
-        updatedAt: '2024-03-08T08:00:00Z',
-        presentCount: 0,
-      },
-    })
-  })
-
-  it('returns empty object when no attendance records exist', async () => {
-    mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-      }),
-    })
-
-    const result = await getAttendanceLastUpdatedPerClass('2024-03-08')
-    expect(result).toEqual({})
   })
 })
 

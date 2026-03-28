@@ -19,32 +19,30 @@ const getLinkedAssetUrl = (parentNode: contentful.Asset) => {
   return 'https:' + parentNode?.fields?.file?.url
 }
 
-let textCache: EntryCollection<EntrySkeletonType, undefined, string>
+let textCachePromise: Promise<
+  EntryCollection<EntrySkeletonType, undefined, string>
+> | null = null
+
 export const getTextSectionData = async (
   client: ContentfulClientApi<undefined>,
   sectionId: string,
-) => {
-  if (!textCache) {
-    console.log('fetching text entries')
-    textCache = await client.getEntries({ content_type: 'text' })
+): Promise<string> => {
+  if (!textCachePromise) {
+    textCachePromise = client.getEntries({ content_type: 'text' })
   }
+  const textCache = await textCachePromise
 
-  // get entry by "id" field
   const item = textCache.items.find((i) => i.fields['id'] === sectionId)
   return item ? (item.fields['text'] as string) : ''
 }
 
 export type FeaturedQuote = { text: string; author: string; role: string }
-//gets a single random entry from all quotes
 export const getFeaturedQuotes = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<FeaturedQuote[]> => {
-  // get total count of quote entries
-  console.log('Fetching Featured Quotes')
   const entries = await client.getEntries({
     content_type: 'quotes',
   })
-  console.log(`Fetched ${entries.items.length} Featured Quotes`)
   return entries.items.map((entry) => ({
     author: entry.fields['author'] as string,
     role: entry.fields['role'] as string,
@@ -52,11 +50,9 @@ export const getFeaturedQuotes = async (
   }))
 }
 
-// gets all the people and groups by role (teacher or commitee)
 export const getCommunityDirectory = async (
   client: ContentfulClientApi<undefined>,
-) => {
-  console.log('fetching Community Directory')
+): Promise<CommunityDirectory> => {
   const people = await client.getEntries({ content_type: 'people' })
   const grouped = people.items.reduce((prev, curr) => {
     const role = curr.fields['role'] as string
@@ -90,7 +86,6 @@ export type PastEvent = {
 export const getEvents = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<PastEvent[]> => {
-  console.log('fetching Events')
   const entries = await client.getEntries({ content_type: 'events', limit: 3 })
 
   const events = entries.items.map(
@@ -112,7 +107,6 @@ export const getAccordion = async (
   client: ContentfulClientApi<undefined>,
   name: string,
 ): Promise<AccordianData> => {
-  console.log('fetching Accordian', name)
   const entry = await client.getEntries({
     content_type: 'accordion',
     'fields.name[match]': name,
@@ -134,12 +128,9 @@ export const getAccordion = async (
 
 export type Author = { name: string; role: string; image: string }
 export type Testimonial = { title: string; text: string; author: Author }
-//gets a single random entry from all quotes
 export const getTestimonials = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<Testimonial[]> => {
-  // get total count of quote entries
-  console.log('fetching Testimonials')
   const entries = await client.getEntries({ content_type: 'testimonials' })
 
   return entries.items.map((e) => ({

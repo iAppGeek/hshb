@@ -218,6 +218,7 @@ describe('updateClass', () => {
     expect(mockFrom).toHaveBeenCalledWith('classes')
     expect(mockEq).toHaveBeenCalledWith('id', 'class-1')
     expect(revalidateTag).toHaveBeenCalledWith('classes', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('students', 'max')
   })
 
   it('throws when supabase returns an error', async () => {

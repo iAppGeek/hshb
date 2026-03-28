@@ -10,24 +10,29 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 import { signInAction, signOutAction } from './actions'
 
+const STAFF_1 = '00000000-0000-4000-8000-000000000001'
+const STAFF_2 = '00000000-0000-4000-8000-000000000002'
+const ADMIN_1 = '00000000-0000-4000-8000-000000000010'
+const SECRETARY_1 = '00000000-0000-4000-8000-000000000020'
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
 
-function makeFormData(fields: Record<string, string>) {
+function makeFormData(fields: Record<string, string>): FormData {
   const fd = new FormData()
   for (const [k, v] of Object.entries(fields)) fd.append(k, v)
   return fd
 }
 
 const teacherSession = {
-  user: { staffId: 'staff-1', role: 'teacher' },
+  user: { staffId: STAFF_1, role: 'teacher' },
 }
 const adminSession = {
-  user: { staffId: 'admin-1', role: 'admin' },
+  user: { staffId: ADMIN_1, role: 'admin' },
 }
 const secretarySession = {
-  user: { staffId: 'secretary-1', role: 'secretary' },
+  user: { staffId: SECRETARY_1, role: 'secretary' },
 }
 
 // ─── signInAction ─────────────────────────────────────────────────────────────
@@ -38,7 +43,7 @@ describe('signInAction', () => {
     vi.mocked(signInStaff).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '09:00',
     })
@@ -47,7 +52,7 @@ describe('signInAction', () => {
 
     expect(result).toBeUndefined()
     expect(signInStaff).toHaveBeenCalledWith(
-      'staff-1',
+      STAFF_1,
       '2026-03-18',
       '2026-03-18T09:00:00',
     )
@@ -58,7 +63,7 @@ describe('signInAction', () => {
     vi.mocked(auth).mockResolvedValue(teacherSession as any)
 
     const fd = makeFormData({
-      staffId: 'staff-2',
+      staffId: STAFF_2,
       date: '2026-03-18',
       time: '09:00',
     })
@@ -74,7 +79,7 @@ describe('signInAction', () => {
     vi.mocked(signInStaff).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '09:00',
     })
@@ -83,7 +88,7 @@ describe('signInAction', () => {
 
     expect(result).toBeUndefined()
     expect(signInStaff).toHaveBeenCalledWith(
-      'staff-1',
+      STAFF_1,
       '2026-03-18',
       '2026-03-18T09:00:00',
     )
@@ -93,7 +98,7 @@ describe('signInAction', () => {
     vi.mocked(auth).mockResolvedValue(null as any)
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '09:00',
     })
@@ -108,7 +113,7 @@ describe('signInAction', () => {
     vi.mocked(signInStaff).mockRejectedValue(new Error('DB error'))
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '09:00',
     })
@@ -121,10 +126,10 @@ describe('signInAction', () => {
   it('returns error when required fields are missing', async () => {
     vi.mocked(auth).mockResolvedValue(teacherSession as any)
 
-    const fd = makeFormData({ staffId: 'staff-1', date: '2026-03-18' }) // no time
+    const fd = makeFormData({ staffId: STAFF_1, date: '2026-03-18' }) // no time
     const result = await signInAction(fd)
 
-    expect(result).toEqual({ error: 'Missing required fields' })
+    expect(result).toEqual({ error: expect.stringContaining('Invalid') })
     expect(signInStaff).not.toHaveBeenCalled()
   })
 
@@ -133,7 +138,7 @@ describe('signInAction', () => {
     vi.mocked(signInStaff).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      staffId: 'secretary-1',
+      staffId: SECRETARY_1,
       date: '2026-03-18',
       time: '09:00',
     })
@@ -142,7 +147,7 @@ describe('signInAction', () => {
 
     expect(result).toBeUndefined()
     expect(signInStaff).toHaveBeenCalledWith(
-      'secretary-1',
+      SECRETARY_1,
       '2026-03-18',
       '2026-03-18T09:00:00',
     )
@@ -153,7 +158,7 @@ describe('signInAction', () => {
     vi.mocked(auth).mockResolvedValue(secretarySession as any)
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '09:00',
     })
@@ -173,7 +178,7 @@ describe('signOutAction', () => {
     vi.mocked(signOutStaff).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '17:00',
     })
@@ -182,7 +187,7 @@ describe('signOutAction', () => {
 
     expect(result).toBeUndefined()
     expect(signOutStaff).toHaveBeenCalledWith(
-      'staff-1',
+      STAFF_1,
       '2026-03-18',
       '2026-03-18T17:00:00',
     )
@@ -193,7 +198,7 @@ describe('signOutAction', () => {
     vi.mocked(auth).mockResolvedValue(teacherSession as any)
 
     const fd = makeFormData({
-      staffId: 'staff-2',
+      staffId: STAFF_2,
       date: '2026-03-18',
       time: '17:00',
     })
@@ -208,7 +213,7 @@ describe('signOutAction', () => {
     vi.mocked(signOutStaff).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '17:00',
     })
@@ -223,7 +228,7 @@ describe('signOutAction', () => {
     vi.mocked(signOutStaff).mockRejectedValue(new Error('DB error'))
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '17:00',
     })
@@ -238,7 +243,7 @@ describe('signOutAction', () => {
     vi.mocked(signOutStaff).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      staffId: 'secretary-1',
+      staffId: SECRETARY_1,
       date: '2026-03-18',
       time: '17:00',
     })
@@ -247,7 +252,7 @@ describe('signOutAction', () => {
 
     expect(result).toBeUndefined()
     expect(signOutStaff).toHaveBeenCalledWith(
-      'secretary-1',
+      SECRETARY_1,
       '2026-03-18',
       '2026-03-18T17:00:00',
     )
@@ -258,7 +263,7 @@ describe('signOutAction', () => {
     vi.mocked(auth).mockResolvedValue(secretarySession as any)
 
     const fd = makeFormData({
-      staffId: 'staff-1',
+      staffId: STAFF_1,
       date: '2026-03-18',
       time: '17:00',
     })

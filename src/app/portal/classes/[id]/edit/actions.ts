@@ -4,31 +4,33 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { updateClass, setClassStudents } from '@/db'
-
-function str(formData: FormData, key: string): string | null {
-  const v = (formData.get(key) as string | null)?.trim()
-  return v || null
-}
+import {
+  updateClassSchema,
+  extractFormFields,
+  type ActionResult,
+} from '@/lib/schemas'
 
 export async function updateClassAction(
   id: string,
   formData: FormData,
-): Promise<{ error: string } | void> {
+): Promise<ActionResult> {
+  const raw = extractFormFields(formData, ['student_ids'])
+  const parsed = updateClassSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const { student_ids, active, ...classData } = parsed.data
+
   try {
     await updateClass(id, {
-      name: str(formData, 'name')!,
-      year_group: str(formData, 'year_group')!,
-      room_number: str(formData, 'room_number'),
-      academic_year: str(formData, 'academic_year') ?? undefined,
-      teacher_id: str(formData, 'teacher_id')!,
-      active: formData.get('active') === 'true',
+      name: classData.name,
+      year_group: classData.year_group,
+      room_number: classData.room_number,
+      academic_year: classData.academic_year ?? undefined,
+      teacher_id: classData.teacher_id,
+      active,
     })
 
-    const studentIds = (formData.getAll('student_ids') as string[]).filter(
-      Boolean,
-    )
-    await setClassStudents(id, studentIds)
-
+    await setClassStudents(id, student_ids)
     revalidatePath('/portal/classes')
   } catch (err) {
     console.error('[updateClassAction] error:', err)

@@ -4,29 +4,31 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { createClass, setClassStudents } from '@/db'
-
-function str(formData: FormData, key: string): string | null {
-  const v = (formData.get(key) as string | null)?.trim()
-  return v || null
-}
+import {
+  createClassSchema,
+  extractFormFields,
+  type ActionResult,
+} from '@/lib/schemas'
 
 export async function createClassAction(
   formData: FormData,
-): Promise<{ error: string } | void> {
+): Promise<ActionResult> {
+  const raw = extractFormFields(formData, ['student_ids'])
+  const parsed = createClassSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const { student_ids, ...classData } = parsed.data
+
   try {
     const cls = await createClass({
-      name: str(formData, 'name')!,
-      year_group: str(formData, 'year_group')!,
-      room_number: str(formData, 'room_number'),
-      academic_year: str(formData, 'academic_year') ?? undefined,
-      teacher_id: str(formData, 'teacher_id')!,
+      name: classData.name,
+      year_group: classData.year_group,
+      room_number: classData.room_number,
+      academic_year: classData.academic_year ?? undefined,
+      teacher_id: classData.teacher_id,
     })
 
-    const studentIds = (formData.getAll('student_ids') as string[]).filter(
-      Boolean,
-    )
-    await setClassStudents(cls.id, studentIds)
-
+    await setClassStudents(cls.id, student_ids)
     revalidatePath('/portal/classes')
   } catch (err) {
     console.error('[createClassAction] error:', err)

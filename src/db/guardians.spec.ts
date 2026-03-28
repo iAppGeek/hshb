@@ -110,6 +110,7 @@ describe('createGuardian', () => {
 
     expect(result).toEqual({ id: 'guardian-1' })
     expect(mockFrom).toHaveBeenCalledWith('guardians')
+    expect(revalidateTag).toHaveBeenCalledWith('students', 'max')
   })
 
   it('throws when the database returns an error', async () => {

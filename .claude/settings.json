@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/anthroponiadas/Development/hshb/src/app/api/push/subscribe/**)",
+      "Read(//Users/anthropony/Development/hshb/src/app/portal/lesson-plans/new/**)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vitest:*)"
+    ]
+  }
+}

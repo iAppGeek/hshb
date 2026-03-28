@@ -44,6 +44,7 @@ export async function createGuardian(data: GuardianInsert) {
     .select('id')
     .single()
   if (error) throw error
+  revalidateTag('students', 'max')
   return guardian
 }
 

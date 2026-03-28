@@ -5,41 +5,35 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
 import { createIncident, updateIncident } from '@/db'
-import type { IncidentType } from '@/db'
 import { canEditIncidents } from '@/lib/permissions'
+import {
+  createIncidentSchema,
+  updateIncidentSchema,
+  extractFormFields,
+  type ActionResult,
+} from '@/lib/schemas'
 import type { StaffRole } from '@/types/next-auth'
-
-function str(formData: FormData, key: string): string {
-  return (formData.get(key) as string | null)?.trim() ?? ''
-}
 
 export async function createIncidentAction(
   formData: FormData,
-): Promise<{ error: string } | void> {
+): Promise<ActionResult> {
   const session = await auth()
   if (!session) return { error: 'Unauthorised' }
 
-  const type = str(formData, 'type') as IncidentType
-  const student_id = str(formData, 'student_id')
-  const title = str(formData, 'title')
-  const description = str(formData, 'description')
-  const incident_date = str(formData, 'incident_date')
+  const raw = extractFormFields(formData)
+  const parsed = createIncidentSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const { type, parent_notified, parent_notified_at, ...rest } = parsed.data
   const created_by = session.user.staffId!
-  const parent_notified = formData.get('parent_notified') === 'true'
-  const parent_notified_at = parent_notified
-    ? str(formData, 'parent_notified_at') || null
-    : null
 
   try {
     await createIncident({
       type,
-      student_id,
-      title,
-      description,
-      incident_date,
+      ...rest,
       created_by,
       parent_notified,
-      parent_notified_at,
+      parent_notified_at: parent_notified ? parent_notified_at : null,
     })
     revalidatePath('/portal/incidents')
   } catch (err) {
@@ -53,29 +47,24 @@ export async function createIncidentAction(
 export async function updateIncidentAction(
   id: string,
   formData: FormData,
-): Promise<{ error: string } | void> {
+): Promise<ActionResult> {
   const session = await auth()
   if (!session || !canEditIncidents(session.user.role as StaffRole))
     return { error: 'Unauthorised' }
 
-  const type = str(formData, 'type') as IncidentType
-  const title = str(formData, 'title')
-  const description = str(formData, 'description')
-  const incident_date = str(formData, 'incident_date')
+  const raw = extractFormFields(formData)
+  const parsed = updateIncidentSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const { type, parent_notified, parent_notified_at, ...rest } = parsed.data
   const updated_by = session.user.staffId!
-  const parent_notified = formData.get('parent_notified') === 'true'
-  const parent_notified_at = parent_notified
-    ? str(formData, 'parent_notified_at') || null
-    : null
 
   try {
     await updateIncident(id, {
-      title,
-      description,
-      incident_date,
+      ...rest,
       updated_by,
       parent_notified,
-      parent_notified_at,
+      parent_notified_at: parent_notified ? parent_notified_at : null,
     })
     revalidatePath('/portal/incidents')
   } catch (err) {

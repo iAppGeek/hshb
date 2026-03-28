@@ -13,6 +13,11 @@ vi.mock('@/db', () => ({
   setClassStudents: vi.fn(),
 }))
 
+const STAFF_ID = '00000000-0000-4000-8000-000000000001'
+const CLASS_ID = '00000000-0000-4000-8000-000000000010'
+const STUDENT_1 = '00000000-0000-4000-8000-000000000020'
+const STUDENT_2 = '00000000-0000-4000-8000-000000000030'
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
@@ -34,12 +39,12 @@ const baseFields = {
   year_group: '1',
   room_number: 'R1',
   academic_year: '2024/25',
-  teacher_id: 'staff-1',
+  teacher_id: STAFF_ID,
 }
 
 describe('createClassAction', () => {
   it('creates class, sets students, revalidates, and redirects', async () => {
-    vi.mocked(createClass).mockResolvedValue({ id: 'class-new' } as any)
+    vi.mocked(createClass).mockResolvedValue({ id: CLASS_ID } as any)
     vi.mocked(setClassStudents).mockResolvedValue(undefined)
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
@@ -55,16 +60,16 @@ describe('createClassAction', () => {
         year_group: '1',
         room_number: 'R1',
         academic_year: '2024/25',
-        teacher_id: 'staff-1',
+        teacher_id: STAFF_ID,
       }),
     )
-    expect(setClassStudents).toHaveBeenCalledWith('class-new', [])
+    expect(setClassStudents).toHaveBeenCalledWith(CLASS_ID, [])
     expect(revalidatePath).toHaveBeenCalledWith('/portal/classes')
     expect(redirect).toHaveBeenCalledWith('/portal/classes')
   })
 
   it('passes selected student ids to setClassStudents', async () => {
-    vi.mocked(createClass).mockResolvedValue({ id: 'class-new' } as any)
+    vi.mocked(createClass).mockResolvedValue({ id: CLASS_ID } as any)
     vi.mocked(setClassStudents).mockResolvedValue(undefined)
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
@@ -72,21 +77,21 @@ describe('createClassAction', () => {
 
     const fields = {
       ...baseFields,
-      student_ids: ['student-1', 'student-2'],
+      student_ids: [STUDENT_1, STUDENT_2],
     }
 
     await expect(createClassAction(makeFormData(fields))).rejects.toThrow(
       'NEXT_REDIRECT',
     )
 
-    expect(setClassStudents).toHaveBeenCalledWith('class-new', [
-      'student-1',
-      'student-2',
+    expect(setClassStudents).toHaveBeenCalledWith(CLASS_ID, [
+      STUDENT_1,
+      STUDENT_2,
     ])
   })
 
   it('converts empty optional fields to null', async () => {
-    vi.mocked(createClass).mockResolvedValue({ id: 'class-new' } as any)
+    vi.mocked(createClass).mockResolvedValue({ id: CLASS_ID } as any)
     vi.mocked(setClassStudents).mockResolvedValue(undefined)
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
@@ -97,7 +102,7 @@ describe('createClassAction', () => {
       year_group: '2',
       room_number: '',
       academic_year: '',
-      teacher_id: 'staff-1',
+      teacher_id: STAFF_ID,
     }
 
     await expect(createClassAction(makeFormData(fields))).rejects.toThrow(

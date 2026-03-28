@@ -33,11 +33,18 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }))
 
+const CLASS_ID = '00000000-0000-4000-8000-000000000001'
+const STUDENT_1 = '00000000-0000-4000-8000-000000000010'
+const STUDENT_2 = '00000000-0000-4000-8000-000000000020'
+const STAFF_ID = '00000000-0000-4000-8000-000000000100'
+const SECRETARY_ID = '00000000-0000-4000-8000-000000000200'
+const ADMIN_ID = '00000000-0000-4000-8000-000000000300'
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
 
-function makeFormData(fields: Record<string, string | string[]>) {
+function makeFormData(fields: Record<string, string | string[]>): FormData {
   const fd = new FormData()
   for (const [key, value] of Object.entries(fields)) {
     if (Array.isArray(value)) {
@@ -51,7 +58,7 @@ function makeFormData(fields: Record<string, string | string[]>) {
 
 const mockSub = {
   id: 'sub-1',
-  staff_id: 'admin-1',
+  staff_id: ADMIN_ID,
   endpoint: 'https://fcm.googleapis.com/fcm/send/abc',
   p256dh: 'p256dh-key',
   auth: 'auth-key',
@@ -60,55 +67,54 @@ const mockSub = {
 
 describe('saveAttendanceAction', () => {
   it('saves attendance records with the current staff id', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: STAFF_ID } } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([])
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: ['student-1', 'student-2'],
-      status_student1: 'present',
-      status_student2: 'absent',
+      studentId: [STUDENT_1, STUDENT_2],
+      [`status_${STUDENT_1}`]: 'present',
+      [`status_${STUDENT_2}`]: 'absent',
     })
 
     await saveAttendanceAction(fd)
 
     expect(saveAttendance).toHaveBeenCalledWith([
       expect.objectContaining({
-        class_id: 'class-1',
+        class_id: CLASS_ID,
         date: '2024-03-08',
-        recorded_by: 'staff-1',
+        recorded_by: STAFF_ID,
       }),
       expect.objectContaining({
-        class_id: 'class-1',
+        class_id: CLASS_ID,
         date: '2024-03-08',
-        recorded_by: 'staff-1',
+        recorded_by: STAFF_ID,
       }),
     ])
     expect(revalidatePath).toHaveBeenCalledWith('/portal/attendance')
   })
 
   it('defaults missing status to absent', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: STAFF_ID } } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([])
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
-      // no status_student-1 key
+      studentId: STUDENT_1,
     })
 
     await saveAttendanceAction(fd)
@@ -124,15 +130,15 @@ describe('saveAttendanceAction', () => {
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([])
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
-      'status_student-1': 'late',
+      studentId: STUDENT_1,
+      [`status_${STUDENT_1}`]: 'late',
     })
 
     await saveAttendanceAction(fd)
@@ -143,21 +149,21 @@ describe('saveAttendanceAction', () => {
   })
 
   it('dispatches push notifications to admin subscriptions after save', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: STAFF_ID } } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([mockSub])
     vi.mocked(sendPushNotification).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
-      'status_student-1': 'present',
+      studentId: STUDENT_1,
+      [`status_${STUDENT_1}`]: 'present',
     })
 
     await saveAttendanceAction(fd)
@@ -173,21 +179,21 @@ describe('saveAttendanceAction', () => {
   })
 
   it('excludes the submitting staff member from notifications', async () => {
-    const submitterSub = { ...mockSub, staff_id: 'staff-1' }
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    const submitterSub = { ...mockSub, staff_id: STAFF_ID }
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: STAFF_ID } } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([submitterSub])
     vi.mocked(sendPushNotification).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
+      studentId: STUDENT_1,
     })
 
     await saveAttendanceAction(fd)
@@ -198,23 +204,23 @@ describe('saveAttendanceAction', () => {
 
   it('sends "updated" in body when attendance already exists', async () => {
     vi.mocked(auth).mockResolvedValue({
-      user: { staffId: 'staff-1', role: 'teacher' },
+      user: { staffId: STAFF_ID, role: 'teacher' },
     } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
       { id: 'att-1' },
     ] as any)
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([mockSub])
     vi.mocked(sendPushNotification).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
+      studentId: STUDENT_1,
     })
 
     await saveAttendanceAction(fd)
@@ -227,11 +233,11 @@ describe('saveAttendanceAction', () => {
   })
 
   it('auto-deletes stale subscription on 410 push error', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: STAFF_ID } } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([mockSub])
@@ -240,9 +246,9 @@ describe('saveAttendanceAction', () => {
     vi.mocked(sendPushNotification).mockRejectedValue(goneError)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
+      studentId: STUDENT_1,
     })
 
     await saveAttendanceAction(fd)
@@ -252,11 +258,11 @@ describe('saveAttendanceAction', () => {
   })
 
   it('swallows non-410 push errors without throwing', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: STAFF_ID } } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([mockSub])
@@ -265,29 +271,29 @@ describe('saveAttendanceAction', () => {
     )
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
+      studentId: STUDENT_1,
     })
 
     await expect(saveAttendanceAction(fd)).resolves.toBeUndefined()
   })
 
   it('still calls revalidatePath even when push dispatch is involved', async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { staffId: 'staff-1' } } as any)
+    vi.mocked(auth).mockResolvedValue({ user: { staffId: STAFF_ID } } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([mockSub])
     vi.mocked(sendPushNotification).mockResolvedValue(undefined)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
+      studentId: STUDENT_1,
     })
 
     await saveAttendanceAction(fd)
@@ -296,21 +302,21 @@ describe('saveAttendanceAction', () => {
 
   it('allows secretary to save new attendance (no existing records)', async () => {
     vi.mocked(auth).mockResolvedValue({
-      user: { staffId: 'secretary-1', role: 'secretary' },
+      user: { staffId: SECRETARY_ID, role: 'secretary' },
     } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([])
     vi.mocked(saveAttendance).mockResolvedValue([] as any)
     vi.mocked(getClassById).mockResolvedValue({
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Class A',
     } as any)
     vi.mocked(getAdminSubscriptions).mockResolvedValue([])
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
-      'status_student-1': 'present',
+      studentId: STUDENT_1,
+      [`status_${STUDENT_1}`]: 'present',
     })
 
     const result = await saveAttendanceAction(fd)
@@ -318,9 +324,9 @@ describe('saveAttendanceAction', () => {
     expect(result).toBeUndefined()
     expect(saveAttendance).toHaveBeenCalledWith([
       expect.objectContaining({
-        class_id: 'class-1',
+        class_id: CLASS_ID,
         date: '2024-03-08',
-        recorded_by: 'secretary-1',
+        recorded_by: SECRETARY_ID,
       }),
     ])
     expect(revalidatePath).toHaveBeenCalledWith('/portal/attendance')
@@ -328,17 +334,17 @@ describe('saveAttendanceAction', () => {
 
   it('blocks secretary from updating existing attendance records', async () => {
     vi.mocked(auth).mockResolvedValue({
-      user: { staffId: 'secretary-1', role: 'secretary' },
+      user: { staffId: SECRETARY_ID, role: 'secretary' },
     } as any)
     vi.mocked(getAttendanceByClassAndDate).mockResolvedValue([
       { id: 'att-1' },
     ] as any)
 
     const fd = makeFormData({
-      classId: 'class-1',
+      classId: CLASS_ID,
       date: '2024-03-08',
-      studentId: 'student-1',
-      'status_student-1': 'present',
+      studentId: STUDENT_1,
+      [`status_${STUDENT_1}`]: 'present',
     })
 
     const result = await saveAttendanceAction(fd)

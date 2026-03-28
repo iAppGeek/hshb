@@ -4,7 +4,7 @@ import { auth } from '@/auth'
 import { canAccessReports } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
-export default auth((req) => {
+export const proxy = auth((req) => {
   const { pathname } = req.nextUrl
   const isLoggedIn = !!req.auth
   const isLoginPage = pathname === '/portal/login'

@@ -12,7 +12,7 @@ vi.mock('next/server', () => ({
   NextResponse: { redirect: mockRedirect },
 }))
 
-import middleware from './proxy'
+import { proxy as middleware } from './proxy'
 
 const makeReq = (pathname: string, auth: any = null) =>
   [

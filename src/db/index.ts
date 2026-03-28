@@ -79,7 +79,6 @@ export type {
 export {
   getAttendanceByClassAndDate,
   getAttendanceSummaryByDate,
-  getAttendanceLastUpdatedPerClass,
   getAttendanceLateCount,
   getAttendanceByDateRange,
   getAttendanceLateCountByDateRange,

@@ -4,26 +4,22 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { updateStaff } from '@/db'
-
-function str(formData: FormData, key: string): string | null {
-  const v = (formData.get(key) as string | null)?.trim()
-  return v || null
-}
+import {
+  updateStaffSchema,
+  extractFormFields,
+  type ActionResult,
+} from '@/lib/schemas'
 
 export async function updateStaffAction(
   id: string,
   formData: FormData,
-): Promise<{ error: string } | void> {
-  try {
-    await updateStaff(id, {
-      first_name: str(formData, 'first_name')!,
-      last_name: str(formData, 'last_name')!,
-      email: str(formData, 'email')!,
-      role: str(formData, 'role')!,
-      display_name: str(formData, 'display_name'),
-      contact_number: str(formData, 'contact_number'),
-    })
+): Promise<ActionResult> {
+  const raw = extractFormFields(formData)
+  const parsed = updateStaffSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
 
+  try {
+    await updateStaff(id, parsed.data)
     revalidatePath('/portal/staff')
   } catch (err) {
     console.error('[updateStaffAction] error:', err)

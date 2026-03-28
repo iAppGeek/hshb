@@ -15,24 +15,28 @@ import {
   canEditLessonPlans,
   isTeacher,
 } from '@/lib/permissions'
+import {
+  createLessonPlanSchema,
+  updateLessonPlanSchema,
+  extractFormFields,
+  type ActionResult,
+} from '@/lib/schemas'
 import type { StaffRole } from '@/types/next-auth'
-
-function str(formData: FormData, key: string): string {
-  return (formData.get(key) as string | null)?.trim() ?? ''
-}
 
 export async function createLessonPlanAction(
   formData: FormData,
-): Promise<{ error: string } | void> {
+): Promise<ActionResult> {
   const session = await auth()
   if (!session) return { error: 'Unauthorised' }
 
   const role = session.user.role as StaffRole
   if (!canCreateLessonPlans(role)) return { error: 'Unauthorised' }
 
-  const class_id = str(formData, 'class_id')
-  const lesson_date = str(formData, 'lesson_date')
-  const description = str(formData, 'description')
+  const raw = extractFormFields(formData)
+  const parsed = createLessonPlanSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const { class_id, lesson_date, description } = parsed.data
   const created_by = session.user.staffId!
 
   if (isTeacher(role)) {
@@ -62,7 +66,7 @@ export async function createLessonPlanAction(
 export async function updateLessonPlanAction(
   id: string,
   formData: FormData,
-): Promise<{ error: string } | void> {
+): Promise<ActionResult> {
   const session = await auth()
   if (!session) return { error: 'Unauthorised' }
 
@@ -80,8 +84,11 @@ export async function updateLessonPlanAction(
     }
   }
 
-  const lesson_date = str(formData, 'lesson_date')
-  const description = str(formData, 'description')
+  const raw = extractFormFields(formData)
+  const parsed = updateLessonPlanSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const { lesson_date, description } = parsed.data
   const updated_by = staffId
 
   try {

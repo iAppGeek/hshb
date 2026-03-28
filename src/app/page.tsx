@@ -92,35 +92,41 @@ const jsonLd = {
 }
 
 const Home = async () => {
-  const heroText = await getTextSectionData(client, 'hero-section')
-  const heroVideoUrl = await getHeroVideo(client)
-
-  const quotes = await getFeaturedQuotes(client)
-  const introText = await getTextSectionData(client, 'spotlight-section')
-
-  const aboutUsText = await getTextSectionData(client, 'aboutUs-blurb')
-  const aboutHighlight1 = await getTextSectionData(
-    client,
-    'aboutUs-highlighted-1',
-  )
-  const aboutHighlight2 = await getTextSectionData(
-    client,
-    'aboutUs-highlighted-2',
-  )
-  const aboutUsAcordian = await getAccordion(client, 'About Us')
-
-  const admissionsText = await getTextSectionData(client, 'admissions-blurb')
-
-  const contactText = await getTextSectionData(client, 'contact-text')
-  const contactEmail = await getTextSectionData(client, 'contact-email')
-  const contactNumber = await getTextSectionData(client, 'contact-number')
-  const contactAddress = await getTextSectionData(client, 'contact-address')
-
-  const directory = await getCommunityDirectory(client)
-
-  const events = await getEvents(client)
-
-  const testimonials = await getTestimonials(client)
+  const [
+    heroText,
+    heroVideoUrl,
+    quotes,
+    introText,
+    aboutUsText,
+    aboutHighlight1,
+    aboutHighlight2,
+    aboutUsAcordian,
+    admissionsText,
+    contactText,
+    contactEmail,
+    contactNumber,
+    contactAddress,
+    directory,
+    events,
+    testimonials,
+  ] = await Promise.all([
+    getTextSectionData(client, 'hero-section'),
+    getHeroVideo(client),
+    getFeaturedQuotes(client),
+    getTextSectionData(client, 'spotlight-section'),
+    getTextSectionData(client, 'aboutUs-blurb'),
+    getTextSectionData(client, 'aboutUs-highlighted-1'),
+    getTextSectionData(client, 'aboutUs-highlighted-2'),
+    getAccordion(client, 'About Us'),
+    getTextSectionData(client, 'admissions-blurb'),
+    getTextSectionData(client, 'contact-text'),
+    getTextSectionData(client, 'contact-email'),
+    getTextSectionData(client, 'contact-number'),
+    getTextSectionData(client, 'contact-address'),
+    getCommunityDirectory(client),
+    getEvents(client),
+    getTestimonials(client),
+  ])
 
   return (
     <>

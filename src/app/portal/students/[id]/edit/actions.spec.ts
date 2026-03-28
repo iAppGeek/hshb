@@ -14,6 +14,12 @@ vi.mock('@/db', () => ({
   updateStudentClasses: vi.fn(),
 }))
 
+const STUDENT_ID = '00000000-0000-4000-8000-000000000001'
+const GUARDIAN_1 = '00000000-0000-4000-8000-000000000010'
+const NEW_GUARDIAN = '00000000-0000-4000-8000-000000000020'
+const CLASS_1 = '00000000-0000-4000-8000-000000000030'
+const CLASS_2 = '00000000-0000-4000-8000-000000000040'
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
@@ -30,7 +36,7 @@ function makeFormData(fields: Record<string, string | string[]>): FormData {
   return fd
 }
 
-const baseFields = {
+const baseFields: Record<string, string> = {
   student_first_name: 'Anna',
   student_last_name: 'Smith',
   student_code: 'S001',
@@ -43,7 +49,7 @@ const baseFields = {
   student_medical_details: '',
   student_notes: '',
   primary_mode: 'existing',
-  primary_existing_id: 'guardian-1',
+  primary_existing_id: GUARDIAN_1,
   primary_relationship: 'Mother',
   has_secondary: 'false',
   has_contact1: 'false',
@@ -53,20 +59,21 @@ const baseFields = {
 describe('updateStudentAction', () => {
   it('updates student and redirects on success', async () => {
     vi.mocked(updateStudent).mockResolvedValue(undefined)
+    vi.mocked(updateStudentClasses).mockResolvedValue(undefined)
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
     })
 
     await expect(
-      updateStudentAction('student-1', makeFormData(baseFields)),
+      updateStudentAction(STUDENT_ID, makeFormData(baseFields)),
     ).rejects.toThrow('NEXT_REDIRECT')
 
     expect(updateStudent).toHaveBeenCalledWith(
-      'student-1',
+      STUDENT_ID,
       expect.objectContaining({
         first_name: 'Anna',
         last_name: 'Smith',
-        primary_guardian_id: 'guardian-1',
+        primary_guardian_id: GUARDIAN_1,
       }),
     )
     expect(revalidatePath).toHaveBeenCalledWith('/portal/students')
@@ -75,25 +82,27 @@ describe('updateStudentAction', () => {
 
   it('updates class enrollments with submitted class ids', async () => {
     vi.mocked(updateStudent).mockResolvedValue(undefined)
+    vi.mocked(updateStudentClasses).mockResolvedValue(undefined)
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
     })
 
-    const fields = { ...baseFields, class_ids: ['class-1', 'class-2'] }
+    const fields = { ...baseFields, class_ids: [CLASS_1, CLASS_2] }
 
     await expect(
-      updateStudentAction('student-1', makeFormData(fields)),
+      updateStudentAction(STUDENT_ID, makeFormData(fields)),
     ).rejects.toThrow('NEXT_REDIRECT')
 
-    expect(updateStudentClasses).toHaveBeenCalledWith('student-1', [
-      'class-1',
-      'class-2',
+    expect(updateStudentClasses).toHaveBeenCalledWith(STUDENT_ID, [
+      CLASS_1,
+      CLASS_2,
     ])
   })
 
   it('creates a new guardian when mode is new', async () => {
-    vi.mocked(createGuardian).mockResolvedValue({ id: 'new-guardian-id' })
+    vi.mocked(createGuardian).mockResolvedValue({ id: NEW_GUARDIAN })
     vi.mocked(updateStudent).mockResolvedValue(undefined)
+    vi.mocked(updateStudentClasses).mockResolvedValue(undefined)
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
     })
@@ -108,7 +117,7 @@ describe('updateStudentAction', () => {
     }
 
     await expect(
-      updateStudentAction('student-1', makeFormData(fields)),
+      updateStudentAction(STUDENT_ID, makeFormData(fields)),
     ).rejects.toThrow('NEXT_REDIRECT')
 
     expect(createGuardian).toHaveBeenCalledWith(
@@ -118,18 +127,19 @@ describe('updateStudentAction', () => {
       }),
     )
     expect(updateStudent).toHaveBeenCalledWith(
-      'student-1',
+      STUDENT_ID,
       expect.objectContaining({
-        primary_guardian_id: 'new-guardian-id',
+        primary_guardian_id: NEW_GUARDIAN,
       }),
     )
   })
 
   it('returns error when update throws', async () => {
     vi.mocked(updateStudent).mockRejectedValue(new Error('DB error'))
+    vi.mocked(updateStudentClasses).mockResolvedValue(undefined)
 
     const result = await updateStudentAction(
-      'student-1',
+      STUDENT_ID,
       makeFormData(baseFields),
     )
     expect(result).toEqual({

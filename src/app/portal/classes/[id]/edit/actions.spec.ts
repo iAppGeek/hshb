@@ -13,6 +13,11 @@ vi.mock('@/db', () => ({
   setClassStudents: vi.fn(),
 }))
 
+const CLASS_ID = '00000000-0000-4000-8000-000000000001'
+const STAFF_ID = '00000000-0000-4000-8000-000000000010'
+const STUDENT_1 = '00000000-0000-4000-8000-000000000020'
+const STUDENT_2 = '00000000-0000-4000-8000-000000000030'
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
@@ -34,7 +39,7 @@ const baseFields = {
   year_group: '1',
   room_number: 'R1',
   academic_year: '2024/25',
-  teacher_id: 'staff-1',
+  teacher_id: STAFF_ID,
   active: 'true',
 }
 
@@ -47,19 +52,19 @@ describe('updateClassAction', () => {
     })
 
     await expect(
-      updateClassAction('class-1', makeFormData(baseFields)),
+      updateClassAction(CLASS_ID, makeFormData(baseFields)),
     ).rejects.toThrow('NEXT_REDIRECT')
 
     expect(updateClass).toHaveBeenCalledWith(
-      'class-1',
+      CLASS_ID,
       expect.objectContaining({
         name: 'Year 1A',
         year_group: '1',
-        teacher_id: 'staff-1',
+        teacher_id: STAFF_ID,
         active: true,
       }),
     )
-    expect(setClassStudents).toHaveBeenCalledWith('class-1', [])
+    expect(setClassStudents).toHaveBeenCalledWith(CLASS_ID, [])
     expect(revalidatePath).toHaveBeenCalledWith('/portal/classes')
     expect(redirect).toHaveBeenCalledWith('/portal/classes')
   })
@@ -74,11 +79,11 @@ describe('updateClassAction', () => {
     const fields = { ...baseFields, active: 'false' }
 
     await expect(
-      updateClassAction('class-1', makeFormData(fields)),
+      updateClassAction(CLASS_ID, makeFormData(fields)),
     ).rejects.toThrow('NEXT_REDIRECT')
 
     expect(updateClass).toHaveBeenCalledWith(
-      'class-1',
+      CLASS_ID,
       expect.objectContaining({ active: false }),
     )
   })
@@ -92,23 +97,23 @@ describe('updateClassAction', () => {
 
     const fields = {
       ...baseFields,
-      student_ids: ['student-1', 'student-2'],
+      student_ids: [STUDENT_1, STUDENT_2],
     }
 
     await expect(
-      updateClassAction('class-1', makeFormData(fields)),
+      updateClassAction(CLASS_ID, makeFormData(fields)),
     ).rejects.toThrow('NEXT_REDIRECT')
 
-    expect(setClassStudents).toHaveBeenCalledWith('class-1', [
-      'student-1',
-      'student-2',
+    expect(setClassStudents).toHaveBeenCalledWith(CLASS_ID, [
+      STUDENT_1,
+      STUDENT_2,
     ])
   })
 
   it('returns error when updateClass throws', async () => {
     vi.mocked(updateClass).mockRejectedValue(new Error('DB error'))
 
-    const result = await updateClassAction('class-1', makeFormData(baseFields))
+    const result = await updateClassAction(CLASS_ID, makeFormData(baseFields))
     expect(result).toEqual({
       error: 'Failed to update class. Please try again.',
     })
