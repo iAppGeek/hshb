@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { createClass, setClassStudents } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import {
   createClassSchema,
   extractFormFields,
@@ -32,7 +33,12 @@ export async function createClassAction(
     revalidatePath('/portal/classes')
   } catch (err) {
     console.error('[createClassAction] error:', err)
-    return { error: 'Failed to create class. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to create class. Please try again.',
+      ),
+    }
   }
 
   redirect('/portal/classes')

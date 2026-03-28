@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { updateClass, setClassStudents } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import {
   updateClassSchema,
   extractFormFields,
@@ -34,7 +35,12 @@ export async function updateClassAction(
     revalidatePath('/portal/classes')
   } catch (err) {
     console.error('[updateClassAction] error:', err)
-    return { error: 'Failed to update class. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to update class. Please try again.',
+      ),
+    }
   }
 
   redirect('/portal/classes')

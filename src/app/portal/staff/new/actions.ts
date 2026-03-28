@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { createStaff } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import {
   createStaffSchema,
   extractFormFields,
@@ -22,7 +23,12 @@ export async function createStaffAction(
     revalidatePath('/portal/staff')
   } catch (err) {
     console.error('[createStaffAction] error:', err)
-    return { error: 'Failed to create staff member. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to create staff member. Please try again.',
+      ),
+    }
   }
 
   redirect('/portal/staff')

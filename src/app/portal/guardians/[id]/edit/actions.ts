@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { updateGuardian } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import {
   updateGuardianSchema,
   extractFormFields,
@@ -24,7 +25,12 @@ export async function updateGuardianAction(
     revalidatePath(`/portal/guardians/${id}/edit`)
   } catch (err) {
     console.error('[updateGuardianAction] error:', err)
-    return { error: 'Failed to save guardian. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to save guardian. Please try again.',
+      ),
+    }
   }
 
   redirect(`/portal/guardians/${id}/edit`)

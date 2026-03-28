@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
 import { signInStaff, signOutStaff } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import { canManageStaffAttendance } from '@/lib/permissions'
 import {
   staffAttendanceSchema,
@@ -34,8 +35,13 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
   try {
     await signInStaff(staffId, date, buildTimestamp(date, time))
     revalidatePath('/portal/staff-attendance')
-  } catch {
-    return { error: 'Failed to sign in. Please try again.' }
+  } catch (err) {
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to sign in. Please try again.',
+      ),
+    }
   }
 }
 
@@ -57,7 +63,12 @@ export async function signOutAction(formData: FormData): Promise<ActionResult> {
   try {
     await signOutStaff(staffId, date, buildTimestamp(date, time))
     revalidatePath('/portal/staff-attendance')
-  } catch {
-    return { error: 'Failed to sign out. Please try again.' }
+  } catch (err) {
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to sign out. Please try again.',
+      ),
+    }
   }
 }

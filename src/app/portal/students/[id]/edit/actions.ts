@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import type { z } from 'zod'
 
 import { createGuardian, updateStudent, updateStudentClasses } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import {
   updateStudentSchema,
   guardianSchema,
@@ -108,7 +109,12 @@ export async function updateStudentAction(
     revalidatePath('/portal/students')
   } catch (err) {
     console.error('[updateStudentAction] error:', err)
-    return { error: 'Failed to save student. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to save student. Please try again.',
+      ),
+    }
   }
 
   redirect('/portal/students')

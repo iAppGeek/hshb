@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
 import { createIncident, updateIncident } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import { canEditIncidents } from '@/lib/permissions'
 import {
   createIncidentSchema,
@@ -38,7 +39,12 @@ export async function createIncidentAction(
     revalidatePath('/portal/incidents')
   } catch (err) {
     console.error('[createIncidentAction] error:', err)
-    return { error: 'Failed to create incident. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to create incident. Please try again.',
+      ),
+    }
   }
 
   redirect(`/portal/incidents?tab=${type}`)
@@ -69,7 +75,12 @@ export async function updateIncidentAction(
     revalidatePath('/portal/incidents')
   } catch (err) {
     console.error('[updateIncidentAction] error:', err)
-    return { error: 'Failed to update incident. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to update incident. Please try again.',
+      ),
+    }
   }
 
   redirect(`/portal/incidents?tab=${type}`)

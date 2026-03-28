@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { updateStaff } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import {
   updateStaffSchema,
   extractFormFields,
@@ -23,7 +24,12 @@ export async function updateStaffAction(
     revalidatePath('/portal/staff')
   } catch (err) {
     console.error('[updateStaffAction] error:', err)
-    return { error: 'Failed to update staff member. Please try again.' }
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to update staff member. Please try again.',
+      ),
+    }
   }
 
   redirect('/portal/staff')

@@ -2,15 +2,16 @@
   "permissions": {
     "allow": [
       "Read(//Users/anthropicdev/Development/hshb/**)",
+      "Read(//Users/anthropicdev/.claude/**)",
       "Bash(npm run:*)",
       "Bash(npx tsc:*)",
       "Bash(npx vitest:*)",
       "Bash(grep -E \"\\\\.\\(env|pem|key|json|toml\\)$\")",
       "Bash(grep -E \"\\\\.\\(pem|key|p8|p12|pfx\\)$\")",
-      "Bash(grep -r \"SUPABASE\\\\|supabase\\\\|AZURE\\\\|azure\" /Users/anthonyladas/Development/hshb --include=*.ts --include=*.tsx --include=*.js --include=*.jsx --include=*.json --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=coverage)",
-      "Bash(grep -r \"https://.*\\\\.supabase\\\\.co\\\\|zfznuscqncvujhzjzinc\" /Users/anthonyladas/Development/hshb --include=*.ts --include=*.tsx --include=*.js --include=*.json --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=coverage)",
       "Bash(git check-ignore:*)",
-      "Bash(grep -r \"G-[A-Z0-9]\\\\{10,\\\\}\\\\|sk_live_\\\\|pk_live_\\\\|auth0\\\\|firebase\" /Users/anthonyladas/Development/hshb/src --include=*.ts --include=*.tsx --include=*.js)"
+      "mcp__serena__read_memory",
+      "mcp__serena__write_memory",
+      "mcp__serena__search_for_pattern"
     ]
   }
 }
