@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 let capturedConfig: any
 
@@ -16,6 +16,10 @@ vi.mock('next-auth', () => ({
 
 vi.mock('next-auth/providers/microsoft-entra-id', () => ({
   default: vi.fn(() => ({ id: 'microsoft-entra-id' })),
+}))
+
+vi.mock('next-auth/providers/credentials', () => ({
+  default: vi.fn(() => ({ id: 'test-credentials' })),
 }))
 
 vi.mock('@/db', () => ({
@@ -108,5 +112,39 @@ describe('session callback', () => {
     const result = await capturedConfig.callbacks.session({ session, token })
     expect(result.user.role).toBe('headteacher')
     expect(result.user.staffId).toBe('staff-3')
+  })
+})
+
+describe('E2E_TEST provider guard', () => {
+  // Each test resets modules so config.ts re-runs its top-level provider setup
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it('only includes MicrosoftEntraID when E2E_TEST is unset (production)', async () => {
+    vi.stubEnv('E2E_TEST', '')
+    await import('./config')
+    expect(capturedConfig.providers).toHaveLength(1)
+    expect(capturedConfig.providers[0].id).toBe('microsoft-entra-id')
+  })
+
+  it('only includes MicrosoftEntraID when E2E_TEST is not "true"', async () => {
+    vi.stubEnv('E2E_TEST', 'false')
+    await import('./config')
+    expect(capturedConfig.providers).toHaveLength(1)
+    expect(capturedConfig.providers[0].id).toBe('microsoft-entra-id')
+  })
+
+  it('adds CredentialsProvider as second provider when E2E_TEST is "true"', async () => {
+    vi.stubEnv('E2E_TEST', 'true')
+    vi.stubEnv('E2E_TEST_SECRET', 'test-secret')
+    await import('./config')
+    expect(capturedConfig.providers).toHaveLength(2)
+    expect(capturedConfig.providers[1].id).toBe('test-credentials')
   })
 })
