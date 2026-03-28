@@ -1,9 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { revalidatePath } from 'next/cache'
 
+import { auth } from '@/auth'
 import { updateStaff } from '@/db'
 
 import { updateStaffAction } from './actions'
+
+vi.mock('@/auth', () => ({ auth: vi.fn() }))
 
 vi.mock('next/navigation', () => ({
   redirect: vi.fn().mockImplementation((url: string) => {
@@ -17,10 +20,16 @@ vi.mock('next/cache', () => ({
 
 vi.mock('@/db', () => ({
   updateStaff: vi.fn(),
+  logAuditEvent: vi.fn(),
 }))
+
+const adminSession = {
+  user: { staffId: 'admin-1', role: 'admin' },
+}
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(auth).mockResolvedValue(adminSession as any)
 })
 
 function makeFormData(fields: Record<string, string>): FormData {
@@ -41,6 +50,24 @@ const validFields = {
 }
 
 describe('updateStaffAction', () => {
+  it('returns error when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValue(null as any)
+
+    const result = await updateStaffAction('staff-1', makeFormData(validFields))
+    expect(result).toEqual({ error: 'Not authenticated' })
+    expect(updateStaff).not.toHaveBeenCalled()
+  })
+
+  it('returns error when not authorised', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { staffId: 'teacher-1', role: 'teacher' },
+    } as any)
+
+    const result = await updateStaffAction('staff-1', makeFormData(validFields))
+    expect(result).toEqual({ error: 'Not authorised' })
+    expect(updateStaff).not.toHaveBeenCalled()
+  })
+
   it('calls updateStaff with correct fields', async () => {
     vi.mocked(updateStaff).mockResolvedValue(undefined)
 

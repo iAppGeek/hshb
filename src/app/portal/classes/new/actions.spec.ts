@@ -2,15 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { auth } from '@/auth'
 import { createClass, setClassStudents } from '@/db'
 
 import { createClassAction } from './actions'
 
+vi.mock('@/auth', () => ({ auth: vi.fn() }))
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('@/db', () => ({
   createClass: vi.fn(),
   setClassStudents: vi.fn(),
+  logAuditEvent: vi.fn(),
 }))
 
 const STAFF_ID = '00000000-0000-4000-8000-000000000001'
@@ -18,8 +21,11 @@ const CLASS_ID = '00000000-0000-4000-8000-000000000010'
 const STUDENT_1 = '00000000-0000-4000-8000-000000000020'
 const STUDENT_2 = '00000000-0000-4000-8000-000000000030'
 
+const adminSession = { user: { staffId: STAFF_ID, role: 'admin' } }
+
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(auth).mockResolvedValue(adminSession as any)
 })
 
 function makeFormData(fields: Record<string, string | string[]>): FormData {
@@ -43,6 +49,24 @@ const baseFields = {
 }
 
 describe('createClassAction', () => {
+  it('returns error when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValue(null as any)
+
+    const result = await createClassAction(makeFormData(baseFields))
+    expect(result).toEqual({ error: 'Not authenticated' })
+    expect(createClass).not.toHaveBeenCalled()
+  })
+
+  it('returns error when not authorised', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { staffId: STAFF_ID, role: 'teacher' },
+    } as any)
+
+    const result = await createClassAction(makeFormData(baseFields))
+    expect(result).toEqual({ error: 'Not authorised' })
+    expect(createClass).not.toHaveBeenCalled()
+  })
+
   it('creates class, sets students, revalidates, and redirects', async () => {
     vi.mocked(createClass).mockResolvedValue({ id: CLASS_ID } as any)
     vi.mocked(setClassStudents).mockResolvedValue(undefined)

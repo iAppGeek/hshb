@@ -75,6 +75,44 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          entity: string
+          entity_id: string | null
+          id: string
+          staff_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          entity: string
+          entity_id?: string | null
+          id?: string
+          staff_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          staff_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'audit_log_staff_id_fkey'
+            columns: ['staff_id']
+            isOneToOne: false
+            referencedRelation: 'staff'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       classes: {
         Row: {
           academic_year: string

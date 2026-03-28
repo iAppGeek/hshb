@@ -5,7 +5,11 @@ import { auth } from '@/auth'
 import { signInStaff, signOutStaff } from '@/db'
 
 vi.mock('@/auth', () => ({ auth: vi.fn() }))
-vi.mock('@/db', () => ({ signInStaff: vi.fn(), signOutStaff: vi.fn() }))
+vi.mock('@/db', () => ({
+  signInStaff: vi.fn(),
+  signOutStaff: vi.fn(),
+  logAuditEvent: vi.fn(),
+}))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 import { signInAction, signOutAction } from './actions'

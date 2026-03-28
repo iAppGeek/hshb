@@ -23,6 +23,7 @@ vi.mock('@/db', () => ({
   getClassById: vi.fn(),
   getAdminSubscriptions: vi.fn(),
   deletePushSubscription: vi.fn(),
+  logAuditEvent: vi.fn(),
 }))
 
 vi.mock('@/lib/push', () => ({

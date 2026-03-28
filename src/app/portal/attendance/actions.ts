@@ -10,6 +10,7 @@ import {
   getAdminSubscriptions,
   deletePushSubscription,
   saveAttendance,
+  logAuditEvent,
 } from '@/db'
 import { canUpdateAttendance } from '@/lib/permissions'
 import { uuid, isoDate, attendanceStatus, optionalString } from '@/lib/schemas'
@@ -80,6 +81,13 @@ export async function saveAttendanceAction(
   }
 
   await saveAttendance(records)
+  logAuditEvent({
+    staffId,
+    action: isUpdate ? 'update' : 'create',
+    entity: 'attendance',
+    entityId: classId,
+    details: { date, studentCount: records.length },
+  })
   revalidatePath('/portal/attendance')
 
   Promise.all([getClassById(classId), getAdminSubscriptions()])

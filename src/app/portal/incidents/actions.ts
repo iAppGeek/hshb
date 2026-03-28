@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
-import { createIncident, updateIncident } from '@/db'
+import { createIncident, updateIncident, logAuditEvent } from '@/db'
 import { getUserFriendlyDbError } from '@/lib/db-error'
 import { canEditIncidents } from '@/lib/permissions'
 import {
@@ -29,12 +29,19 @@ export async function createIncidentAction(
   const created_by = session.user.staffId!
 
   try {
-    await createIncident({
+    const incident = await createIncident({
       type,
       ...rest,
       created_by,
       parent_notified,
       parent_notified_at: parent_notified ? parent_notified_at : null,
+    })
+    logAuditEvent({
+      staffId: created_by,
+      action: 'create',
+      entity: 'incident',
+      entityId: incident.id,
+      details: parsed.data as Record<string, unknown>,
     })
     revalidatePath('/portal/incidents')
   } catch (err) {
@@ -71,6 +78,13 @@ export async function updateIncidentAction(
       updated_by,
       parent_notified,
       parent_notified_at: parent_notified ? parent_notified_at : null,
+    })
+    logAuditEvent({
+      staffId: updated_by,
+      action: 'update',
+      entity: 'incident',
+      entityId: id,
+      details: parsed.data as Record<string, unknown>,
     })
     revalidatePath('/portal/incidents')
   } catch (err) {

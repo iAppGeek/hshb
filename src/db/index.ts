@@ -94,3 +94,4 @@ export {
   getStaffSignedInCount,
 } from './staff-attendance'
 export type { StaffAttendanceRow } from './staff-attendance'
+export { logAuditEvent } from './audit-log'

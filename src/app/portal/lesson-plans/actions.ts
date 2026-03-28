@@ -9,6 +9,7 @@ import {
   updateLessonPlan,
   getLessonPlanById,
   getClassesByTeacher,
+  logAuditEvent,
 } from '@/db'
 import {
   canCreateLessonPlans,
@@ -47,7 +48,19 @@ export async function createLessonPlanAction(
   }
 
   try {
-    await createLessonPlan({ class_id, lesson_date, description, created_by })
+    const plan = await createLessonPlan({
+      class_id,
+      lesson_date,
+      description,
+      created_by,
+    })
+    logAuditEvent({
+      staffId: created_by,
+      action: 'create',
+      entity: 'lesson_plan',
+      entityId: plan.id,
+      details: parsed.data as Record<string, unknown>,
+    })
     revalidatePath('/portal/lesson-plans')
   } catch (err: unknown) {
     const code = (err as { code?: string })?.code
@@ -93,6 +106,13 @@ export async function updateLessonPlanAction(
 
   try {
     await updateLessonPlan(id, { lesson_date, description, updated_by })
+    logAuditEvent({
+      staffId: updated_by,
+      action: 'update',
+      entity: 'lesson_plan',
+      entityId: id,
+      details: parsed.data as Record<string, unknown>,
+    })
     revalidatePath('/portal/lesson-plans')
   } catch (err: unknown) {
     const code = (err as { code?: string })?.code

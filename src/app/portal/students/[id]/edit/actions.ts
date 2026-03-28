@@ -4,8 +4,15 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import type { z } from 'zod'
 
-import { createGuardian, updateStudent, updateStudentClasses } from '@/db'
+import { auth } from '@/auth'
+import {
+  createGuardian,
+  updateStudent,
+  updateStudentClasses,
+  logAuditEvent,
+} from '@/db'
 import { getUserFriendlyDbError } from '@/lib/db-error'
+import { canEditStudents } from '@/lib/permissions'
 import {
   updateStudentSchema,
   guardianSchema,
@@ -13,6 +20,7 @@ import {
   extractGuardianFields,
   type ActionResult,
 } from '@/lib/schemas'
+import type { StaffRole } from '@/types/next-auth'
 
 async function resolveGuardian(
   guardian: z.infer<typeof guardianSchema>,
@@ -37,6 +45,12 @@ export async function updateStudentAction(
   id: string,
   formData: FormData,
 ): Promise<ActionResult> {
+  const session = await auth()
+  if (!session) return { error: 'Not authenticated' }
+  const role = session.user.role as StaffRole
+  if (!canEditStudents(role)) return { error: 'Not authorised' }
+  const staffId = session.user.staffId ?? null
+
   const raw = extractFormFields(formData, ['class_ids'])
   const parsed = updateStudentSchema.safeParse(raw)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
@@ -106,6 +120,13 @@ export async function updateStudentAction(
     })
 
     await updateStudentClasses(id, d.class_ids)
+    logAuditEvent({
+      staffId,
+      action: 'update',
+      entity: 'student',
+      entityId: id,
+      details: parsed.data as Record<string, unknown>,
+    })
     revalidatePath('/portal/students')
   } catch (err) {
     console.error('[updateStudentAction] error:', err)

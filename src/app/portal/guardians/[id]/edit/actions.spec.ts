@@ -2,18 +2,24 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
-vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
-vi.mock('@/db', () => ({
-  updateGuardian: vi.fn(),
-}))
-
+import { auth } from '@/auth'
 import { updateGuardian } from '@/db'
 
 import { updateGuardianAction } from './actions'
 
+vi.mock('@/auth', () => ({ auth: vi.fn() }))
+vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
+vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+vi.mock('@/db', () => ({
+  updateGuardian: vi.fn(),
+  logAuditEvent: vi.fn(),
+}))
+
+const adminSession = { user: { staffId: 'admin-1', role: 'admin' } }
+
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(auth).mockResolvedValue(adminSession as any)
 })
 
 function makeFormData(fields: Record<string, string>): FormData {
@@ -37,6 +43,30 @@ const baseFields = {
 }
 
 describe('updateGuardianAction', () => {
+  it('returns error when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValue(null as any)
+
+    const result = await updateGuardianAction(
+      'guardian-1',
+      makeFormData(baseFields),
+    )
+    expect(result).toEqual({ error: 'Not authenticated' })
+    expect(updateGuardian).not.toHaveBeenCalled()
+  })
+
+  it('returns error when not authorised', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { staffId: 'teacher-1', role: 'teacher' },
+    } as any)
+
+    const result = await updateGuardianAction(
+      'guardian-1',
+      makeFormData(baseFields),
+    )
+    expect(result).toEqual({ error: 'Not authorised' })
+    expect(updateGuardian).not.toHaveBeenCalled()
+  })
+
   it('updates guardian and redirects back to edit page', async () => {
     vi.mocked(updateGuardian).mockResolvedValue(undefined)
     vi.mocked(redirect).mockImplementation(() => {

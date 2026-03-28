@@ -2,16 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { auth } from '@/auth'
 import { createGuardian, updateStudent, updateStudentClasses } from '@/db'
 
 import { updateStudentAction } from './actions'
 
+vi.mock('@/auth', () => ({ auth: vi.fn() }))
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('@/db', () => ({
   createGuardian: vi.fn(),
   updateStudent: vi.fn(),
   updateStudentClasses: vi.fn(),
+  logAuditEvent: vi.fn(),
 }))
 
 const STUDENT_ID = '00000000-0000-4000-8000-000000000001'
@@ -20,8 +23,11 @@ const NEW_GUARDIAN = '00000000-0000-4000-8000-000000000020'
 const CLASS_1 = '00000000-0000-4000-8000-000000000030'
 const CLASS_2 = '00000000-0000-4000-8000-000000000040'
 
+const adminSession = { user: { staffId: 'admin-1', role: 'admin' } }
+
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(auth).mockResolvedValue(adminSession as any)
 })
 
 function makeFormData(fields: Record<string, string | string[]>): FormData {
@@ -57,6 +63,30 @@ const baseFields: Record<string, string> = {
 }
 
 describe('updateStudentAction', () => {
+  it('returns error when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValue(null as any)
+
+    const result = await updateStudentAction(
+      STUDENT_ID,
+      makeFormData(baseFields),
+    )
+    expect(result).toEqual({ error: 'Not authenticated' })
+    expect(updateStudent).not.toHaveBeenCalled()
+  })
+
+  it('returns error when not authorised', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { staffId: 'teacher-1', role: 'teacher' },
+    } as any)
+
+    const result = await updateStudentAction(
+      STUDENT_ID,
+      makeFormData(baseFields),
+    )
+    expect(result).toEqual({ error: 'Not authorised' })
+    expect(updateStudent).not.toHaveBeenCalled()
+  })
+
   it('updates student and redirects on success', async () => {
     vi.mocked(updateStudent).mockResolvedValue(undefined)
     vi.mocked(updateStudentClasses).mockResolvedValue(undefined)

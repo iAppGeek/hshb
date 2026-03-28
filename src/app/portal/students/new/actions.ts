@@ -4,8 +4,10 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import type { z } from 'zod'
 
-import { createGuardian, createStudent } from '@/db'
+import { auth } from '@/auth'
+import { createGuardian, createStudent, logAuditEvent } from '@/db'
 import { getUserFriendlyDbError } from '@/lib/db-error'
+import { canCreateStudents } from '@/lib/permissions'
 import {
   createStudentSchema,
   guardianSchema,
@@ -13,6 +15,7 @@ import {
   extractGuardianFields,
   type ActionResult,
 } from '@/lib/schemas'
+import type { StaffRole } from '@/types/next-auth'
 
 async function resolveGuardian(
   guardian: z.infer<typeof guardianSchema>,
@@ -36,6 +39,12 @@ async function resolveGuardian(
 export async function createStudentAction(
   formData: FormData,
 ): Promise<ActionResult> {
+  const session = await auth()
+  if (!session) return { error: 'Not authenticated' }
+  const role = session.user.role as StaffRole
+  if (!canCreateStudents(role)) return { error: 'Not authorised' }
+  const staffId = session.user.staffId ?? null
+
   const raw = extractFormFields(formData)
   const parsed = createStudentSchema.safeParse(raw)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
@@ -76,7 +85,7 @@ export async function createStudentAction(
     }
 
     const d = parsed.data
-    await createStudent({
+    const student = await createStudent({
       first_name: d.student_first_name,
       last_name: d.student_last_name,
       student_code: d.student_code,
@@ -104,6 +113,13 @@ export async function createStudentAction(
         : null,
     })
 
+    logAuditEvent({
+      staffId,
+      action: 'create',
+      entity: 'student',
+      entityId: student.id,
+      details: parsed.data as Record<string, unknown>,
+    })
     revalidatePath('/portal/students')
   } catch (err) {
     console.error('[createStudentAction] error:', err)

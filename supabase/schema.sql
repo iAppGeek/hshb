@@ -287,3 +287,21 @@ RETURNS TABLE(
   WHERE date = p_date
   GROUP BY class_id
 $$ LANGUAGE sql STABLE;
+
+-- ─── Audit Log ───────────────────────────────────────────────────────────────
+
+CREATE TABLE audit_log (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  staff_id    UUID REFERENCES staff(id) ON DELETE SET NULL,
+  action      TEXT NOT NULL,
+  entity      TEXT NOT NULL,
+  entity_id   TEXT,
+  details     JSONB,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX idx_audit_log_staff_id ON audit_log(staff_id);
+CREATE INDEX idx_audit_log_entity ON audit_log(entity);
+CREATE INDEX idx_audit_log_created_at ON audit_log(created_at);

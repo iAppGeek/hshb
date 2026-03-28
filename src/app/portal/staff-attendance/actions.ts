@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
-import { signInStaff, signOutStaff } from '@/db'
+import { signInStaff, signOutStaff, logAuditEvent } from '@/db'
 import { getUserFriendlyDbError } from '@/lib/db-error'
 import { canManageStaffAttendance } from '@/lib/permissions'
 import {
@@ -34,6 +34,13 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
 
   try {
     await signInStaff(staffId, date, buildTimestamp(date, time))
+    logAuditEvent({
+      staffId: session.user.staffId ?? null,
+      action: 'sign_in',
+      entity: 'staff_attendance',
+      entityId: staffId,
+      details: { date, time },
+    })
     revalidatePath('/portal/staff-attendance')
   } catch (err) {
     return {
@@ -62,6 +69,13 @@ export async function signOutAction(formData: FormData): Promise<ActionResult> {
 
   try {
     await signOutStaff(staffId, date, buildTimestamp(date, time))
+    logAuditEvent({
+      staffId: session.user.staffId ?? null,
+      action: 'sign_out',
+      entity: 'staff_attendance',
+      entityId: staffId,
+      details: { date, time },
+    })
     revalidatePath('/portal/staff-attendance')
   } catch (err) {
     return {
