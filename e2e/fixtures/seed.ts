@@ -35,7 +35,7 @@ export const SEED_IDS = {
 } as const
 
 export async function deleteStudentsByEmail(emails: string[]): Promise<void> {
-  await db.from('students').delete().in('first_name', emails)
+  await db.from('students').delete().in('email', emails)
 }
 
 export async function deleteStaffByEmail(email: string): Promise<void> {
