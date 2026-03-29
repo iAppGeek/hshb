@@ -2,11 +2,16 @@ node_modules/
 .next/
 .swc/
 coverage/
+e2e/.results/
+e2e/.report/
+e2e/.auth/
+supabase/.temp/
 tsconfig.tsbuildinfo
 next-env.d.ts
 .env
 .env.*
 !.env.local.example
+!.env.e2e.example
 .*.env
 .env.local
 

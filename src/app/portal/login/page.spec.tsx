@@ -73,4 +73,25 @@ describe('LoginPage', () => {
     render(await LoginPage({ searchParams: Promise.resolve({}) }))
     expect(screen.queryByText(/not authorised/i)).toBeNull()
   })
+
+  it('does not render test login form when E2E_TEST is unset (production)', async () => {
+    vi.stubEnv('E2E_TEST', '')
+    render(await LoginPage({ searchParams: Promise.resolve({}) }))
+    expect(screen.queryByTestId('test-login-form')).toBeNull()
+    vi.unstubAllEnvs()
+  })
+
+  it('does not render test login form when E2E_TEST is not "true"', async () => {
+    vi.stubEnv('E2E_TEST', 'false')
+    render(await LoginPage({ searchParams: Promise.resolve({}) }))
+    expect(screen.queryByTestId('test-login-form')).toBeNull()
+    vi.unstubAllEnvs()
+  })
+
+  it('renders test login form when E2E_TEST is "true"', async () => {
+    vi.stubEnv('E2E_TEST', 'true')
+    render(await LoginPage({ searchParams: Promise.resolve({}) }))
+    expect(screen.getByTestId('test-login-form')).toBeTruthy()
+    vi.unstubAllEnvs()
+  })
 })

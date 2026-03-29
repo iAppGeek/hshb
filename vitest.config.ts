@@ -9,11 +9,23 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
+    exclude: ['node_modules', 'e2e/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/**/*.spec.{ts,tsx}', 'src/styles/**'],
+      exclude: [
+        'src/**/*.spec.{ts,tsx}',
+        'src/styles/**',
+        'src/sections/**',
+        'src/types/**',
+      ],
+      thresholds: {
+        lines: 75,
+        branches: 68,
+        functions: 65,
+        statements: 75,
+      },
     },
   },
   resolve: {

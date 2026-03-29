@@ -59,6 +59,41 @@ export default async function LoginPage({
         <p className="mt-6 text-center text-xs text-gray-400">
           This portal is for authorised HSHB staff only.
         </p>
+
+        {process.env.E2E_TEST === 'true' && (
+          <form
+            className="mt-4"
+            action={async (formData: FormData) => {
+              'use server'
+              await signIn('test-credentials', {
+                email: formData.get('email'),
+                password: formData.get('password'),
+                redirectTo: '/portal/dashboard',
+              })
+            }}
+            data-testid="test-login-form"
+          >
+            <input
+              name="email"
+              type="email"
+              data-testid="test-email"
+              className="mb-2 w-full rounded border border-gray-300 px-3 py-2 text-sm"
+            />
+            <input
+              name="password"
+              type="password"
+              data-testid="test-password"
+              className="mb-2 w-full rounded border border-gray-300 px-3 py-2 text-sm"
+            />
+            <button
+              type="submit"
+              data-testid="test-login-button"
+              className="w-full rounded bg-gray-800 px-4 py-2 text-sm text-white"
+            >
+              Test Login
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )

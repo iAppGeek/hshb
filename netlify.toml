@@ -3,6 +3,9 @@
 
 [build.environment]
   NODE_VERSION = "24.14.0"
+  # Skip postinstall binary downloads (supabase CLI, etc.) — not needed on Netlify.
+  # Sharp (image optimisation) is optional in Next.js; the build succeeds without it.
+  NPM_FLAGS = "--ignore-scripts"
 
 [[plugins]]
 package = "@netlify/plugin-nextjs"
