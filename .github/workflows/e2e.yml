@@ -12,6 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     # Docker is available on ubuntu-latest — required for Supabase local stack
 
+    env:
+      E2E_TEST: 'true'
+      E2E_TEST_SECRET: ${{ secrets.E2E_TEST_SECRET }}
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY_LOCAL }}
+      # Required to start the dev server (home page fetches Contentful at runtime)
+      CONTENTFUL_SPACE: ${{ secrets.CONTENTFUL_SPACE }}
+      CONTENTFUL_TOKEN: ${{ secrets.CONTENTFUL_TOKEN }}
+      # Dummy Azure AD values — not called during E2E tests
+      AZURE_AD_CLIENT_ID: ci-placeholder
+      AZURE_AD_CLIENT_SECRET: ci-placeholder
+      AZURE_AD_TENANT_ID: ci-placeholder
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,10 +40,7 @@ jobs:
         run: npm ci
 
       - name: Start local Supabase
-        run: npx supabase start
-
-      - name: Apply migrations and seed
-        run: npx supabase db reset
+        run: npx supabase start --ignore-health-check
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

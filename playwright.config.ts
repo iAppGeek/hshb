@@ -64,7 +64,7 @@ export default defineConfig({
       name: 'mobile:admin',
       dependencies: ['setup'],
       use: {
-        ...devices['iPhone 13'],
+        ...devices['Pixel 5'],
         storageState: 'e2e/.auth/admin.json',
       },
     },
@@ -72,7 +72,7 @@ export default defineConfig({
       name: 'mobile:teacher',
       dependencies: ['setup'],
       use: {
-        ...devices['iPhone 13'],
+        ...devices['Pixel 5'],
         storageState: 'e2e/.auth/teacher.json',
       },
     },
@@ -80,7 +80,7 @@ export default defineConfig({
       name: 'mobile:headteacher',
       dependencies: ['setup'],
       use: {
-        ...devices['iPhone 13'],
+        ...devices['Pixel 5'],
         storageState: 'e2e/.auth/headteacher.json',
       },
     },
@@ -88,14 +88,19 @@ export default defineConfig({
       name: 'mobile:secretary',
       dependencies: ['setup'],
       use: {
-        ...devices['iPhone 13'],
+        ...devices['Pixel 5'],
         storageState: 'e2e/.auth/secretary.json',
       },
     },
   ],
 
   webServer: {
-    command: 'dotenv -e .env.e2e -- npm run dev',
+    // In CI the env vars are already in the environment (from e2e.yml job env).
+    // Locally they come from .env.e2e via dotenv-cli.
+    // Turbopack is disabled in CI due to a Node.js streams incompatibility.
+    command: process.env.CI
+      ? 'next dev'
+      : 'dotenv -e .env.e2e -- next dev --turbopack',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

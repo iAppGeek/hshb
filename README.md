@@ -46,6 +46,49 @@ npm install --cpu=x64 --os=linux sharp
 
 See the [Sharp cross-platform docs](https://sharp.pixelplumbing.com/install#cross-platform) for more details.
 
+## E2E tests (Playwright)
+
+Integration tests run against a local Supabase instance using Playwright. Tests cover all 4 staff roles across desktop and mobile viewports.
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) running
+
+### First-time setup
+
+```bash
+npm run supabase:start   # starts local Postgres on http://127.0.0.1:54321
+```
+
+### Running tests
+
+```bash
+npm run test:e2e         # headless
+npm run test:e2e:ui      # Playwright UI mode
+```
+
+`supabase db reset` runs automatically before the suite (via `e2e/global-setup.ts`), so the database is always in a clean seed state.
+
+### Stopping Supabase
+
+```bash
+npm run supabase:stop
+```
+
+### CI secrets
+
+The E2E GitHub Actions workflow requires these secrets set in **Settings → Secrets and variables → Actions**:
+
+| Secret                            | Value                                  | Notes                                                                                                              |
+| --------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `E2E_TEST_SECRET`                 | `e2e-test-secret-hshb`                 | Arbitrary string — gates the test-only login form                                                                  |
+| `AUTH_SECRET`                     | `e2e-auth-secret-for-jwt-signing-hshb` | Signs JWTs for the local test run only                                                                             |
+| `SUPABASE_SERVICE_ROLE_KEY_LOCAL` | see `.env.e2e`                         | The [public default key](https://supabase.com/docs/guides/cli/local-development) for every local Supabase instance |
+
+`CONTENTFUL_SPACE` and `CONTENTFUL_TOKEN` are already configured — the dev server needs them at startup.
+
+All three values are non-sensitive dummy values safe to share with the team.
+
 ## Tech stack
 
 - [Next.js](https://nextjs.org/docs) — React framework with App Router
