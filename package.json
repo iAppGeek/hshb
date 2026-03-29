@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
+    "preinstall": "npx only-allow npm",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -102,6 +103,7 @@
       "prettier --write"
     ]
   },
+  "packageManager": "npm@11.12.1",
   "engines": {
     "npm": ">=11.9.0",
     "node": ">=24.14.0"

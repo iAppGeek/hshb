@@ -10,6 +10,7 @@ jobs:
   e2e:
     name: Playwright E2E
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     # Docker is available on ubuntu-latest — required for Supabase local stack
 
     env:
@@ -41,6 +42,12 @@ jobs:
 
       - name: Start local Supabase
         run: npx supabase start --ignore-health-check
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

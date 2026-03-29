@@ -8,8 +8,9 @@ on:
 
 jobs:
   ci:
-    name: Lint, Type-check & Test
+    name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     env:
       # Dummy values — only needed to satisfy NextAuth/Supabase init, not called at build time
@@ -46,7 +47,7 @@ jobs:
         run: npm run type-check
 
       - name: Test
-        run: npm test
+        run: npm run test:coverage
 
       - name: Build
         run: npm run build
