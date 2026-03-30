@@ -71,22 +71,22 @@ describe('migrateClassAction', () => {
     expect(migrateClass).not.toHaveBeenCalled()
   })
 
-  it('returns error when RPC returns an error', async () => {
-    vi.mocked(migrateClass).mockResolvedValue({
-      data: null,
-      error: { message: 'Source class is already inactive' } as any,
+  it('returns user-friendly error when migrateClass throws', async () => {
+    vi.mocked(migrateClass).mockRejectedValue({
+      code: '23505',
+      message: 'duplicate key value violates unique constraint',
+      details: 'Key (name)=(Year 2A) already exists.',
     })
 
     const result = await migrateClassAction(makeFormData(baseFields))
-    expect(result).toEqual({ error: 'Source class is already inactive' })
+    expect(result).toEqual({
+      error: 'A record with this name already exists.',
+    })
     expect(redirect).not.toHaveBeenCalled()
   })
 
   it('calls migrateClass with correct args, logs audit, revalidates, and redirects on success', async () => {
-    vi.mocked(migrateClass).mockResolvedValue({
-      data: { new_class_id: NEW_CLASS_ID },
-      error: null,
-    })
+    vi.mocked(migrateClass).mockResolvedValue({ new_class_id: NEW_CLASS_ID })
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
     })
@@ -110,15 +110,21 @@ describe('migrateClassAction', () => {
         entityId: NEW_CLASS_ID,
       }),
     )
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        staffId: STAFF_ID,
+        action: 'update',
+        entity: 'class',
+        entityId: SOURCE_CLASS_ID,
+        details: { migrated_to: NEW_CLASS_ID, deactivated: true },
+      }),
+    )
     expect(revalidatePath).toHaveBeenCalledWith('/portal/admin')
     expect(redirect).toHaveBeenCalledWith('/portal/admin')
   })
 
   it('converts empty room_number to null', async () => {
-    vi.mocked(migrateClass).mockResolvedValue({
-      data: { new_class_id: NEW_CLASS_ID },
-      error: null,
-    })
+    vi.mocked(migrateClass).mockResolvedValue({ new_class_id: NEW_CLASS_ID })
     vi.mocked(redirect).mockImplementation(() => {
       throw new Error('NEXT_REDIRECT')
     })

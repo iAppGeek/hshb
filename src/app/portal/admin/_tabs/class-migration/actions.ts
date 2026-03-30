@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
 import { migrateClass, logAuditEvent } from '@/db'
+import { getUserFriendlyDbError } from '@/lib/db-error'
 import { canMigrateClasses } from '@/lib/permissions'
 import {
   migrateClassSchema,
@@ -28,18 +29,33 @@ export async function migrateClassAction(
 
   const { source_class_id, ...newClassData } = parsed.data
 
-  const { data, error } = await migrateClass(source_class_id, newClassData)
+  try {
+    const result = await migrateClass(source_class_id, newClassData)
 
-  if (error) return { error: error.message }
-
-  logAuditEvent({
-    staffId,
-    action: 'create',
-    entity: 'class',
-    entityId: data?.new_class_id ?? source_class_id,
-    details: parsed.data as Record<string, unknown>,
-  })
-  revalidatePath('/portal/admin')
+    logAuditEvent({
+      staffId,
+      action: 'create',
+      entity: 'class',
+      entityId: result.new_class_id,
+      details: parsed.data as Record<string, unknown>,
+    })
+    logAuditEvent({
+      staffId,
+      action: 'update',
+      entity: 'class',
+      entityId: source_class_id,
+      details: { migrated_to: result.new_class_id, deactivated: true },
+    })
+    revalidatePath('/portal/admin')
+  } catch (err) {
+    console.error('[migrateClassAction] error:', err)
+    return {
+      error: getUserFriendlyDbError(
+        err,
+        'Failed to migrate class. Please try again.',
+      ),
+    }
+  }
 
   redirect('/portal/admin')
 }

@@ -1,4 +1,5 @@
 import { getAllClasses, getTeachers, getStudentsByClass } from '@/db'
+import { uuid } from '@/lib/schemas'
 
 import ClassMigrationForm from './ClassMigrationForm'
 import type { MigrationStudent } from './ClassMigrationForm'
@@ -16,8 +17,11 @@ export default async function ClassMigrationTab({
     getTeachers(),
   ])
 
-  const students: MigrationStudent[] = sourceClassId
-    ? await getStudentsByClass(sourceClassId)
+  const isValidSource = sourceClassId
+    ? uuid.safeParse(sourceClassId).success
+    : false
+  const students: MigrationStudent[] = isValidSource
+    ? await getStudentsByClass(sourceClassId!)
     : []
 
   return (

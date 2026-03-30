@@ -24,11 +24,14 @@ import { getAllClasses, getTeachers, getStudentsByClass } from '@/db'
 import ClassMigrationForm from './ClassMigrationForm'
 import ClassMigrationTab from './ClassMigrationTab'
 
+const CLASS_ID = '00000000-0000-4000-8000-000000000001'
+const TEACHER_ID = '00000000-0000-4000-8000-000000000002'
+
 beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(getAllClasses).mockResolvedValue([
     {
-      id: 'class-1',
+      id: CLASS_ID,
       name: 'Year 1A',
       year_group: '1',
       academic_year: '2025/26',
@@ -36,7 +39,7 @@ beforeEach(() => {
   ] as any)
   vi.mocked(getTeachers).mockResolvedValue([
     {
-      id: 'teacher-1',
+      id: TEACHER_ID,
       first_name: 'Alice',
       last_name: 'Smith',
       display_name: null,
@@ -63,14 +66,21 @@ describe('ClassMigrationTab', () => {
     expect(screen.getByTestId('source-class-id').textContent).toBe('none')
   })
 
+  it('does not fetch students when sourceClassId is not a valid UUID', async () => {
+    render(await ClassMigrationTab({ sourceClassId: 'not-a-uuid' }))
+
+    expect(getStudentsByClass).not.toHaveBeenCalled()
+    expect(screen.getByTestId('student-count').textContent).toBe('0')
+  })
+
   it('fetches students when sourceClassId is provided', async () => {
     vi.mocked(getStudentsByClass).mockResolvedValue([
       { id: 's1', first_name: 'John', last_name: 'Doe' },
     ] as any)
 
-    render(await ClassMigrationTab({ sourceClassId: 'class-1' }))
+    render(await ClassMigrationTab({ sourceClassId: CLASS_ID }))
 
-    expect(getStudentsByClass).toHaveBeenCalledWith('class-1')
+    expect(getStudentsByClass).toHaveBeenCalledWith(CLASS_ID)
     expect(screen.getByTestId('student-count').textContent).toBe('1')
   })
 
@@ -88,20 +98,16 @@ describe('ClassMigrationTab', () => {
     expect(vi.mocked(ClassMigrationForm)).toHaveBeenCalledWith(
       expect.objectContaining({
         classes: [
-          {
-            id: 'class-1',
+          expect.objectContaining({
+            id: CLASS_ID,
             name: 'Year 1A',
-            year_group: '1',
-            academic_year: '2025/26',
-          },
+          }),
         ],
         teachers: [
-          {
-            id: 'teacher-1',
+          expect.objectContaining({
+            id: TEACHER_ID,
             first_name: 'Alice',
-            last_name: 'Smith',
-            display_name: null,
-          },
+          }),
         ],
       }),
       undefined,
