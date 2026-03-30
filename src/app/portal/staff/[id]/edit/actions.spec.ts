@@ -47,6 +47,7 @@ const validFields = {
   role: 'teacher',
   display_name: 'Ms Smith',
   contact_number: '07700 900001',
+  personal_email: 'alice@gmail.com',
 }
 
 describe('updateStaffAction', () => {
@@ -82,13 +83,19 @@ describe('updateStaffAction', () => {
       role: 'teacher',
       display_name: 'Ms Smith',
       contact_number: '07700 900001',
+      personal_email: 'alice@gmail.com',
     })
   })
 
   it('treats empty optional fields as null', async () => {
     vi.mocked(updateStaff).mockResolvedValue(undefined)
 
-    const fields = { ...validFields, display_name: '', contact_number: '' }
+    const fields = {
+      ...validFields,
+      display_name: '',
+      contact_number: '',
+      personal_email: '',
+    }
 
     await expect(
       updateStaffAction('staff-1', makeFormData(fields)),
@@ -96,7 +103,11 @@ describe('updateStaffAction', () => {
 
     expect(updateStaff).toHaveBeenCalledWith(
       'staff-1',
-      expect.objectContaining({ display_name: null, contact_number: null }),
+      expect.objectContaining({
+        display_name: null,
+        contact_number: null,
+        personal_email: null,
+      }),
     )
   })
 

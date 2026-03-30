@@ -40,6 +40,7 @@ const mockStaff = {
   role: 'teacher',
   display_name: null,
   contact_number: null,
+  personal_email: null,
 }
 
 beforeEach(() => {

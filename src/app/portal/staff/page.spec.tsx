@@ -34,6 +34,7 @@ const mockStaff = [
     role: 'teacher',
     email: 'jane@school.com',
     contact_number: '07700 900001',
+    personal_email: 'jane@gmail.com',
     classes: [
       { id: 'class-1', name: 'Year 3A', room_number: 'R12', year_group: '3' },
     ],
@@ -46,6 +47,7 @@ const mockStaff = [
     role: 'admin',
     email: 'bob@school.com',
     contact_number: null,
+    personal_email: null,
     classes: [],
   },
 ]
@@ -71,7 +73,7 @@ describe('StaffPage', () => {
     expect(screen.getByText('No staff found.')).toBeTruthy()
   })
 
-  it('renders staff first/last names, display name, and roles', async () => {
+  it('renders staff first/last names, display name, roles, and emails', async () => {
     vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
 
     render(await StaffPage())
@@ -81,6 +83,10 @@ describe('StaffPage', () => {
     expect(screen.getAllByText('Jones').length).toBeGreaterThan(0)
     expect(screen.getByText('Teacher')).toBeTruthy()
     expect(screen.getByText('Admin')).toBeTruthy()
+    // Email is visible to all roles
+    expect(screen.getByText('Email')).toBeTruthy()
+    expect(screen.getAllByText('jane@school.com').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('bob@school.com').length).toBeGreaterThan(0)
   })
 
   it('shows class name and room number for teachers', async () => {
@@ -100,23 +106,28 @@ describe('StaffPage', () => {
     expect(dashes.length).toBeGreaterThan(0)
   })
 
-  it('hides contact column for teachers', async () => {
+  it('hides contact and personal email columns for teachers', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'teacher' } } as any)
     vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
 
     render(await StaffPage())
     expect(screen.queryByText('Contact')).toBeNull()
     expect(screen.queryByText('07700 900001')).toBeNull()
+    expect(screen.queryByText('Personal Email')).toBeNull()
+    expect(screen.queryByText('jane@gmail.com')).toBeNull()
   })
 
-  it('shows contact column for admin', async () => {
+  it('shows contact and personal email columns for admin', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { role: 'admin' } } as any)
     vi.mocked(getAllStaffWithClasses).mockResolvedValue(mockStaff as any)
 
     render(await StaffPage())
     expect(screen.getByText('Contact')).toBeTruthy()
+    expect(screen.getByText('Personal Email')).toBeTruthy()
     // Contact number appears in both mobile card and desktop column
     expect(screen.getAllByText('07700 900001').length).toBeGreaterThan(0)
+    // Personal email appears in both mobile card and desktop column
+    expect(screen.getAllByText('jane@gmail.com').length).toBeGreaterThan(0)
   })
 
   it('shows contact column for headteacher', async () => {

@@ -73,6 +73,7 @@ export default function AddStaffForm() {
           </div>
           <Field label="Display name" name="display_name" />
           <Field label="Contact number" name="contact_number" type="tel" />
+          <Field label="Personal email" name="personal_email" type="email" />
         </div>
       </div>
 

@@ -372,9 +372,11 @@ describe('createStaffSchema', () => {
       role: 'teacher',
       display_name: '',
       contact_number: '',
+      personal_email: '',
     })
     expect(result.display_name).toBeNull()
     expect(result.contact_number).toBeNull()
+    expect(result.personal_email).toBeNull()
   })
 
   it('rejects invalid role', () => {
@@ -386,6 +388,7 @@ describe('createStaffSchema', () => {
         role: 'principal',
         display_name: '',
         contact_number: '',
+        personal_email: '',
       }),
     ).toThrow()
   })
