@@ -90,6 +90,15 @@ export const updateClassSchema = createClassSchema.extend({
   active: booleanFromString,
 })
 
+export const migrateClassSchema = z.object({
+  source_class_id: uuid,
+  name: requiredString,
+  year_group: requiredString,
+  room_number: optionalString,
+  academic_year: requiredString,
+  teacher_id: uuid,
+})
+
 export const updateGuardianSchema = z.object({
   first_name: requiredString,
   last_name: requiredString,

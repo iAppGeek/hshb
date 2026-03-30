@@ -18,6 +18,7 @@ import {
   ExclamationTriangleIcon,
   ClockIcon,
   DocumentTextIcon,
+  ArrowPathRoundedSquareIcon,
 } from '@heroicons/react/24/outline'
 
 import logo from '@/images/logo.png'
@@ -32,6 +33,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   '/portal/staff': UserGroupIcon,
   '/portal/lesson-plans': DocumentTextIcon,
   '/portal/reports': ChartBarIcon,
+  '/portal/class-migration': ArrowPathRoundedSquareIcon,
 }
 
 type NavItem = {

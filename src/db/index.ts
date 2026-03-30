@@ -46,6 +46,7 @@ export {
   createClass,
   updateClass,
   setClassStudents,
+  migrateClass,
 } from './classes'
 export { getAllTimetableSlots, getTimetableByClass } from './timetable'
 export {
