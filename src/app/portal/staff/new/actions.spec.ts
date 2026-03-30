@@ -47,6 +47,7 @@ const validFields = {
   role: 'teacher',
   display_name: '',
   contact_number: '',
+  personal_email: '',
 }
 
 describe('createStaffAction', () => {
@@ -82,6 +83,7 @@ describe('createStaffAction', () => {
       role: 'teacher',
       display_name: null,
       contact_number: null,
+      personal_email: null,
     })
   })
 

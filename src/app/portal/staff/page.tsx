@@ -83,7 +83,9 @@ export default async function StaffPage() {
                   <th className={TH}>Last name</th>
                   <th className={TH}>Display name</th>
                   <th className={TH}>Role</th>
+                  <th className={TH}>Email</th>
                   {canSeeContact && <th className={TH}>Contact</th>}
+                  {canSeeContact && <th className={TH}>Personal Email</th>}
                   <th className={TH}>Class</th>
                   <th className={TH}>Room</th>
                   {(canEdit || canSeeAllData(role)) && (
@@ -154,6 +156,14 @@ export default async function StaffPage() {
                               member.role}
                           </span>
                           <span className="block">
+                            <a
+                              href={`mailto:${member.email}`}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              {member.email}
+                            </a>
+                          </span>
+                          <span className="block">
                             {classesText}
                             {' · '}
                             {roomText}
@@ -172,6 +182,20 @@ export default async function StaffPage() {
                               )}
                             </span>
                           )}
+                          {canSeeContact && (
+                            <span className="block">
+                              {member.personal_email ? (
+                                <a
+                                  href={`mailto:${member.personal_email}`}
+                                  className="text-blue-600 hover:text-blue-800"
+                                >
+                                  {member.personal_email}
+                                </a>
+                              ) : (
+                                '—'
+                              )}
+                            </span>
+                          )}
                         </div>
                       </td>
 
@@ -183,6 +207,14 @@ export default async function StaffPage() {
                       <td className={TD}>
                         {roleLabels[member.role as StaffRole] ?? member.role}
                       </td>
+                      <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
+                        <a
+                          href={`mailto:${member.email}`}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          {member.email}
+                        </a>
+                      </td>
                       {canSeeContact && (
                         <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
                           {member.contact_number ? (
@@ -191,6 +223,20 @@ export default async function StaffPage() {
                               className="text-blue-600 hover:text-blue-800"
                             >
                               {member.contact_number}
+                            </a>
+                          ) : (
+                            <span className="text-gray-500">—</span>
+                          )}
+                        </td>
+                      )}
+                      {canSeeContact && (
+                        <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
+                          {member.personal_email ? (
+                            <a
+                              href={`mailto:${member.personal_email}`}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              {member.personal_email}
                             </a>
                           ) : (
                             <span className="text-gray-500">—</span>

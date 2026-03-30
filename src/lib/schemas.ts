@@ -157,6 +157,7 @@ export const createStaffSchema = z.object({
   role: staffRole,
   display_name: optionalString,
   contact_number: optionalUkPhone,
+  personal_email: optionalEmail,
 })
 
 export const updateStaffSchema = createStaffSchema

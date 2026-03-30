@@ -9,6 +9,7 @@ CREATE TABLE staff (
   display_name    TEXT,                -- optional override; if null, use first_name || ' ' || last_name
   role            TEXT NOT NULL CHECK (role IN ('teacher', 'admin', 'headteacher', 'secretary')),
   contact_number  TEXT,
+  personal_email  TEXT,
   created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 

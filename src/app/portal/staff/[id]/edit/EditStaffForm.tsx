@@ -16,6 +16,7 @@ type StaffData = {
   role: string
   display_name: string | null
   contact_number: string | null
+  personal_email: string | null
 }
 
 const ROLES = [
@@ -105,6 +106,12 @@ export default function EditStaffForm({ staff }: { staff: StaffData }) {
             name="contact_number"
             type="tel"
             defaultValue={staff.contact_number ?? undefined}
+          />
+          <Field
+            label="Personal email"
+            name="personal_email"
+            type="email"
+            defaultValue={staff.personal_email ?? undefined}
           />
         </div>
       </div>

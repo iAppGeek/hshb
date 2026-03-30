@@ -5,7 +5,7 @@ import { TEACHING_ROLES } from '@/lib/permissions'
 import { supabase } from './client'
 
 const STAFF_SELECT =
-  'id, email, first_name, last_name, display_name, role, contact_number, created_at'
+  'id, email, first_name, last_name, display_name, role, contact_number, personal_email, created_at'
 
 const OPTS = { revalidate: 60, tags: ['staff'] }
 
@@ -76,6 +76,7 @@ export async function createStaff(input: {
   role: string
   display_name?: string | null
   contact_number?: string | null
+  personal_email?: string | null
 }) {
   const { data, error } = await supabase
     .from('staff')
@@ -96,6 +97,7 @@ export async function updateStaff(
     role: string
     display_name?: string | null
     contact_number?: string | null
+    personal_email?: string | null
   },
 ) {
   const { error } = await supabase.from('staff').update(input).eq('id', id)

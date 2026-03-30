@@ -203,6 +203,7 @@ describe('createStaff', () => {
       role: 'teacher',
       display_name: null,
       contact_number: null,
+      personal_email: null,
     }
     const created = { id: 'staff-new', ...input }
     mockFrom.mockReturnValue({
