@@ -13,6 +13,8 @@ import type {
   MigrationStudent,
 } from './ClassMigrationForm'
 
+const BASE_URL = '/portal/admin?tab=class-migration'
+
 const mockClasses: MigrationClass[] = [
   { id: 'class-1', name: 'Year 1A', year_group: '1', academic_year: '2025/26' },
   { id: 'class-2', name: 'Year 2B', year_group: '2', academic_year: '2025/26' },
@@ -48,6 +50,7 @@ describe('ClassMigrationForm', () => {
         sourceClassId={null}
         students={[]}
         action={mockAction}
+        baseUrl={BASE_URL}
       />,
     )
 
@@ -64,6 +67,7 @@ describe('ClassMigrationForm', () => {
         sourceClassId={null}
         students={[]}
         action={mockAction}
+        baseUrl={BASE_URL}
       />,
     )
 
@@ -81,6 +85,7 @@ describe('ClassMigrationForm', () => {
         sourceClassId="class-1"
         students={mockStudents}
         action={mockAction}
+        baseUrl={BASE_URL}
       />,
     )
 
@@ -97,13 +102,14 @@ describe('ClassMigrationForm', () => {
         sourceClassId={null}
         students={[]}
         action={mockAction}
+        baseUrl={BASE_URL}
       />,
     )
 
     expect(screen.queryByTestId('student-list')).toBeNull()
   })
 
-  it('pushes new URL when source class selection changes', () => {
+  it('pushes baseUrl with sourceClassId when source class selection changes', () => {
     const push = vi.fn()
     vi.mocked(useRouter).mockReturnValue({ push } as any)
 
@@ -114,6 +120,7 @@ describe('ClassMigrationForm', () => {
         sourceClassId={null}
         students={[]}
         action={mockAction}
+        baseUrl={BASE_URL}
       />,
     )
 
@@ -122,8 +129,30 @@ describe('ClassMigrationForm', () => {
     })
 
     expect(push).toHaveBeenCalledWith(
-      '/portal/class-migration?sourceClassId=class-1',
+      '/portal/admin?tab=class-migration&sourceClassId=class-1',
     )
+  })
+
+  it('pushes baseUrl without sourceClassId when selection is cleared', () => {
+    const push = vi.fn()
+    vi.mocked(useRouter).mockReturnValue({ push } as any)
+
+    render(
+      <ClassMigrationForm
+        classes={mockClasses}
+        teachers={mockTeachers}
+        sourceClassId="class-1"
+        students={mockStudents}
+        action={mockAction}
+        baseUrl={BASE_URL}
+      />,
+    )
+
+    fireEvent.change(screen.getByLabelText(/class to migrate/i), {
+      target: { value: '' },
+    })
+
+    expect(push).toHaveBeenCalledWith(BASE_URL)
   })
 
   it('calls action on form submit', async () => {
@@ -134,6 +163,7 @@ describe('ClassMigrationForm', () => {
         sourceClassId="class-1"
         students={mockStudents}
         action={mockAction}
+        baseUrl={BASE_URL}
       />,
     )
 
@@ -154,6 +184,7 @@ describe('ClassMigrationForm', () => {
         sourceClassId="class-1"
         students={mockStudents}
         action={mockAction}
+        baseUrl={BASE_URL}
       />,
     )
 

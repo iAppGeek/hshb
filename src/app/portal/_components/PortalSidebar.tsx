@@ -33,7 +33,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   '/portal/staff': UserGroupIcon,
   '/portal/lesson-plans': DocumentTextIcon,
   '/portal/reports': ChartBarIcon,
-  '/portal/class-migration': ArrowPathRoundedSquareIcon,
+  '/portal/admin': ArrowPathRoundedSquareIcon,
 }
 
 type NavItem = {

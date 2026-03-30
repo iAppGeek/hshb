@@ -1,9 +1,14 @@
-export default function ClassMigrationLoading(): React.ReactElement {
+export default function AdminLoading(): React.ReactElement {
   return (
     <div className="max-w-2xl animate-pulse">
       <div className="mb-6">
-        <div className="h-8 w-48 rounded bg-gray-200" />
+        <div className="h-8 w-32 rounded bg-gray-200" />
         <div className="mt-2 h-4 w-72 rounded bg-gray-200" />
+      </div>
+
+      {/* Tab bar skeleton */}
+      <div className="mb-6 flex gap-1 rounded-xl bg-gray-100 p-1">
+        <div className="h-9 w-36 rounded-lg bg-gray-200" />
       </div>
 
       {/* Source class section skeleton */}

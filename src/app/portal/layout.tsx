@@ -17,8 +17,8 @@ import {
 import { auth, signOut } from '@/auth'
 import logo from '@/images/logo.png'
 import {
+  canAccessAdminTasks,
   canAccessReports,
-  canMigrateClasses,
   receivesNotifications,
 } from '@/lib/permissions'
 import { roleLabels } from '@/lib/roleLabels'
@@ -52,6 +52,12 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: '/portal/dashboard', label: 'Dashboard', Icon: HomeIcon },
+  {
+    href: '/portal/reports',
+    label: 'Reports',
+    Icon: ChartBarIcon,
+    filter: canAccessReports,
+  },
   { href: '/portal/staff', label: 'Staff', Icon: UserGroupIcon },
   { href: '/portal/students', label: 'Students', Icon: UsersIcon },
   { href: '/portal/classes', label: 'Classes', Icon: AcademicCapIcon },
@@ -76,16 +82,10 @@ const navItems = [
     Icon: ExclamationTriangleIcon,
   },
   {
-    href: '/portal/reports',
-    label: 'Reports',
-    Icon: ChartBarIcon,
-    filter: canAccessReports,
-  },
-  {
-    href: '/portal/class-migration',
-    label: 'Class Migration',
+    href: '/portal/admin',
+    label: 'Admin Tasks',
     Icon: ArrowPathRoundedSquareIcon,
-    filter: canMigrateClasses,
+    filter: canAccessAdminTasks,
   },
 ]
 

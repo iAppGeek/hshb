@@ -32,6 +32,7 @@ type Props = {
   sourceClassId: string | null
   students: MigrationStudent[]
   action: (formData: FormData) => Promise<ActionResult>
+  baseUrl: string
 }
 
 export default function ClassMigrationForm({
@@ -40,6 +41,7 @@ export default function ClassMigrationForm({
   sourceClassId,
   students,
   action,
+  baseUrl,
 }: Props): React.ReactElement {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
@@ -48,9 +50,9 @@ export default function ClassMigrationForm({
   function handleSourceChange(e: React.ChangeEvent<HTMLSelectElement>): void {
     const value = e.target.value
     if (value) {
-      router.push(`/portal/class-migration?sourceClassId=${value}`)
+      router.push(`${baseUrl}&sourceClassId=${value}`)
     } else {
-      router.push('/portal/class-migration')
+      router.push(baseUrl)
     }
   }
 

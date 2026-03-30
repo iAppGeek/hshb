@@ -1,16 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 
-import ClassMigrationLoading from './loading'
+import AdminLoading from './loading'
 
-describe('ClassMigrationLoading', () => {
+describe('AdminLoading', () => {
   it('renders with skeleton animation', () => {
-    const { container } = render(<ClassMigrationLoading />)
+    const { container } = render(<AdminLoading />)
     expect(container.querySelector('.animate-pulse')).toBeTruthy()
   })
 
-  it('renders source class and new class detail sections', () => {
-    const { container } = render(<ClassMigrationLoading />)
+  it('renders tab bar and two content section skeletons', () => {
+    const { container } = render(<AdminLoading />)
     const sections = container.querySelectorAll('.rounded-xl.bg-white')
     expect(sections.length).toBe(2)
   })

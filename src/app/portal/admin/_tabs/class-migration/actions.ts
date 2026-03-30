@@ -39,7 +39,7 @@ export async function migrateClassAction(
     entityId: data?.new_class_id ?? source_class_id,
     details: parsed.data as Record<string, unknown>,
   })
-  revalidatePath('/portal/class-migration')
+  revalidatePath('/portal/admin')
 
-  redirect('/portal/class-migration')
+  redirect('/portal/admin')
 }

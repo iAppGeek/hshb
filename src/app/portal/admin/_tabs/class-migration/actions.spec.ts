@@ -110,8 +110,8 @@ describe('migrateClassAction', () => {
         entityId: NEW_CLASS_ID,
       }),
     )
-    expect(revalidatePath).toHaveBeenCalledWith('/portal/class-migration')
-    expect(redirect).toHaveBeenCalledWith('/portal/class-migration')
+    expect(revalidatePath).toHaveBeenCalledWith('/portal/admin')
+    expect(redirect).toHaveBeenCalledWith('/portal/admin')
   })
 
   it('converts empty room_number to null', async () => {
