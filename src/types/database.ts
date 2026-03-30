@@ -631,6 +631,17 @@ export type Database = {
           present_count: number
         }[]
       }
+      migrate_class: {
+        Args: {
+          p_academic_year: string
+          p_name: string
+          p_room_number: string
+          p_source_class_id: string
+          p_teacher_id: string
+          p_year_group: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

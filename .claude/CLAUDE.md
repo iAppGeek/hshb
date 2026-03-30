@@ -29,6 +29,11 @@
 - Client components (`"use client"`) go in `src/clientComponents/`, not `src/components/`
 - API routes go under `src/app/api/`
 
+## Imports
+
+- All imports must be at the top of the file, before any other code
+- Never add imports inline or mid-file — always place them with the existing import block
+
 ## Testing
 
 - Every new function or component must have a corresponding test file
