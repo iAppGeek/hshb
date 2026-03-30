@@ -88,6 +88,10 @@ export function receivesNotifications(role: StaffRole): boolean {
   return role === 'admin' || role === 'headteacher'
 }
 
+export function canMigrateClasses(role: StaffRole): boolean {
+  return role === 'admin'
+}
+
 // ── Data classification ─────────────────────────────────────────────────────
 
 export function isTeachingStaff(role: StaffRole): boolean {

@@ -11,11 +11,16 @@ import {
   ExclamationTriangleIcon,
   ClockIcon,
   DocumentTextIcon,
+  ArrowPathRoundedSquareIcon,
 } from '@heroicons/react/24/outline'
 
 import { auth, signOut } from '@/auth'
 import logo from '@/images/logo.png'
-import { canAccessReports, receivesNotifications } from '@/lib/permissions'
+import {
+  canAccessReports,
+  canMigrateClasses,
+  receivesNotifications,
+} from '@/lib/permissions'
 import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -75,6 +80,12 @@ const navItems = [
     label: 'Reports',
     Icon: ChartBarIcon,
     filter: canAccessReports,
+  },
+  {
+    href: '/portal/class-migration',
+    label: 'Class Migration',
+    Icon: ArrowPathRoundedSquareIcon,
+    filter: canMigrateClasses,
   },
 ]
 

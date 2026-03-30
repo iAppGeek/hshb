@@ -1,4 +1,7 @@
 import { unstable_cache, revalidateTag } from 'next/cache'
+import type { PostgrestError } from '@supabase/supabase-js'
+
+import type { Database } from '@/types/database'
 
 import { supabase } from './client'
 
@@ -125,6 +128,34 @@ export async function updateClass(
   if (error) throw error
   revalidateTag('classes', 'max')
   revalidateTag('students', 'max')
+}
+
+type MigrateClassInput = {
+  name: string
+  year_group: string
+  room_number: string | null
+  academic_year: string
+  teacher_id: string
+}
+
+export async function migrateClass(
+  sourceClassId: string,
+  newClass: MigrateClassInput,
+): Promise<{
+  data: { new_class_id: string } | null
+  error: PostgrestError | null
+}> {
+  // Supabase codegen types p_room_number as `string` but the Postgres function
+  // accepts TEXT (nullable). Cast the args to allow `string | null` here.
+  const { data, error } = await supabase.rpc('migrate_class', {
+    p_source_class_id: sourceClassId,
+    p_name: newClass.name,
+    p_year_group: newClass.year_group,
+    p_room_number: newClass.room_number,
+    p_academic_year: newClass.academic_year,
+    p_teacher_id: newClass.teacher_id,
+  } as Database['public']['Functions']['migrate_class']['Args'])
+  return { data: data as { new_class_id: string } | null, error }
 }
 
 export async function setClassStudents(classId: string, studentIds: string[]) {
