@@ -22,6 +22,7 @@ export const metadata: Metadata = { title: 'Staff' }
 const TH =
   'px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:px-6'
 const TD = 'hidden px-3 py-4 text-sm text-gray-500 sm:table-cell sm:px-6'
+const TD_LINK = 'hidden px-3 py-4 text-sm sm:table-cell sm:px-6'
 
 export default async function StaffPage() {
   const session = await auth()
@@ -207,7 +208,7 @@ export default async function StaffPage() {
                       <td className={TD}>
                         {roleLabels[member.role as StaffRole] ?? member.role}
                       </td>
-                      <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
+                      <td className={TD_LINK}>
                         <a
                           href={`mailto:${member.email}`}
                           className="text-blue-600 hover:text-blue-800"
@@ -216,7 +217,7 @@ export default async function StaffPage() {
                         </a>
                       </td>
                       {canSeeContact && (
-                        <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
+                        <td className={TD_LINK}>
                           {member.contact_number ? (
                             <a
                               href={`tel:${member.contact_number}`}
@@ -230,7 +231,7 @@ export default async function StaffPage() {
                         </td>
                       )}
                       {canSeeContact && (
-                        <td className="hidden px-3 py-4 text-sm sm:table-cell sm:px-6">
+                        <td className={TD_LINK}>
                           {member.personal_email ? (
                             <a
                               href={`mailto:${member.personal_email}`}
