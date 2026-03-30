@@ -8,11 +8,7 @@ import { canMigrateClasses } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import ClassMigrationForm from './ClassMigrationForm'
-import type {
-  MigrationClass,
-  MigrationTeacher,
-  MigrationStudent,
-} from './ClassMigrationForm'
+import type { MigrationStudent } from './ClassMigrationForm'
 import { migrateClassAction } from './actions'
 
 export const metadata: Metadata = { title: 'Class Migration' }
@@ -23,9 +19,9 @@ export default async function ClassMigrationPage({
   searchParams: Promise<{ sourceClassId?: string }>
 }): Promise<ReactNode> {
   const session = await auth()
-  const role = session?.user?.role as StaffRole
+  const role = session?.user?.role as StaffRole | undefined
 
-  if (!canMigrateClasses(role)) {
+  if (!role || !canMigrateClasses(role)) {
     redirect('/portal/classes')
   }
 
@@ -51,8 +47,18 @@ export default async function ClassMigrationPage({
       </div>
 
       <ClassMigrationForm
-        classes={classes as MigrationClass[]}
-        teachers={teachers as MigrationTeacher[]}
+        classes={classes.map((c) => ({
+          id: c.id,
+          name: c.name,
+          year_group: c.year_group,
+          academic_year: c.academic_year,
+        }))}
+        teachers={teachers.map((t) => ({
+          id: t.id,
+          first_name: t.first_name,
+          last_name: t.last_name,
+          display_name: t.display_name,
+        }))}
         sourceClassId={sourceClassId ?? null}
         students={students}
         action={migrateClassAction}
