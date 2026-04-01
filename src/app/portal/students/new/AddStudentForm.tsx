@@ -15,6 +15,7 @@ export default function AddStudentForm({ guardians }: Props) {
   const [showSecondary, setShowSecondary] = useState(false)
   const [showContact1, setShowContact1] = useState(false)
   const [showContact2, setShowContact2] = useState(false)
+  const [addressMode, setAddressMode] = useState<'own' | 'guardian'>('guardian')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -30,10 +31,15 @@ export default function AddStudentForm({ guardians }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Hidden flags for optional sections */}
+      {/* Hidden flags for optional sections and address source */}
       <input type="hidden" name="has_secondary" value={String(showSecondary)} />
       <input type="hidden" name="has_contact1" value={String(showContact1)} />
       <input type="hidden" name="has_contact2" value={String(showContact2)} />
+      <input
+        type="hidden"
+        name="address_guardian_id"
+        value={addressMode === 'guardian' ? 'primary' : ''}
+      />
 
       {/* ── Student Details ─────────────────────────────────────────── */}
       <FormSection title="Student Details">
@@ -48,15 +54,47 @@ export default function AddStudentForm({ guardians }: Props) {
           <Field label="Student code" name="student_code" />
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field
-            label="Address line 1"
-            name="student_address_line_1"
-            required
-          />
-          <Field label="Address line 2" name="student_address_line_2" />
-          <Field label="City" name="student_city" required />
-          <Field label="Postcode" name="student_postcode" required />
+        <div className="mt-4">
+          <p className="mb-2 text-sm font-medium text-gray-700">Address</p>
+          <div className="mb-3 flex gap-4">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
+              <input
+                type="radio"
+                name="address_mode"
+                checked={addressMode === 'guardian'}
+                onChange={() => setAddressMode('guardian')}
+                className="text-blue-600 focus:ring-blue-500"
+              />
+              Same as guardian
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
+              <input
+                type="radio"
+                name="address_mode"
+                checked={addressMode === 'own'}
+                onChange={() => setAddressMode('own')}
+                className="text-blue-600 focus:ring-blue-500"
+              />
+              Enter address
+            </label>
+          </div>
+
+          {addressMode === 'guardian' ? (
+            <p className="text-sm text-gray-500">
+              Student will use the primary guardian&apos;s address.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field
+                label="Address line 1"
+                name="student_address_line_1"
+                required
+              />
+              <Field label="Address line 2" name="student_address_line_2" />
+              <Field label="City" name="student_city" required />
+              <Field label="Postcode" name="student_postcode" required />
+            </div>
+          )}
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -72,6 +110,7 @@ export default function AddStudentForm({ guardians }: Props) {
           prefix="primary"
           guardians={guardians}
           showAddress
+          requireAddress={addressMode === 'guardian'}
           requireEmail
         />
       </FormSection>
@@ -180,11 +219,13 @@ function GuardianSelector({
   prefix,
   guardians,
   showAddress = false,
+  requireAddress = false,
   requireEmail = false,
 }: {
   prefix: string
   guardians: GuardianSummary[]
   showAddress?: boolean
+  requireAddress?: boolean
   requireEmail?: boolean
 }) {
   const [mode, setMode] = useState<'new' | 'existing'>('new')
@@ -287,6 +328,7 @@ function GuardianSelector({
         <GuardianFields
           prefix={prefix}
           showAddress={showAddress}
+          requireAddress={requireAddress}
           requireEmail={requireEmail}
         />
       )}
@@ -325,10 +367,12 @@ function FormSection({
 function GuardianFields({
   prefix,
   showAddress = false,
+  requireAddress = false,
   requireEmail = false,
 }: {
   prefix: string
   showAddress?: boolean
+  requireAddress?: boolean
   requireEmail?: boolean
 }) {
   return (
@@ -351,10 +395,22 @@ function GuardianFields({
       </div>
       {showAddress && (
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label="Address line 1" name={`${prefix}_address_line_1`} />
+          <Field
+            label="Address line 1"
+            name={`${prefix}_address_line_1`}
+            required={requireAddress}
+          />
           <Field label="Address line 2" name={`${prefix}_address_line_2`} />
-          <Field label="City" name={`${prefix}_city`} />
-          <Field label="Postcode" name={`${prefix}_postcode`} />
+          <Field
+            label="City"
+            name={`${prefix}_city`}
+            required={requireAddress}
+          />
+          <Field
+            label="Postcode"
+            name={`${prefix}_postcode`}
+            required={requireAddress}
+          />
         </div>
       )}
     </>

@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { createGuardian, createStudent } from '@/db'
+import { createGuardian, createStudent, getGuardianById } from '@/db'
 
 import { createStudentAction } from './actions'
 
@@ -12,6 +12,7 @@ vi.mock('@/auth', () => ({ auth: vi.fn() }))
 vi.mock('@/db', () => ({
   createGuardian: vi.fn(),
   createStudent: vi.fn(),
+  getGuardianById: vi.fn(),
   logAuditEvent: vi.fn(),
 }))
 
@@ -44,11 +45,13 @@ function makeFormData(fields: Record<string, string>): FormData {
   return fd
 }
 
+// baseFields uses own address (address_guardian_id empty)
 const baseFields = {
   student_first_name: 'Anna',
   student_last_name: 'Smith',
   student_code: '',
   student_date_of_birth: '',
+  address_guardian_id: '',
   student_address_line_1: '1 Main Street',
   student_address_line_2: '',
   student_city: 'London',
@@ -68,6 +71,18 @@ const baseFields = {
   has_secondary: 'false',
   has_contact1: 'false',
   has_contact2: 'false',
+}
+
+// fields using primary guardian as address source
+const guardianAddressFields = {
+  ...baseFields,
+  address_guardian_id: 'primary',
+  student_address_line_1: '',
+  student_city: '',
+  student_postcode: '',
+  primary_address_line_1: '99 Guardian Rd',
+  primary_city: 'Bristol',
+  primary_postcode: 'BS1 1AA',
 }
 
 describe('createStudentAction', () => {
@@ -207,6 +222,86 @@ describe('createStudentAction', () => {
     expect(createGuardian).not.toHaveBeenCalled()
     expect(createStudent).toHaveBeenCalledWith(
       expect.objectContaining({ primary_guardian_id: GUARDIAN_EXISTING }),
+    )
+  })
+
+  it('sets address_guardian_id to primary guardian id when slot is primary', async () => {
+    vi.mocked(createGuardian).mockResolvedValue({ id: GUARDIAN_1 } as any)
+    vi.mocked(getGuardianById).mockResolvedValue({
+      id: GUARDIAN_1,
+      first_name: 'Maria',
+      last_name: 'Smith',
+      phone: '07700 900000',
+      address_line_1: '99 Guardian Rd',
+      city: 'Bristol',
+      postcode: 'BS1 1AA',
+    } as any)
+    vi.mocked(createStudent).mockResolvedValue({ id: STUDENT_ID } as any)
+
+    await createStudentAction(makeFormData(guardianAddressFields))
+
+    expect(createStudent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        address_guardian_id: GUARDIAN_1,
+        address_line_1: null,
+        city: null,
+        postcode: null,
+      }),
+    )
+  })
+
+  it('returns error when selected guardian has no address', async () => {
+    vi.mocked(createGuardian).mockResolvedValue({ id: GUARDIAN_1 } as any)
+    vi.mocked(getGuardianById).mockResolvedValue({
+      id: GUARDIAN_1,
+      first_name: 'Maria',
+      last_name: 'Smith',
+      phone: '07700 900000',
+      address_line_1: null,
+      city: null,
+      postcode: null,
+    } as any)
+
+    const result = await createStudentAction(
+      makeFormData(guardianAddressFields),
+    )
+
+    expect(result).toEqual({
+      error: expect.stringContaining('does not have an address'),
+    })
+    expect(createStudent).not.toHaveBeenCalled()
+  })
+
+  it('returns error when both address_guardian_id and own address are absent', async () => {
+    const result = await createStudentAction(
+      makeFormData({
+        ...baseFields,
+        address_guardian_id: '',
+        student_address_line_1: '',
+        student_city: '',
+        student_postcode: '',
+      }),
+    )
+
+    expect(result).toEqual({
+      error: expect.stringContaining('Enter an address'),
+    })
+    expect(createStudent).not.toHaveBeenCalled()
+  })
+
+  it('passes own address fields when address_guardian_id is empty', async () => {
+    vi.mocked(createGuardian).mockResolvedValue({ id: GUARDIAN_1 } as any)
+    vi.mocked(createStudent).mockResolvedValue({ id: STUDENT_ID } as any)
+
+    await createStudentAction(makeFormData(baseFields))
+
+    expect(createStudent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        address_guardian_id: null,
+        address_line_1: '1 Main Street',
+        city: 'London',
+        postcode: 'EC1A 1BB',
+      }),
     )
   })
 })

@@ -184,26 +184,42 @@ export const guardianSchema = z.discriminatedUnion('mode', [
   guardianExistingSchema,
 ])
 
-const studentBaseSchema = z.object({
-  student_first_name: requiredString,
-  student_last_name: requiredString,
-  student_code: optionalString,
-  student_date_of_birth: optionalString,
-  student_address_line_1: requiredString,
-  student_address_line_2: optionalString,
-  student_city: requiredString,
-  student_postcode: requiredString,
-  student_allergies: optionalString,
-  student_medical_details: optionalString,
-  student_notes: optionalString,
-  primary_relationship: optionalString,
-  has_secondary: booleanFromString,
-  secondary_relationship: optionalString.optional(),
-  has_contact1: booleanFromString,
-  contact1_relationship: optionalString.optional(),
-  has_contact2: booleanFromString,
-  contact2_relationship: optionalString.optional(),
-})
+const studentBaseSchema = z
+  .object({
+    student_first_name: requiredString,
+    student_last_name: requiredString,
+    student_code: optionalString,
+    student_date_of_birth: optionalString,
+    address_guardian_id: optionalString,
+    student_address_line_1: optionalString.optional(),
+    student_address_line_2: optionalString.optional(),
+    student_city: optionalString.optional(),
+    student_postcode: optionalString.optional(),
+    student_allergies: optionalString,
+    student_medical_details: optionalString,
+    student_notes: optionalString,
+    primary_relationship: optionalString,
+    has_secondary: booleanFromString,
+    secondary_relationship: optionalString.optional(),
+    has_contact1: booleanFromString,
+    contact1_relationship: optionalString.optional(),
+    has_contact2: booleanFromString,
+    contact2_relationship: optionalString.optional(),
+  })
+  .superRefine((data, ctx) => {
+    const hasGuardianRef = data.address_guardian_id != null
+    const hasOwnAddress = Boolean(
+      data.student_address_line_1 && data.student_city && data.student_postcode,
+    )
+    if (!hasGuardianRef && !hasOwnAddress) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'Enter an address or select a guardian whose address the student shares',
+        path: [],
+      })
+    }
+  })
 
 export const createStudentSchema = studentBaseSchema
 

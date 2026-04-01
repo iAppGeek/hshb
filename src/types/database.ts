@@ -473,10 +473,11 @@ export type Database = {
           additional_contact_1_relationship: string | null
           additional_contact_2_id: string | null
           additional_contact_2_relationship: string | null
-          address_line_1: string
+          address_guardian_id: string | null
+          address_line_1: string | null
           address_line_2: string | null
           allergies: string | null
-          city: string
+          city: string | null
           created_at: string | null
           date_of_birth: string | null
           enrollment_date: string | null
@@ -485,7 +486,7 @@ export type Database = {
           last_name: string
           medical_details: string | null
           notes: string | null
-          postcode: string
+          postcode: string | null
           primary_guardian_id: string | null
           primary_guardian_relationship: string | null
           secondary_guardian_id: string | null
@@ -499,10 +500,11 @@ export type Database = {
           additional_contact_1_relationship?: string | null
           additional_contact_2_id?: string | null
           additional_contact_2_relationship?: string | null
-          address_line_1: string
+          address_guardian_id?: string | null
+          address_line_1?: string | null
           address_line_2?: string | null
           allergies?: string | null
-          city: string
+          city?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           enrollment_date?: string | null
@@ -511,7 +513,7 @@ export type Database = {
           last_name: string
           medical_details?: string | null
           notes?: string | null
-          postcode: string
+          postcode?: string | null
           primary_guardian_id?: string | null
           primary_guardian_relationship?: string | null
           secondary_guardian_id?: string | null
@@ -525,10 +527,11 @@ export type Database = {
           additional_contact_1_relationship?: string | null
           additional_contact_2_id?: string | null
           additional_contact_2_relationship?: string | null
-          address_line_1?: string
+          address_guardian_id?: string | null
+          address_line_1?: string | null
           address_line_2?: string | null
           allergies?: string | null
-          city?: string
+          city?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           enrollment_date?: string | null
@@ -537,7 +540,7 @@ export type Database = {
           last_name?: string
           medical_details?: string | null
           notes?: string | null
-          postcode?: string
+          postcode?: string | null
           primary_guardian_id?: string | null
           primary_guardian_relationship?: string | null
           secondary_guardian_id?: string | null
@@ -556,6 +559,13 @@ export type Database = {
           {
             foreignKeyName: 'students_additional_contact_2_id_fkey'
             columns: ['additional_contact_2_id']
+            isOneToOne: false
+            referencedRelation: 'guardians'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'students_address_guardian_id_fkey'
+            columns: ['address_guardian_id']
             isOneToOne: false
             referencedRelation: 'guardians'
             referencedColumns: ['id']

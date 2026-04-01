@@ -44,6 +44,7 @@ const baseStudent = {
   last_name: 'Papadopoulos',
   student_code: 'S001',
   date_of_birth: null,
+  address_guardian_id: null,
   address_line_1: '1 Main Street',
   address_line_2: null,
   city: 'London',

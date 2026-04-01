@@ -7,6 +7,7 @@ import type { z } from 'zod'
 import { auth } from '@/auth'
 import {
   createGuardian,
+  getGuardianById,
   updateStudent,
   updateStudentClasses,
   logAuditEvent,
@@ -91,15 +92,41 @@ export async function updateStudentAction(
     }
 
     const d = parsed.data
+
+    let addressGuardianId: string | null = null
+    if (d.address_guardian_id === 'primary') {
+      addressGuardianId = primaryGuardianId
+    }
+
+    if (addressGuardianId) {
+      const guardian = await getGuardianById(addressGuardianId)
+      if (!guardian?.address_line_1 || !guardian?.city || !guardian?.postcode) {
+        return {
+          error:
+            'The selected guardian does not have an address. Add their address first.',
+        }
+      }
+    } else if (
+      !d.student_address_line_1 ||
+      !d.student_city ||
+      !d.student_postcode
+    ) {
+      return {
+        error:
+          'Enter an address or select a guardian whose address the student shares',
+      }
+    }
+
     await updateStudent(id, {
       first_name: d.student_first_name,
       last_name: d.student_last_name,
       student_code: d.student_code,
       date_of_birth: d.student_date_of_birth,
-      address_line_1: d.student_address_line_1,
-      address_line_2: d.student_address_line_2,
-      city: d.student_city,
-      postcode: d.student_postcode,
+      address_guardian_id: addressGuardianId,
+      address_line_1: addressGuardianId ? null : d.student_address_line_1,
+      address_line_2: addressGuardianId ? null : d.student_address_line_2,
+      city: addressGuardianId ? null : d.student_city,
+      postcode: addressGuardianId ? null : d.student_postcode,
       allergies: d.student_allergies,
       medical_details: d.student_medical_details,
       notes: d.student_notes,
