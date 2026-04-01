@@ -216,7 +216,7 @@ const studentBaseSchema = z
         code: z.ZodIssueCode.custom,
         message:
           'Enter an address or select a guardian whose address the student shares',
-        path: ['student_address_line_1'],
+        path: [],
       })
     }
   })
