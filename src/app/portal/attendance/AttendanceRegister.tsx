@@ -1,5 +1,7 @@
+import BulkEmailDropdown from '@/clientComponents/BulkEmailDropdown'
 import { getStudentsByClass, getAttendanceByClassAndDate } from '@/db'
 import type { AttendanceStatus } from '@/db'
+import { guardianEmailsForMailto, mailtoWithBcc } from '@/lib/mailto'
 import type { StaffRole } from '@/types/next-auth'
 
 import AttendanceForm from './AttendanceForm'
@@ -31,6 +33,11 @@ export default async function AttendanceRegister({
   const dateLabel =
     date === today ? 'Today' : date < today ? 'Historical' : 'Future'
 
+  const attendanceBcc = guardianEmailsForMailto(students)
+  const attendanceMailtoHref = mailtoWithBcc(attendanceBcc, {
+    subject: `${className} — Attendance ${date}`,
+  })
+
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-gray-500">
@@ -44,6 +51,18 @@ export default async function AttendanceRegister({
         </span>
         {existingRows.length > 0 && (
           <span className="text-green-600">(register already taken)</span>
+        )}
+        {students.length > 0 && (
+          <div className="ml-auto sm:ml-0">
+            <BulkEmailDropdown
+              emails={attendanceBcc}
+              mailtoHref={attendanceMailtoHref}
+              buttonLabel="Email class"
+              triggerClassName="rounded-lg border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:bg-blue-50"
+              emptyReason="No guardian email addresses on file for this class."
+              mailtoUnavailableReason="Too many addresses for your email app. Use copy instead."
+            />
+          </div>
         )}
       </div>
       <AttendanceForm

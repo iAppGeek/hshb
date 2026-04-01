@@ -3,13 +3,16 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getAllStaffWithClasses } from '@/db'
+import StaffEmailDropdown from '@/clientComponents/StaffEmailDropdown'
 import Tooltip from '@/components/Tooltip'
+import { getAllStaffWithClasses } from '@/db'
+import { mailtoWithBcc, staffEmailsForMailto } from '@/lib/mailto'
 import {
   canEditStaff,
   canCreateStaff,
   canSeeStaffContact,
   canSeeAllData,
+  TEACHING_ROLES,
 } from '@/lib/permissions'
 import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
@@ -50,25 +53,54 @@ export default async function StaffPage() {
     return aName.localeCompare(bName)
   })
 
+  const teachingMembers = staff.filter((m) =>
+    TEACHING_ROLES.includes(m.role as StaffRole),
+  )
+  const teacherBccEmails = staffEmailsForMailto(teachingMembers, canSeeContact)
+  const allStaffBccEmails = staffEmailsForMailto(staff, canSeeContact)
+  const teacherMailtoHref = mailtoWithBcc(teacherBccEmails, {
+    subject: 'Teachers & headteachers',
+  })
+  const allStaffMailtoHref = mailtoWithBcc(allStaffBccEmails, {
+    subject: 'Staff',
+  })
+
   return (
     <>
       <PageHeader
         title="Staff"
         action={
-          canCreate ? (
-            <Link
-              href="/portal/staff/new"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
-            >
-              Add Staff
-            </Link>
-          ) : canSeeAllData(role) ? (
-            <Tooltip text="You don't have permission to add staff">
-              <span className="cursor-not-allowed rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50 shadow-sm">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {staff.length > 0 && (
+              <StaffEmailDropdown
+                teachers={{
+                  emails: teacherBccEmails,
+                  mailtoHref: teacherMailtoHref,
+                }}
+                allStaff={{
+                  emails: allStaffBccEmails,
+                  mailtoHref: allStaffMailtoHref,
+                }}
+                triggerClassName="rounded-lg border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:bg-blue-50"
+                emptyReason="No email addresses available for staff on this list."
+                mailtoUnavailableReason="Too many addresses for your email app. Use copy instead."
+              />
+            )}
+            {canCreate ? (
+              <Link
+                href="/portal/staff/new"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+              >
                 Add Staff
-              </span>
-            </Tooltip>
-          ) : null
+              </Link>
+            ) : canSeeAllData(role) ? (
+              <Tooltip text="You don't have permission to add staff">
+                <span className="cursor-not-allowed rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50 shadow-sm">
+                  Add Staff
+                </span>
+              </Tooltip>
+            ) : null}
+          </div>
         }
       />
 

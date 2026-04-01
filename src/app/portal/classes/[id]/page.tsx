@@ -3,7 +3,9 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
+import BulkEmailDropdown from '@/clientComponents/BulkEmailDropdown'
 import { getClassWithStudents } from '@/db'
+import { guardianEmailsForMailto, mailtoWithBcc } from '@/lib/mailto'
 import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -22,6 +24,13 @@ type Student = {
     first_name: string
     last_name: string
     phone: string | null
+    email: string | null
+  } | null
+  secondary_guardian: {
+    first_name: string
+    last_name: string
+    phone: string | null
+    email: string | null
   } | null
 }
 
@@ -62,6 +71,11 @@ export default async function ClassRegisterPage({
       return lnc !== 0 ? lnc : a.first_name.localeCompare(b.first_name)
     })
 
+  const classBccEmails = guardianEmailsForMailto(students)
+  const classMailtoHref = mailtoWithBcc(classBccEmails, {
+    subject: `${cls.name} — Class register`,
+  })
+
   const LABEL =
     'text-xs font-medium tracking-wide text-gray-500 uppercase print:font-bold print:text-gray-900'
 
@@ -81,7 +95,19 @@ export default async function ClassRegisterPage({
             {cls.name} — Register
           </h1>
         </div>
-        <PrintButton />
+        <div className="flex shrink-0 items-center gap-3">
+          {students.length > 0 && (
+            <BulkEmailDropdown
+              emails={classBccEmails}
+              mailtoHref={classMailtoHref}
+              buttonLabel="Email class"
+              triggerClassName="rounded-lg border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:bg-blue-50"
+              emptyReason="No guardian email addresses on file for this class."
+              mailtoUnavailableReason="Too many addresses for your email app. Use copy instead."
+            />
+          )}
+          <PrintButton />
+        </div>
       </div>
 
       {/* Print-only title */}
