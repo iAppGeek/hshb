@@ -51,6 +51,7 @@ const mockStudent = {
   additional_contact_1_relationship: null,
   additional_contact_2_id: null,
   additional_contact_2_relationship: null,
+  address_guardian_id: null,
   address_line_1: null,
   address_line_2: null,
   city: null,

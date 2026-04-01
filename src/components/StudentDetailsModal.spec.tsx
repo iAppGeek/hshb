@@ -35,6 +35,8 @@ const baseStudent = {
   id: 'student-1',
   first_name: 'Anna',
   last_name: 'Papadopoulos',
+  address_guardian_id: null,
+  address_guardian: null,
   address_line_1: null,
   address_line_2: null,
   city: null,

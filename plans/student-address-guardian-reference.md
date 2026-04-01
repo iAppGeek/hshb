@@ -92,30 +92,36 @@ export function resolveStudentAddress(student: {
 **File:** `src/lib/schemas.ts`
 
 - Add `address_guardian_id` (optional UUID) to `studentBaseSchema`
-- Make `student_address_line_1`, `student_city`, `student_postcode` optional (they're required only when `address_guardian_id` is not set — validate this with a `.refine()`)
-- Add refinement: if `address_guardian_id` is empty/null, then address fields are required
+- Make `student_address_line_1`, `student_city`, `student_postcode` optional at the field level (individually not required)
+- Add a `.superRefine()` that enforces the mutual exclusivity rule: **either** `address_guardian_id` is a non-null UUID **or** `address_line_1 + city + postcode` are all non-null strings — if both are absent, attach a field error to `address_line_1` with the message `"Enter an address or select a guardian whose address the student shares"`
+- This mirrors the DB CHECK constraint exactly so the error is caught in userspace before any DB call
 
 ### 6. Update Form UI — AddStudentForm
 
 **File:** `src/app/portal/students/new/AddStudentForm.tsx`
 
-- Add state: `const [addressMode, setAddressMode] = useState<'own' | 'guardian'>('own')`
-- Add a toggle in the Student Details section (below address fields): radio buttons "Enter address" / "Same as guardian"
-- When "Same as guardian" is selected:
+- Add state: `const [addressMode, setAddressMode] = useState<'own' | 'guardian'>('guardian')` with `const [guardianSlot, setGuardianSlot] = useState<'primary' | 'secondary'>('primary')`
+- **Default is `'guardian'` / `'primary'`** — new students default to sharing the primary guardian's address. The user must explicitly switch to "Enter address" if the student has a different address.
+- Add a toggle in the Student Details section (below address fields): radio buttons "Same as guardian" / "Enter address"
+- When **`'guardian'`** is selected:
   - Hide the 4 address input fields
-  - Show a dropdown to pick which guardian (populated from the already-selected primary/secondary guardians on the form)
-  - Add hidden input `address_guardian_id` with the selected guardian's ID
-  - The dropdown should only show guardians that have been selected (existing) or are being created (new — in which case we need to handle this: the guardian doesn't have an ID yet)
+  - Show a **required** dropdown to pick which guardian slot (`primary` / `secondary`), defaulting to `primary`
+  - If no guardian has been entered on the form yet, disable the dropdown and show helper text: "Add a guardian first"
+  - Block form submission client-side if guardian mode is active but no guardian is in the selected slot
+  - Add hidden input: `<input type="hidden" name="address_guardian_id" value={guardianSlot} />`
+    - Value is the slot name (`"primary"` or `"secondary"`), not a UUID — the server action resolves it to an ID
+- When **`'own'`** is selected:
+  - Show the 4 address input fields (`address_line_1` required, `address_line_2` optional, `city` required, `postcode` required)
+  - Clear/omit `address_guardian_id` from submission
 - **Edge case — new guardian:** If the user picks "Same as guardian" and the guardian is being created inline (mode: "new"), the server action must create the guardian first, then use that ID as `address_guardian_id`. This is already the flow — guardians are resolved before student creation.
-- Add hidden input: `<input type="hidden" name="address_guardian_id" value={selectedGuardianSlot} />`
-  - Value should indicate which slot ("primary" or "secondary") rather than a UUID, since the guardian may not exist yet. The server action resolves the slot to an ID.
 
 ### 7. Update Form UI — EditStudentForm
 
 **File:** `src/app/portal/students/[id]/edit/EditStudentForm.tsx`
 
 - Same toggle as AddStudentForm
-- Pre-populate: if `student.address_guardian_id` is set, default to "Same as guardian" mode and pre-select the matching guardian slot
+- **Pre-populate:** if `student.address_guardian_id` is set, default to `'guardian'` mode and pre-select the matching guardian slot; if the student has their own address fields set, default to `'own'` mode
+- The form must never load in an indeterminate state — if the existing student somehow has neither an address nor a guardian reference (data inconsistency), default to `'guardian'` / `'primary'` (same as new student default) so the user is prompted to pick a source
 - Pass `address_guardian_id` in the student data type
 
 ### 8. Update Server Actions
@@ -123,13 +129,14 @@ export function resolveStudentAddress(student: {
 **File:** `src/app/portal/students/new/actions.ts`
 
 - After resolving all guardian IDs, check if `address_guardian_id` slot is set
-- Map slot name ("primary" / "secondary") to the resolved guardian ID
+- Map slot name (`"primary"` / `"secondary"`) to the resolved guardian ID
 - Pass `address_guardian_id` to `createStudent()`
 - When `address_guardian_id` is set, pass `null` for student address fields
+- **Pre-flight guard:** after resolving IDs, explicitly check that the data satisfies the constraint (either `address_guardian_id` is non-null OR all three address fields are non-null); return a validation error to the form if not — do not let this reach the DB
 
 **File:** `src/app/portal/students/[id]/edit/actions.ts`
 
-- Same pattern for update
+- Same pattern for update, same pre-flight guard
 
 ### 9. Update Display Components
 
@@ -165,12 +172,12 @@ When a student references a guardian for address, that guardian must have addres
 
 ## New Test Files
 
-| File                                                | Tests                                                                  |
-| --------------------------------------------------- | ---------------------------------------------------------------------- |
-| `src/lib/student-address.spec.ts`                   | `resolveStudentAddress` with own address, with guardian ref, with null |
-| `src/lib/schemas.spec.ts`                           | Update existing tests for conditional address validation               |
-| `src/app/portal/students/new/actions.spec.ts`       | Update for `address_guardian_id` flow                                  |
-| `src/app/portal/students/[id]/edit/actions.spec.ts` | Update for `address_guardian_id` flow                                  |
+| File                                                | Tests                                                                                                                                               |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/student-address.spec.ts`                   | `resolveStudentAddress` with own address, with guardian ref, with null                                                                              |
+| `src/lib/schemas.spec.ts`                           | Conditional address validation: own address valid, guardian ref valid, both null → error, guardian ref set but address fields present → still valid |
+| `src/app/portal/students/new/actions.spec.ts`       | `address_guardian_id` flow; pre-flight guard rejects both-null; guardian slot resolved correctly                                                    |
+| `src/app/portal/students/[id]/edit/actions.spec.ts` | Same as above; edit with switch from own→guardian and guardian→own                                                                                  |
 
 ## Verification
 

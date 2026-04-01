@@ -20,6 +20,9 @@ const STUDENT_SELECT = `
   ),
   additional_contact_2:guardians!students_additional_contact_2_id_fkey(
     first_name, last_name, phone
+  ),
+  address_guardian:guardians!students_address_guardian_id_fkey(
+    address_line_1, address_line_2, city, postcode
   )
 `
 
@@ -39,6 +42,9 @@ const STUDENT_SELECT_WITH_TEACHER = `
   ),
   additional_contact_2:guardians!students_additional_contact_2_id_fkey(
     first_name, last_name, phone
+  ),
+  address_guardian:guardians!students_address_guardian_id_fkey(
+    address_line_1, address_line_2, city, postcode
   )
 `
 
@@ -207,10 +213,11 @@ type StudentInsert = {
   last_name: string
   student_code?: string | null
   date_of_birth?: string | null
-  address_line_1: string
+  address_guardian_id?: string | null
+  address_line_1?: string | null
   address_line_2?: string | null
-  city: string
-  postcode: string
+  city?: string | null
+  postcode?: string | null
   primary_guardian_id: string
   primary_guardian_relationship?: string | null
   secondary_guardian_id?: string | null

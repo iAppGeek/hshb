@@ -435,11 +435,12 @@ describe('guardianSchema', () => {
 })
 
 describe('createStudentSchema', () => {
-  const valid = {
+  const validWithOwnAddress = {
     student_first_name: 'Anna',
     student_last_name: 'Smith',
     student_code: 'S001',
     student_date_of_birth: '2015-06-01',
+    address_guardian_id: '',
     student_address_line_1: '123 High Street',
     student_address_line_2: '',
     student_city: 'London',
@@ -453,15 +454,56 @@ describe('createStudentSchema', () => {
     has_contact2: 'false',
   }
 
-  it('accepts valid student data', () => {
-    const result = createStudentSchema.parse(valid)
+  const validWithGuardianRef = {
+    student_first_name: 'Anna',
+    student_last_name: 'Smith',
+    student_code: '',
+    student_date_of_birth: '',
+    address_guardian_id: 'primary',
+    student_address_line_1: '',
+    student_address_line_2: '',
+    student_city: '',
+    student_postcode: '',
+    student_allergies: '',
+    student_medical_details: '',
+    student_notes: '',
+    primary_relationship: 'Mother',
+    has_secondary: 'false',
+    has_contact1: 'false',
+    has_contact2: 'false',
+  }
+
+  it('accepts student with own address', () => {
+    const result = createStudentSchema.parse(validWithOwnAddress)
     expect(result.student_first_name).toBe('Anna')
-    expect(result.has_secondary).toBe(false)
+    expect(result.address_guardian_id).toBeNull()
+    expect(result.student_address_line_1).toBe('123 High Street')
   })
 
-  it('rejects missing required fields', () => {
+  it('accepts student with guardian address reference', () => {
+    const result = createStudentSchema.parse(validWithGuardianRef)
+    expect(result.address_guardian_id).toBe('primary')
+    expect(result.student_address_line_1).toBeNull()
+  })
+
+  it('rejects when both address_guardian_id and own address are absent', () => {
     expect(() =>
-      createStudentSchema.parse({ ...valid, student_first_name: '' }),
+      createStudentSchema.parse({
+        ...validWithOwnAddress,
+        address_guardian_id: '',
+        student_address_line_1: '',
+        student_city: '',
+        student_postcode: '',
+      }),
+    ).toThrow('Enter an address or select a guardian')
+  })
+
+  it('rejects missing required name fields', () => {
+    expect(() =>
+      createStudentSchema.parse({
+        ...validWithOwnAddress,
+        student_first_name: '',
+      }),
     ).toThrow()
   })
 })
@@ -473,10 +515,11 @@ describe('updateStudentSchema', () => {
       student_last_name: 'Smith',
       student_code: '',
       student_date_of_birth: '',
-      student_address_line_1: '123 High Street',
+      address_guardian_id: 'primary',
+      student_address_line_1: '',
       student_address_line_2: '',
-      student_city: 'London',
-      student_postcode: 'N1 1AA',
+      student_city: '',
+      student_postcode: '',
       student_allergies: '',
       student_medical_details: '',
       student_notes: '',

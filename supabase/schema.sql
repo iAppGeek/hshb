@@ -69,11 +69,13 @@ CREATE TABLE students (
   first_name              TEXT NOT NULL,
   last_name               TEXT NOT NULL,
   date_of_birth           DATE,
-  -- Student's own address
-  address_line_1          TEXT NOT NULL,
+  -- Student's own address (nullable when address_guardian_id is set)
+  address_line_1          TEXT,
   address_line_2          TEXT,
-  city                    TEXT NOT NULL,
-  postcode                TEXT NOT NULL,
+  city                    TEXT,
+  postcode                TEXT,
+  -- Guardian whose address this student shares (alternative to own address)
+  address_guardian_id     UUID REFERENCES guardians(id) ON DELETE SET NULL,
   -- Guardian links with relationship to student
   primary_guardian_id           UUID NOT NULL REFERENCES guardians(id) ON DELETE RESTRICT,
   primary_guardian_relationship TEXT,
@@ -96,6 +98,12 @@ CREATE TABLE students (
 CREATE TRIGGER students_updated_at
   BEFORE UPDATE ON students
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+ALTER TABLE students
+  ADD CONSTRAINT students_address_source_check CHECK (
+    address_guardian_id IS NOT NULL
+    OR (address_line_1 IS NOT NULL AND city IS NOT NULL AND postcode IS NOT NULL)
+  );
 
 -- ─── Student Classes ──────────────────────────────────────────────────────────
 -- Junction table: a student can be enrolled in multiple classes.

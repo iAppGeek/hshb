@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
 import { canSeeStudentMedical, canEditGuardians } from '@/lib/permissions'
+import { resolveStudentAddress } from '@/lib/student-address'
+import type { AddressSource } from '@/lib/student-address'
 import type { StaffRole } from '@/types/next-auth'
 
 const SECTION_H =
@@ -32,6 +34,8 @@ export type StudentForModal = {
   id: string
   first_name: string
   last_name: string
+  address_guardian_id: string | null
+  address_guardian?: AddressSource | null
   address_line_1: string | null
   address_line_2: string | null
   city: string | null
@@ -76,8 +80,11 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
     return () => document.removeEventListener('keydown', handleKey)
   }, [onClose])
 
+  const resolvedAddress = resolveStudentAddress(student)
   const hasStudentAddress =
-    student.address_line_1 || student.city || student.postcode
+    resolvedAddress.address_line_1 ||
+    resolvedAddress.city ||
+    resolvedAddress.postcode
 
   return (
     <div
@@ -104,12 +111,19 @@ export default function StudentDetailsModal({ student, role, onClose }: Props) {
         <div className="flex-1 space-y-4 overflow-y-auto px-6 py-4">
           {hasStudentAddress && (
             <section>
-              <h3 className={SECTION_H}>Student Address</h3>
+              <h3 className={SECTION_H}>
+                Student Address
+                {student.address_guardian_id && (
+                  <span className="ml-2 font-normal text-gray-400 normal-case">
+                    (from guardian)
+                  </span>
+                )}
+              </h3>
               <AddressBlock
-                address_line_1={student.address_line_1}
-                address_line_2={student.address_line_2}
-                city={student.city}
-                postcode={student.postcode}
+                address_line_1={resolvedAddress.address_line_1}
+                address_line_2={resolvedAddress.address_line_2}
+                city={resolvedAddress.city}
+                postcode={resolvedAddress.postcode}
               />
             </section>
           )}

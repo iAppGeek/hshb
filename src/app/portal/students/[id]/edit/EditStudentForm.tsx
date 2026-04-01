@@ -19,6 +19,7 @@ type StudentData = {
   last_name: string
   student_code: string | null
   date_of_birth: string | null
+  address_guardian_id: string | null
   address_line_1: string | null
   address_line_2: string | null
   city: string | null
@@ -58,8 +59,24 @@ export default function EditStudentForm({
   const [showContact2, setShowContact2] = useState(
     Boolean(student.additional_contact_2_id),
   )
+
+  const initialAddressMode: 'own' | 'guardian' =
+    student.address_guardian_id != null
+      ? 'guardian'
+      : student.address_line_1
+        ? 'own'
+        : 'guardian'
+
+  const [addressMode, setAddressMode] = useState<'own' | 'guardian'>(
+    initialAddressMode,
+  )
+
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  function handleRemoveSecondary() {
+    setShowSecondary(false)
+  }
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -76,6 +93,11 @@ export default function EditStudentForm({
       <input type="hidden" name="has_secondary" value={String(showSecondary)} />
       <input type="hidden" name="has_contact1" value={String(showContact1)} />
       <input type="hidden" name="has_contact2" value={String(showContact2)} />
+      <input
+        type="hidden"
+        name="address_guardian_id"
+        value={addressMode === 'guardian' ? 'primary' : ''}
+      />
 
       {/* ── Student Details ─────────────────────────────────────────── */}
       <FormSection title="Student Details">
@@ -105,30 +127,62 @@ export default function EditStudentForm({
           />
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field
-            label="Address line 1"
-            name="student_address_line_1"
-            required
-            defaultValue={student.address_line_1 ?? undefined}
-          />
-          <Field
-            label="Address line 2"
-            name="student_address_line_2"
-            defaultValue={student.address_line_2 ?? undefined}
-          />
-          <Field
-            label="City"
-            name="student_city"
-            required
-            defaultValue={student.city ?? undefined}
-          />
-          <Field
-            label="Postcode"
-            name="student_postcode"
-            required
-            defaultValue={student.postcode ?? undefined}
-          />
+        <div className="mt-4">
+          <p className="mb-2 text-sm font-medium text-gray-700">Address</p>
+          <div className="mb-3 flex gap-4">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
+              <input
+                type="radio"
+                name="address_mode"
+                checked={addressMode === 'guardian'}
+                onChange={() => setAddressMode('guardian')}
+                className="text-blue-600 focus:ring-blue-500"
+              />
+              Same as guardian
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
+              <input
+                type="radio"
+                name="address_mode"
+                checked={addressMode === 'own'}
+                onChange={() => setAddressMode('own')}
+                className="text-blue-600 focus:ring-blue-500"
+              />
+              Enter address
+            </label>
+          </div>
+
+          {addressMode === 'guardian' ? (
+            <p className="text-sm text-gray-500">
+              Student will use the primary guardian&apos;s address.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field
+                label="Address line 1"
+                name="student_address_line_1"
+                required
+                defaultValue={student.address_line_1 ?? undefined}
+              />
+              <Field
+                label="Address line 2"
+                name="student_address_line_2"
+                defaultValue={student.address_line_2 ?? undefined}
+              />
+              <Field
+                label="City"
+                name="student_city"
+                required
+                defaultValue={student.city ?? undefined}
+              />
+              <Field
+                label="Postcode"
+                name="student_postcode"
+                required
+                defaultValue={student.postcode ?? undefined}
+              />
+            </div>
+          )}
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -156,6 +210,7 @@ export default function EditStudentForm({
           prefix="primary"
           guardians={guardians}
           showAddress
+          requireAddress={addressMode === 'guardian'}
           requireEmail
           defaultId={student.primary_guardian_id ?? undefined}
           defaultRelationship={
@@ -168,7 +223,7 @@ export default function EditStudentForm({
       {showSecondary ? (
         <FormSection
           title="Secondary Guardian"
-          onRemove={() => setShowSecondary(false)}
+          onRemove={handleRemoveSecondary}
         >
           <GuardianSelector
             prefix="secondary"
@@ -309,6 +364,7 @@ function GuardianSelector({
   prefix,
   guardians,
   showAddress = false,
+  requireAddress = false,
   requireEmail = false,
   defaultId,
   defaultRelationship,
@@ -316,6 +372,7 @@ function GuardianSelector({
   prefix: string
   guardians: GuardianSummary[]
   showAddress?: boolean
+  requireAddress?: boolean
   requireEmail?: boolean
   defaultId?: string
   defaultRelationship?: string
@@ -446,6 +503,7 @@ function GuardianSelector({
         <GuardianFields
           prefix={prefix}
           showAddress={showAddress}
+          requireAddress={requireAddress}
           requireEmail={requireEmail}
         />
       )}
@@ -484,10 +542,12 @@ function FormSection({
 function GuardianFields({
   prefix,
   showAddress = false,
+  requireAddress = false,
   requireEmail = false,
 }: {
   prefix: string
   showAddress?: boolean
+  requireAddress?: boolean
   requireEmail?: boolean
 }) {
   return (
@@ -510,10 +570,22 @@ function GuardianFields({
       </div>
       {showAddress && (
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label="Address line 1" name={`${prefix}_address_line_1`} />
+          <Field
+            label="Address line 1"
+            name={`${prefix}_address_line_1`}
+            required={requireAddress}
+          />
           <Field label="Address line 2" name={`${prefix}_address_line_2`} />
-          <Field label="City" name={`${prefix}_city`} />
-          <Field label="Postcode" name={`${prefix}_postcode`} />
+          <Field
+            label="City"
+            name={`${prefix}_city`}
+            required={requireAddress}
+          />
+          <Field
+            label="Postcode"
+            name={`${prefix}_postcode`}
+            required={requireAddress}
+          />
         </div>
       )}
     </>

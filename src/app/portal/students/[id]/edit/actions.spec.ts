@@ -3,7 +3,12 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { createGuardian, updateStudent, updateStudentClasses } from '@/db'
+import {
+  createGuardian,
+  getGuardianById,
+  updateStudent,
+  updateStudentClasses,
+} from '@/db'
 
 import { updateStudentAction } from './actions'
 
@@ -12,6 +17,7 @@ vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('@/db', () => ({
   createGuardian: vi.fn(),
+  getGuardianById: vi.fn(),
   updateStudent: vi.fn(),
   updateStudentClasses: vi.fn(),
   logAuditEvent: vi.fn(),
@@ -47,6 +53,7 @@ const baseFields: Record<string, string> = {
   student_last_name: 'Smith',
   student_code: 'S001',
   student_date_of_birth: '',
+  address_guardian_id: '',
   student_address_line_1: '1 Main Street',
   student_address_line_2: '',
   student_city: 'London',
@@ -176,5 +183,91 @@ describe('updateStudentAction', () => {
       error: 'Failed to save student. Please try again.',
     })
     expect(redirect).not.toHaveBeenCalled()
+  })
+
+  it('sets address_guardian_id to primary guardian id when slot is primary', async () => {
+    vi.mocked(getGuardianById).mockResolvedValue({
+      id: GUARDIAN_1,
+      first_name: 'Maria',
+      last_name: 'Smith',
+      phone: '07700 900000',
+      address_line_1: '1 Main Street',
+      city: 'London',
+      postcode: 'EC1A 1BB',
+    } as any)
+    vi.mocked(updateStudent).mockResolvedValue(undefined)
+    vi.mocked(updateStudentClasses).mockResolvedValue(undefined)
+    vi.mocked(redirect).mockImplementation(() => {
+      throw new Error('NEXT_REDIRECT')
+    })
+
+    await expect(
+      updateStudentAction(
+        STUDENT_ID,
+        makeFormData({
+          ...baseFields,
+          address_guardian_id: 'primary',
+          student_address_line_1: '',
+          student_city: '',
+          student_postcode: '',
+        }),
+      ),
+    ).rejects.toThrow('NEXT_REDIRECT')
+
+    expect(updateStudent).toHaveBeenCalledWith(
+      STUDENT_ID,
+      expect.objectContaining({
+        address_guardian_id: GUARDIAN_1,
+        address_line_1: null,
+        city: null,
+        postcode: null,
+      }),
+    )
+  })
+
+  it('returns error when selected guardian has no address', async () => {
+    vi.mocked(getGuardianById).mockResolvedValue({
+      id: GUARDIAN_1,
+      first_name: 'Maria',
+      last_name: 'Smith',
+      phone: '07700 900000',
+      address_line_1: null,
+      city: null,
+      postcode: null,
+    } as any)
+
+    const result = await updateStudentAction(
+      STUDENT_ID,
+      makeFormData({
+        ...baseFields,
+        address_guardian_id: 'primary',
+        student_address_line_1: '',
+        student_city: '',
+        student_postcode: '',
+      }),
+    )
+
+    expect(result).toEqual({
+      error: expect.stringContaining('does not have an address'),
+    })
+    expect(updateStudent).not.toHaveBeenCalled()
+  })
+
+  it('returns error when both address_guardian_id and own address are absent', async () => {
+    const result = await updateStudentAction(
+      STUDENT_ID,
+      makeFormData({
+        ...baseFields,
+        address_guardian_id: '',
+        student_address_line_1: '',
+        student_city: '',
+        student_postcode: '',
+      }),
+    )
+
+    expect(result).toEqual({
+      error: expect.stringContaining('Enter an address'),
+    })
+    expect(updateStudent).not.toHaveBeenCalled()
   })
 })
