@@ -6,7 +6,7 @@
 - React 19, TypeScript, Tailwind CSS
 - Supabase for database (`src/db/`)
 - NextAuth for authentication (`src/auth/`)
-- Vitest for testing, ESLint + Prettier for code quality
+- Vitest for unit/component tests, Playwright for E2E (`e2e/tests/**/*.e2e.ts`), ESLint + Prettier
 - Deployed on Netlify
 
 ## Folder Structure
@@ -36,8 +36,9 @@
 
 ## Testing
 
-- Every new function or component must have a corresponding test file
-- Test files use `.spec.tsx` / `.spec.ts` suffix alongside the source file
+- Every new function or component must have a corresponding Vitest file
+- Vitest: `.spec.tsx` / `.spec.ts` alongside source under `src/`
+- Playwright E2E: `*.e2e.ts` under `e2e/tests/`
 - Component tests use React Testing Library
 - Never use `jest.mock()` — always use `vi.mock()`, `vi.spyOn()` or `vi.fn()`
 
@@ -73,5 +74,5 @@ vi.mock('@/db/client', () => ({
 ## Verification
 
 - Run `npm run pipeline:check` after every change
-- This runs: lint → format:check → type-check → test:coverage → build
+- This runs: lint → format:check → type-check → test:coverage → test:e2e → build
 - Fix all failures immediately — do not move on to the next task until all pass

@@ -1,0 +1,59 @@
+---
+description: Playwright E2E tests, auth projects, env, and patterns for hshb
+globs: 'e2e/tests/**/*.e2e.ts,playwright.config.ts,e2e/auth.setup.ts,e2e/global-setup.ts'
+alwaysApply: false
+---
+
+# Playwright E2E (`e2e/`)
+
+## When to add tests
+
+- Any **new or changed user-visible flow** (navigation, forms, permissions, mobile vs desktop) should include or update Playwright coverage.
+- Prefer **happy path + one failure or edge case** per flow rather than duplicating Vitest coverage.
+- If a feature is **role-gated**, assert behaviour for the relevant role(s) using the projects below — do not assume every test runs as admin.
+
+## Layout and config
+
+- E2E files: `e2e/tests/<area>/<name>.e2e.ts` (e.g. `auth/`, `students/`, `navigation/`, `permissions/`). Vitest uses `*.spec.ts` / `*.spec.tsx` in `src/` only.
+- Config: `playwright.config.ts` — `testDir` is `./e2e/tests`, `testMatch` is `**/*.e2e.ts`, `baseURL` is `http://localhost:3000`, HTML report under `e2e/.report`, traces on first retry.
+- **Projects:** `setup` runs `e2e/auth.setup.ts` and writes `e2e/.auth/<role>.json`. Tests run under `desktop:*` and `mobile:*` for roles `admin`, `teacher`, `headteacher`, `secretary` — each depends on `setup`.
+- **Web server:** Playwright starts Next locally; non-CI uses `.env.e2e` via `dotenv-cli` (see `npm run test:e2e`).
+- **Global setup:** `e2e/global-setup.ts` waits for Supabase and runs `npx supabase db reset --local` — tests assume a **clean seeded DB**. Local Supabase must be running (`npm run supabase:start`) before E2E.
+
+## Commands
+
+- `npm run test:e2e` — full suite (loads `.env.e2e`).
+- `npm run test:e2e:ui` — Playwright UI mode for debugging.
+
+## Auth and fixtures
+
+- **Logged-in as a role:** pin the project’s storage state in the test file:
+
+```typescript
+import { test, expect } from '../../fixtures/index'
+
+test.use({ storageState: 'e2e/.auth/admin.json' })
+```
+
+- **Unauthenticated:** clear storage (see `e2e/tests/auth/login.e2e.ts`):
+
+```typescript
+test.use({ storageState: { cookies: [], origins: [] } })
+```
+
+- **Credentials in tests:** use `process.env.E2E_TEST_SECRET` and the seeded emails from `e2e/auth.setup.ts` (e.g. `admin@test.hshb.local`). Never hardcode real secrets.
+- Reuse `import { test, expect } from '../../fixtures/index'` (or correct relative depth) so shared fixture extensions stay consistent.
+
+## Selectors and stability
+
+- Prefer **`data-testid`** for elements that drive assertions or repeated actions (login already uses `test-email`, `test-password`, `test-login-button`).
+- For forms, `name` attributes are acceptable when stable and documented.
+
+## Data and cleanup
+
+- When tests **mutate the database**, clean up in `test.afterEach` / `afterAll` (see `e2e/tests/students/add-student.e2e.ts` using `db` from `e2e/fixtures/seed.ts`).
+- Do not point E2E at production; only local + `.env.e2e` / CI secrets as documented for the project.
+
+## CI
+
+- `npm run pipeline:check` includes **`test:e2e`** after Vitest — E2E failures block the pipeline.

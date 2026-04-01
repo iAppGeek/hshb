@@ -1,0 +1,19 @@
+---
+description: Supabase queries, schema, and generated types for hshb
+globs: 'src/db/**,supabase/**,src/types/database.ts'
+alwaysApply: false
+---
+
+# Supabase
+
+- Use the Supabase MCP to inspect tables and schema before writing any queries
+- Never write queries based on assumptions — always verify column names via MCP first
+- All database queries go in `src/db/` — one file per domain (students, staff, classes etc.)
+- The Supabase MCP is read-only — it cannot modify the database directly
+- Schema changes must go through `supabase/schema.sql` and be applied via the Supabase dashboard or CLI
+
+# Database Types
+
+- `src/types/database.ts` is auto-generated — NEVER edit it manually
+- To regenerate after schema changes, use the Supabase MCP `generate_typescript_types` tool
+- Or run manually: `npx supabase gen types typescript --schema public > src/types/database.ts`
