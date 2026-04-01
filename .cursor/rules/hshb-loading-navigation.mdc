@@ -1,0 +1,45 @@
+---
+description: Loading UX, streaming, and fast navigation for App Router portal pages
+globs: 'src/app/**/*.{tsx,ts},src/components/DatePicker.tsx'
+alwaysApply: false
+---
+
+# Loading and navigation UX (Next.js App Router)
+
+Staff often judge the product by **how quickly the UI responds** after a click, not raw TTFB. Optimise **perceived** performance: shell stays stable, content streams in, navigations feel immediate.
+
+## Layouts must stay light
+
+- **Do not** load page-specific or heavy Supabase data in shared layouts (`src/app/portal/layout.tsx` and parents). Layout work should be **auth/shell only** (and already-wrapped in `Suspense` where it can block).
+- Anything that is **optional, role-gated, or slow** (notifications, banners, counts) belongs in a **child `Suspense` boundary** with a small fallback — not an `await` that delays the whole `<main>{children}</main>`.
+- If new shell features need data, default to: **stream the shell immediately** + `Suspense` fallback (skeleton or null), rather than blocking the entire layout tree.
+
+## Route segments: `loading.tsx` and streaming
+
+- Each **meaningful portal route segment** under `src/app/portal/` should have a **`loading.tsx`** that matches the **real page skeleton** (cards, table rows, filters) — not only a generic spinner. Reuse patterns from `src/app/portal/loading.tsx` and existing segment loaders.
+- Prefer **multiple `Suspense` boundaries inside a page** when one part is fast and another is slow (e.g. header + filters static, table streams). That avoids “nothing until everything is ready”.
+- **Parallelise** independent `await` calls in server components (`const [a, b] = await Promise.all([...])`). Avoid sequential waterfalls unless the second query truly depends on the first.
+
+## Data fetching discipline
+
+- Keep **DB access in `src/db/`**; pages compose calls — they should not hide N+1 or serial fetches across unrelated entities.
+- Use **`React.cache`** (or existing shared fetch helpers) for **per-request deduplication** when the same query is used from layout-adjacent and page-level code, so one slow path is not duplicated.
+- Do not move slow queries “up” into layout just to share them unless the UX **requires** that data for the shell; otherwise fetch at the **lowest** segment that needs it.
+
+## Navigation: instant feedback
+
+- **Primary nav** in the portal already uses **`useTransition` + `router.push`** (`PortalSidebar`) so the UI can show pending state — keep that pattern for **programmatic** full-page moves when `Link` is not used.
+- For **in-app links** in content (cards, tables, CTAs), prefer **`next/link`** so **prefetch** can warm routes on hover/viewport (unless there is a strong reason to use `router.push` without prefetch).
+- After **mutations** (forms, server actions), prefer **`router.refresh()`** (or `revalidatePath` / `revalidateTag` from the action) so the user sees updated RSC payload **without** a full hard reload when possible.
+- **Client-only tab/filter UX** (same URL shape, no new data requirement): avoid **full navigation** if a **state + same-page data** pattern is enough (see incidents tabs — if switching tabs only filters client props, do not `router.replace` unless you need shareable URLs or server data per tab).
+
+## Anti-patterns (common sources of “everything waits”)
+
+- Single large server page that **`await`s every query** before returning any JSX — split with `Suspense` or move non-critical bits down.
+- **`loading.tsx` that looks nothing like the real page** — users perceive a “flash” and slower experience.
+- **Blocking the layout** on data that only the **child route** needs.
+- **`router.push` / `replace` without transition** for nav that users trigger repeatedly — no pending affordance feels like a frozen app.
+
+## Verification
+
+- After behavioural changes, run **`npm run fix:all`** and **`npm run pipeline:check`** per project rules.

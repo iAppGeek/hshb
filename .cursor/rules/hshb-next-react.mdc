@@ -1,0 +1,36 @@
+---
+description: Next.js App Router, React 19 server/client boundaries, and route composition
+globs: 'src/app/**/*.{tsx,ts}'
+alwaysApply: false
+---
+
+# Next.js App Router and React 19
+
+Applies to `src/app/**`. Pure **Route Handlers** (`route.ts`) — see **`hshb-api-routes`**. Loading and navigation UX — see **`hshb-loading-navigation`**.
+
+## Server vs client
+
+- **Default to Server Components.** Add `"use client"` only when the module needs client-only APIs: `useState`, `useEffect`, browser APIs, or event handlers that cannot live in a small child client leaf.
+- **Do not** add `"use client"` to a large page just for one hook — extract a **`src/clientComponents/`** (or colocated `*Client.tsx`) leaf and keep the page as a server parent that passes props.
+- **Data fetching** for portal pages: prefer **server** (`async` components, server actions, `auth()` in RSC) unless there is a deliberate client-side polling or SWR-style need.
+
+## Routes and composition
+
+- Use **nested `layout.tsx`** for shared chrome; keep layouts **free of page-specific data** (see `hshb-loading-navigation`).
+- Co-locate **`loading.tsx`** and **`error.tsx`** when the route benefits from streaming or error isolation.
+- Set **`metadata`** / **`generateMetadata`** at the appropriate segment; avoid duplicating large metadata objects — use `template` in parent layouts where it fits.
+
+## Imports and boundaries
+
+- **All imports at the top of the file** (project-wide). No mid-file imports.
+- Server components **must not** import client-only modules that pull hooks into the server tree; pass serialisable props into client children instead.
+
+## Performance (complements loading-navigation)
+
+- Prefer **`next/image`** for raster content in app UI; set sensible `sizes` for responsive layouts.
+- Use **`next/dynamic`** for heavy **client-only** widgets that are below the fold or rare, so the initial client bundle stays smaller.
+- Avoid huge **client** subtrees under **`layout.tsx`**; shell should stay lean.
+
+## Verification
+
+- After changes: **`npm run fix:all`** and **`npm run pipeline:check`**.

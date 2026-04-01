@@ -12,7 +12,6 @@ test.describe('Login', () => {
   })
 
   test('already authenticated user is redirected away from login page', async ({
-    page,
     browser,
   }) => {
     // Sign in first

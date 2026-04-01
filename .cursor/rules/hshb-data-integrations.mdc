@@ -1,0 +1,29 @@
+---
+description: Contentful, events, numbers, and other external data in src/data
+globs: 'src/data/**/*'
+alwaysApply: false
+---
+
+# External data (`src/data/`)
+
+## Responsibilities
+
+- **`src/data/`** owns **external** fetching and shaping: Contentful, events, numbers, MDX config, etc. **Do not** embed long-lived Contentful or HTTP client logic in **`src/components/`** or page files — call into `src/data` helpers.
+
+## Patterns
+
+- **Errors**: map failures to clear outcomes (empty list, throw domain-specific error, or logged fallback) consistently with existing modules; avoid silent `catch` that returns misleading data.
+- **Caching**: follow Next and project conventions (`fetch` options, `revalidate`, or documented static reads). When adding new external APIs, document **TTL / staleness** expectations in code comments only if non-obvious.
+- **Types**: export narrow types for consumers; avoid leaking huge Contentful response shapes into UI — map to **view models** at the data layer.
+
+## Configuration
+
+- **Env vars** for third parties stay **server-side** unless the client truly needs them (then use `NEXT_PUBLIC_*` deliberately and document).
+
+## Tests
+
+- Co-locate **`*.spec.ts`** / **`*.spec.tsx`** with data modules when behaviour is non-trivial (parsing, transforms, error paths).
+
+## Verification
+
+- **`npm run fix:all`** and **`npm run pipeline:check`**.

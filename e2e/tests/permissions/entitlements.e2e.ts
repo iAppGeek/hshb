@@ -53,7 +53,6 @@ for (const { route, allowedRoles, redirectTo } of ROUTE_RULES) {
   test.describe(`Route: ${route}`, () => {
     test('access is allowed or redirected based on role', async ({
       page,
-      isMobile: _isMobile,
     }, testInfo) => {
       const role = getRoleFromProject(testInfo.project.name)
       const isAllowed = allowedRoles.includes(role)

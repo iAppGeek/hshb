@@ -44,7 +44,7 @@ alwaysApply: true
 
 ## Verification
 
-- Run `npm run fix:all` after every change to fix formatting
+- Run `npm run fix:all` after every change — `lint:fix` covers `src/`, `e2e/**/*.ts`, and `playwright.config.ts`; `format` runs Prettier on the repo (including `*.e2e.ts`).
 - Run `npm run pipeline:check` after every change
 - This runs: lint → format:check → type-check → test:coverage → `test:e2e` → build
 - Fix all failures immediately — do not move on to the next task until all pass

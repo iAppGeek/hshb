@@ -1,0 +1,31 @@
+---
+description: App Router Route Handlers — auth, validation, errors, JSON contracts
+globs: 'src/app/api/**/*.{ts,tsx}'
+alwaysApply: false
+---
+
+# API routes (`src/app/api`)
+
+## Auth first
+
+- Call **`auth()`** (or the project’s established check) **before** business logic. Return **`401`** with a minimal JSON body when unauthenticated unless the route is intentionally public.
+- Authorise **by role or staff id** when the operation is sensitive; do not trust query/body identifiers alone.
+
+## Input and output
+
+- Validate JSON bodies and query params with **`src/lib/schemas`** (Zod) or explicit runtime checks — mirror the style of existing routes (e.g. push subscribe validation).
+- Use **correct HTTP status codes**: `400` validation, `401` / `403` authz, `404` missing resource, `500` only for unexpected server failures.
+- Return **`Response.json(...)`** with a **stable, small shape** (`{ error: string }` or `{ ok: true }` + data). Do not leak stack traces, SQL, or internal messages to clients.
+
+## Implementation
+
+- Keep handlers **thin**: parse → validate → call **`src/db`** or **`src/lib`** → map to JSON. No inline Supabase in handlers if a `src/db` helper exists or should exist.
+- **Idempotency** where it matters (e.g. subscribe/unsubscribe): document behaviour; use DB constraints or upsert patterns as appropriate.
+
+## Tests
+
+- New or changed routes should include **Vitest** coverage alongside the handler (`*.spec.ts` next to `route.ts`) for auth, validation, and success paths.
+
+## Verification
+
+- **`npm run fix:all`** and **`npm run pipeline:check`**.

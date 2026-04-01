@@ -1,0 +1,29 @@
+---
+description: TypeScript strictness, boundaries, and shared types for hshb
+globs: 'src/**/*.{ts,tsx}'
+alwaysApply: false
+---
+
+# TypeScript
+
+Applies to `src/**`. **Not** for Vitest/Playwright files outside `src/`; skip **`src/**/*.spec.*`**, **`src/**/*.spec.tsx`**, and generated **`src/types/database.ts`** (regenerate only — see **`hshb-supabase`**).
+
+## Strictness
+
+- Avoid **`any`**. Prefer **`unknown`** and narrow, **`satisfies`**, or explicit domain types from `@/types` / inferred from Zod (`z.infer`).
+- **`eslint-disable` for TypeScript** is a last resort — fix the type or the API shape instead.
+- **Exported** functions and public hooks: prefer **explicit return types** when inference is wide, opaque, or unstable across edits.
+
+## Boundaries
+
+- **Validate at the boundary**: API bodies, search params, and form payloads — use **`src/lib/schemas`** (Zod) or dedicated validators; inside the app, work with narrowed types.
+- **Database rows**: align with **`src/types/database.ts`** and domain types; do not cast blindly to “shape we hope”.
+- **Errors**: use a consistent pattern — either typed **`Result`**-style returns from `src/db` helpers or thrown **`DbError`** / domain errors from `src/lib` as already established; do not mix ad-hoc string throws without a convention.
+
+## NextAuth / session fields
+
+- Session user fields (`role`, `staffId`, etc.) should match **`src/types/next-auth.d.ts`**. When extending the session, update types and callbacks together — avoid `as` casts scattered in pages.
+
+## Verification
+
+- **`npm run fix:all`** and **`npm run pipeline:check`** after substantive changes.

@@ -1,0 +1,32 @@
+---
+description: Tailwind UI consistency, components, and accessibility for hshb
+globs: 'src/components/**/*.{tsx,ts},src/clientComponents/**/*.{tsx,ts},src/sections/**/*.{tsx,ts},src/app/portal/_components/**/*.{tsx,ts}'
+alwaysApply: false
+---
+
+# UI, Tailwind, and accessibility
+
+## Composition
+
+- Prefer **existing primitives** (`src/components/Button.tsx`, layout helpers, portal **`PageHeader`**, **`SectionCard`**, **`EmptyState`**) before inventing new button/card styles.
+- Use **`clsx`** for conditional classes; match **spacing and radius** patterns already used in the portal (e.g. `rounded-lg`, `ring-1 ring-gray-200`, consistent `gap-*` / `p-*`).
+
+## Tailwind
+
+- Favour **utility classes** in JSX; extract a component when the same cluster of classes repeats across files.
+- Keep **focus styles** visible for interactive elements (`focus:ring-*`, `focus:outline-none` only when replacing with a visible ring).
+
+## Accessibility
+
+- **Labels**: every form control needs an associated **`<label>`** (or `aria-label` / `aria-labelledby` when a visible label is impossible).
+- **Buttons vs divs**: use **`<button>`** for actions; use **`Link`** / **`next/link`** for navigation — avoid `onClick` on non-interactive elements without keyboard support.
+- **Headings**: preserve sensible **heading order** on marketing and portal pages (`h1` → `h2`, etc.).
+- **Images**: meaningful **`alt`** text; decorative images use empty alt or `alt=""` as appropriate.
+
+## Testing and E2E
+
+- For flows covered by Playwright, add **`data-testid`** only where selectors need stability — see **`hshb-playwright`**. Do not litter test IDs on every element.
+
+## Verification
+
+- **`npm run fix:all`** and **`npm run pipeline:check`**.
