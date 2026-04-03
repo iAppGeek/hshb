@@ -237,43 +237,43 @@ e2e/
     seed.ts                         # Direct DB helpers for per-test cleanup
   tests/
     auth/
-      login.spec.ts                 # Login flow, unauthorized access, redirect
+      login.e2e.ts                 # Login flow, unauthorized access, redirect
     navigation/
-      sidebar.spec.ts               # Sidebar items per role, mobile drawer toggle
+      sidebar.e2e.ts               # Sidebar items per role, mobile drawer toggle
     permissions/
-      entitlements.spec.ts          # Full route-access matrix for all 4 roles
+      entitlements.e2e.ts          # Full route-access matrix for all 4 roles
     dashboard/
-      dashboard.spec.ts             # Cards and data visibility per role
+      dashboard.e2e.ts             # Cards and data visibility per role
     students/
-      students-list.spec.ts         # Listing, search, role-based filtering
-      students-create.spec.ts       # Create form (admin only)
-      students-edit.spec.ts         # Edit form (admin only)
+      students-list.e2e.ts         # Listing, search, role-based filtering
+      students-create.e2e.ts       # Create form (admin only)
+      students-edit.e2e.ts         # Edit form (admin only)
     staff/
-      staff-list.spec.ts            # Listing, contact visibility per role
-      staff-create.spec.ts          # Create (admin only)
-      staff-edit.spec.ts            # Edit (admin only)
+      staff-list.e2e.ts            # Listing, contact visibility per role
+      staff-create.e2e.ts          # Create (admin only)
+      staff-edit.e2e.ts            # Edit (admin only)
     classes/
-      classes-list.spec.ts
-      classes-create.spec.ts        # Admin + headteacher
-      classes-edit.spec.ts          # Admin + headteacher
+      classes-list.e2e.ts
+      classes-create.e2e.ts        # Admin + headteacher
+      classes-edit.e2e.ts          # Admin + headteacher
     attendance/
-      attendance.spec.ts            # Register selection, save, role restrictions
+      attendance.e2e.ts            # Register selection, save, role restrictions
     staff-attendance/
-      staff-attendance.spec.ts      # Sign-in/out, self-only for teacher/secretary
+      staff-attendance.e2e.ts      # Sign-in/out, self-only for teacher/secretary
     incidents/
-      incidents-list.spec.ts
-      incidents-create.spec.ts      # All authenticated roles
-      incidents-edit.spec.ts        # Admin + headteacher only
+      incidents-list.e2e.ts
+      incidents-create.e2e.ts      # All authenticated roles
+      incidents-edit.e2e.ts        # Admin + headteacher only
     lesson-plans/
-      lesson-plans-list.spec.ts
-      lesson-plans-create.spec.ts   # Teacher (own classes), admin, headteacher
-      lesson-plans-edit.spec.ts
+      lesson-plans-list.e2e.ts
+      lesson-plans-create.e2e.ts   # Teacher (own classes), admin, headteacher
+      lesson-plans-edit.e2e.ts
     guardians/
-      guardians-edit.spec.ts        # Admin only
+      guardians-edit.e2e.ts        # Admin only
     timetables/
-      timetables.spec.ts            # Slot visibility per role
+      timetables.e2e.ts            # Slot visibility per role
     reports/
-      reports.spec.ts               # Admin, headteacher, secretary only
+      reports.e2e.ts               # Admin, headteacher, secretary only
 ```
 
 ---
@@ -311,9 +311,9 @@ export const test = base.extend<{ isMobile: boolean }>({
 
 ### Priority 1: Auth & Permissions (Foundation)
 
-**`login.spec.ts`** — Unauthenticated redirect to login, successful login, invalid credentials, unknown email rejected
+**`login.e2e.ts`** — Unauthenticated redirect to login, successful login, invalid credentials, unknown email rejected
 
-**`entitlements.spec.ts`** — Full route-access matrix:
+**`entitlements.e2e.ts`** — Full route-access matrix:
 | Route | admin | headteacher | teacher | secretary |
 |---|---|---|---|---|
 | `/portal/students/new` | allowed | redirect | redirect | redirect |
@@ -324,7 +324,7 @@ export const test = base.extend<{ isMobile: boolean }>({
 | `/portal/guardians/{id}/edit` | allowed | redirect | redirect | redirect |
 | (all other portal pages) | allowed | allowed | allowed | allowed |
 
-**`sidebar.spec.ts`** — Nav items per role (Reports only for admin/headteacher/secretary), notification toggle only for admin/headteacher, sign-out works, mobile drawer open/close
+**`sidebar.e2e.ts`** — Nav items per role (Reports only for admin/headteacher/secretary), notification toggle only for admin/headteacher, sign-out works, mobile drawer open/close
 
 ### Priority 2: Data Visibility & Filtering per Role
 
@@ -337,7 +337,7 @@ These tests verify that each role sees the correct data and UI controls. The see
 
 The assertion tables below reflect the actual code, not a simplified model.
 
-**`students-list.spec.ts` — Student visibility:**
+**`students-list.e2e.ts` — Student visibility:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Sees Alice, Bob, Carol (all students) | yes | yes | yes | no |
@@ -346,7 +346,7 @@ The assertion tables below reflect the actual code, not a simplified model.
 | "Edit" link visible on each row | yes | no | no | no |
 | Medical/allergy info columns visible | yes | yes | yes | no (`canSeeStudentMedical`) |
 
-**`staff-list.spec.ts` — Staff visibility:**
+**`staff-list.e2e.ts` — Staff visibility:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Sees all 5 staff members | yes | yes | yes | yes |
@@ -354,7 +354,7 @@ The assertion tables below reflect the actual code, not a simplified model.
 | "Add staff" button is a clickable link | yes | no (disabled tooltip) | no (disabled tooltip) | no (hidden) |
 | "Edit" link visible on each row | yes | no | no | no |
 
-**`classes-list.spec.ts` — Class visibility:**
+**`classes-list.e2e.ts` — Class visibility:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Sees all 3 classes (Alpha, Beta, Gamma) | yes | yes | yes | no |
@@ -364,21 +364,21 @@ The assertion tables below reflect the actual code, not a simplified model.
 | Teacher name shown on each class | yes | yes | yes | yes |
 | Student count shown on each class | yes | yes | yes | yes |
 
-**`attendance.spec.ts` — Class selector filtering:**
+**`attendance.e2e.ts` — Class selector filtering:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Class dropdown shows all classes | yes | yes | yes | no |
 | Teacher dropdown shows only own class | n/a | n/a | n/a | yes |
 | Can save attendance (toggle + submit) | yes | yes | new only | yes |
 
-**`incidents-list.spec.ts` — Incident visibility:**
+**`incidents-list.e2e.ts` — Incident visibility:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Sees all incidents | yes | yes | yes | own students only |
 | "Edit" link visible | yes | yes | no | no |
 | "New incident" button visible | yes | yes | yes | yes |
 
-**`lesson-plans-list.spec.ts` — Lesson plan visibility:**
+**`lesson-plans-list.e2e.ts` — Lesson plan visibility:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Sees all lesson plans | yes | yes | yes | own classes only |
@@ -386,7 +386,7 @@ The assertion tables below reflect the actual code, not a simplified model.
 | "Edit" link visible | yes | yes | no | own only |
 | Teacher class dropdown on create: all classes | yes | yes | n/a | own classes only |
 
-**`staff-attendance.spec.ts` — Staff sign-in/out visibility:**
+**`staff-attendance.e2e.ts` — Staff sign-in/out visibility:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Sees all non-admin staff on the sheet | yes | yes | yes | no |
@@ -397,7 +397,7 @@ The assertion tables below reflect the actual code, not a simplified model.
 
 Note: `showsOnSignInSheet(role)` returns `role !== 'admin'` — so admin does NOT appear on the sign-in sheet, but all other roles do.
 
-**`timetables.spec.ts` — Timetable visibility:**
+**`timetables.e2e.ts` — Timetable visibility:**
 | Assertion | admin | headteacher | secretary | teacher |
 |---|---|---|---|---|
 | Sees all timetable slots across classes | yes | yes | yes | no |
@@ -489,7 +489,7 @@ All IDs use deterministic UUIDs (`00000000-...`, `10000000-...`, etc.) for relia
 - `e2e/global-setup.ts`
 - `e2e/fixtures/index.ts`
 - `e2e/fixtures/seed.ts`
-- `e2e/tests/**/*.spec.ts` (all test files listed in Section 3)
+- `e2e/tests/**/*.e2e.ts` (all test files listed in Section 3)
 - `supabase/config.toml` (generated)
 - `supabase/migrations/00000000000000_initial_schema.sql`
 - `supabase/seed.sql`
@@ -515,7 +515,7 @@ All IDs use deterministic UUIDs (`00000000-...`, `10000000-...`, etc.) for relia
 5. Create `.env.e2e`, `e2e/global-setup.ts`, `e2e/auth.setup.ts`, `e2e/fixtures/`
 6. Update `package.json` scripts including `pipeline:check`
 7. Update `.gitignore`
-8. Write first tests: `login.spec.ts`, `entitlements.spec.ts`, `sidebar.spec.ts`
+8. Write first tests: `login.e2e.ts`, `entitlements.e2e.ts`, `sidebar.e2e.ts`
 9. Verify everything works end-to-end
 
 **Phase 2 — Read-only page tests (follow-up):**

@@ -1,0 +1,32 @@
+---
+description: NextAuth config, session, portal access control, and env secrets
+globs: 'src/auth/**/*,src/app/api/auth/**/*,src/proxy.ts'
+alwaysApply: false
+---
+
+# Authentication and portal access
+
+## Config (`src/auth/`)
+
+- NextAuth lives in **`src/auth/config.ts`**; **`src/auth/index.ts`** re-exports `auth`, `signIn`, `signOut`, `handlers`.
+- **Providers and callbacks** are security-sensitive: keep DB lookups in **`src/db`**; avoid duplicating staff-resolution logic ad hoc in pages.
+- **E2E credentials provider** is gated by env (`E2E_TEST`, `E2E_TEST_SECRET`) — never enable test shortcuts in production builds.
+
+## Session usage
+
+- In **Server Components**, **Server Actions**, and **Route Handlers**, use **`auth()`** from **`@/auth`** for the current session.
+- **Role and entitlement checks** should go through **`src/lib/permissions`** (and related helpers) so rules stay in one place — do not re-implement “can access X” in random components.
+
+## Portal gate (`src/proxy.ts`)
+
+- **`src/proxy.ts`** wraps the NextAuth middleware callback for **`/portal/*`**: login redirect, reports role check, etc. When adding new **role-gated route prefixes**, extend the matcher logic here (or shared helpers) instead of scattering checks only in UI.
+- If a **`middleware.ts`** file is introduced at the repo root, it should remain a thin entry that delegates to the same auth/access patterns as `proxy.ts`.
+
+## Environment variables
+
+- **Secrets** (`AZURE_AD_*`, `NEXTAUTH_SECRET`, `E2E_TEST_SECRET`, etc.) are **server-only** — never prefix with `NEXT_PUBLIC_` unless the value is intentionally public.
+- No default fallbacks for secrets in auth code.
+
+## Verification
+
+- **`npm run fix:all`** and **`npm run pipeline:check`**.

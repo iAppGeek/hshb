@@ -30,13 +30,6 @@ test.describe('Sidebar navigation', () => {
       ).toBeVisible()
     }
 
-    const sidebar = isMobile
-      ? page
-          .locator('aside')
-          .filter({ hasText: 'Dashboard' })
-          .and(page.locator('.translate-x-0, [class*="translate-x-0"]'))
-      : page.locator('aside.sticky')
-
     // All roles see these core nav items
     const commonItems = [
       'Dashboard',

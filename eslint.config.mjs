@@ -18,7 +18,7 @@ const eslintConfig = [
     rules: { 'react-compiler/react-compiler': 'error' },
   },
   {
-    files: ['**/*.spec.ts', '**/*.spec.tsx'],
+    files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.e2e.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },

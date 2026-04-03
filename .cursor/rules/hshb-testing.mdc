@@ -1,0 +1,29 @@
+---
+description: Vitest, RTL, and Supabase mocking for hshb unit/component tests
+globs: 'src/**/*.spec.ts,src/**/*.spec.tsx'
+alwaysApply: false
+---
+
+# Unit and component tests (Vitest)
+
+- These rules apply to **Vitest** tests co-located with `src/` (`*.spec.ts`, `*.spec.tsx` only). **E2E** tests are `*.e2e.ts` under `e2e/tests/` (Playwright) — see the `hshb-playwright` rule when editing those files or `playwright.config.ts`.
+
+- Every new function or component must have a corresponding test file
+- Test files use `.spec.tsx` / `.spec.ts` suffix alongside the source file
+- Component tests use React Testing Library
+- Never use `jest.mock()` — always use `vi.mock()`, `vi.spyOn()` or `vi.fn()`
+
+## Supabase in tests
+
+- Never create a real Supabase connection in tests.
+- Always mock the Supabase client by importing from the relative path to `src/db/client.ts`:
+
+```typescript
+vi.mock('@/db/client', () => ({
+  supabase: {
+    from: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+  },
+}))
+```

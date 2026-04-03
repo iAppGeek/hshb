@@ -1,0 +1,50 @@
+---
+description: hshb stack, folder layout, imports, and pipeline verification
+alwaysApply: true
+---
+
+# Project: hshb
+
+## Stack
+
+- Next.js 16 with App Router and Turbopack
+- React 19, TypeScript, Tailwind CSS
+- Supabase for database (`src/db/`)
+- NextAuth for authentication (`src/auth/`)
+- Vitest for unit testing, ESLint + Prettier for code quality
+- Playwright for end-to-end (E2E) UI tests (`e2e/tests/`)
+- Deployed on Netlify
+
+## Folder Structure
+
+- `src/components/` — shared, reusable UI components (server components by default)
+- `src/clientComponents/` — client components that require `"use client"`
+- `src/sections/` — page-level layout sections (Hero, Footer, Navbar etc.)
+- `src/db/` — all Supabase database queries, one file per domain
+- `src/data/` — external data fetching (Contentful, events, numbers)
+- `src/auth/` — NextAuth config and helpers
+- `src/lib/` — shared utilities and business logic
+- `src/types/` — shared TypeScript types and declarations
+- `src/app/` — Next.js App Router pages and API routes
+- `e2e/` — Playwright E2E tests, auth setup, fixtures, and seed helpers (`e2e/tests/**/*.e2e.ts`; Vitest stays `*.spec.ts` / `*.spec.tsx` in `src/`)
+
+## Key Rules
+
+- Before creating a new utility, check `src/lib/` first
+- Before creating a new component, check `src/components/` and `src/clientComponents/`
+- New database queries go in the relevant file in `src/db/` — never inline in components
+- Client components (`"use client"`) go in `src/clientComponents/`, not `src/components/`
+- API routes go under `src/app/api/`
+- New **user-facing** features (pages, flows, role-specific behaviour) should ship with **Playwright** coverage under `e2e/tests/` as `*.e2e.ts`, colocated by feature area (e.g. `e2e/tests/students/`). Keep **Vitest** for units and component tests (`.spec.ts` / `.spec.tsx` next to source).
+
+## Imports
+
+- All imports must be at the top of the file, before any other code
+- Never add imports inline or mid-file — always place them with the existing import block
+
+## Verification
+
+- Run `npm run fix:all` after every change — `lint:fix` covers `src/`, `e2e/**/*.ts`, and `playwright.config.ts`; `format` runs Prettier on the repo (including `*.e2e.ts`).
+- Run `npm run pipeline:check` after every change
+- This runs: lint → format:check → type-check → test:coverage → `test:e2e` → build
+- Fix all failures immediately — do not move on to the next task until all pass
