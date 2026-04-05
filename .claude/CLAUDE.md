@@ -31,16 +31,7 @@
 
 ## Imports
 
-- All imports must be at the top of the file, before any other code
-- Never add imports inline or mid-file — always place them with the existing import block
-
-## Testing
-
-- Every new function or component must have a corresponding Vitest file
-- Vitest: `.spec.tsx` / `.spec.ts` alongside source under `src/`
-- Playwright E2E: `*.e2e.ts` under `e2e/tests/`
-- Component tests use React Testing Library
-- Never use `jest.mock()` — always use `vi.mock()`, `vi.spyOn()` or `vi.fn()`
+- Never add imports inline or mid-file — always place them with the existing import block at the top of the file
 
 ## Supabase
 
@@ -53,8 +44,7 @@
 ## Database Types
 
 - `src/types/database.ts` is auto-generated — NEVER edit it manually
-- To regenerate after schema changes, use the Supabase MCP `generate_typescript_types` tool
-- Or run manually: `npx supabase gen types typescript --schema public > src/types/database.ts`
+- To regenerate after schema changes, run manually: `npx supabase gen types typescript --schema public > src/types/database.ts`
 
 ## Supabase Mock Pattern
 
@@ -75,4 +65,3 @@ vi.mock('@/db/client', () => ({
 
 - Run `npm run pipeline:check` after every change
 - This runs: lint → format:check → type-check → test:coverage → test:e2e → build
-- Fix all failures immediately — do not move on to the next task until all pass

@@ -1,0 +1,97 @@
+# =============================================================================
+# .claudeignore — HSHB Project
+# Keeps Claude's context lean by excluding irrelevant files from scanning.
+# =============================================================================
+
+
+# --- Dependencies ---
+node_modules/
+.pnp
+.pnp.js
+
+
+# --- Next.js build output ---
+.next/
+out/
+build/
+dist/
+
+
+# --- Next.js cache ---
+.next/cache/
+
+
+# --- Supabase local dev artefacts ---
+supabase/.branches/
+supabase/.temp/
+supabase/seed.sql          # usually large and not needed for code tasks
+
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example              # keep the example as a reference
+
+
+# --- Package manager lockfiles ---
+# Large and noisy — Claude doesn't need to read these
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+
+# --- Test coverage & reports ---
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+.vscode/extensions.json    # keep settings.json if you have project config in it
+.idea/
+
+
+# --- TypeScript build info ---
+*.tsbuildinfo
+next-env.d.ts
+
+
+# --- Static & media assets ---
+# Claude doesn't need to scan these for code tasks
+public/images/
+public/fonts/
+public/icons/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.webp
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+
+# --- Generated / compiled CSS ---
+# If you use Tailwind's generated output or similar
+.tailwind-cache/
+
+
+# --- Storybook (if used) ---
+storybook-static/
+.storybook/public/

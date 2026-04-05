@@ -1,27 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "Read(//Users/anthropicdev/Development/hshb/**)",
-      "Read(//Users/anthropicdev/.claude/**)",
-      "Bash(npm run:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npx vitest:*)",
-      "Bash(grep -E \"\\\\.\\(env|pem|key|json|toml\\)$\")",
-      "Bash(grep -E \"\\\\.\\(pem|key|p8|p12|pfx\\)$\")",
-      "Bash(git check-ignore:*)",
-      "mcp__serena__check_onboarding_performed",
-      "mcp__serena__find_file",
-      "mcp__serena__find_referencing_symbols",
-      "mcp__serena__find_symbol",
-      "mcp__serena__get_symbols_overview",
-      "mcp__serena__initial_instructions",
-      "mcp__serena__list_dir",
-      "mcp__serena__list_memories",
-      "mcp__serena__onboarding",
-      "mcp__serena__read_memory",
-      "mcp__serena__search_for_pattern",
-      "mcp__serena__write_memory",
-      "mcp__supabase__list_tables"
-    ]
+    "allow": ["Bash(npm run:*)", "Bash(npx tsc:*)", "Bash(npx vitest:*)"]
   }
 }
