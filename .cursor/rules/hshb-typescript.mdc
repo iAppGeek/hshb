@@ -11,8 +11,9 @@ Applies to `src/**`. **Not** for Vitest/Playwright files outside `src/`; skip **
 ## Strictness
 
 - Avoid **`any`**. Prefer **`unknown`** and narrow, **`satisfies`**, or explicit domain types from `@/types` / inferred from Zod (`z.infer`).
+- Prefer **`type` over `interface`** unless you need declaration merging or a clear `extends` pattern that reads better as an interface.
 - **`eslint-disable` for TypeScript** is a last resort — fix the type or the API shape instead.
-- **Exported** functions and public hooks: prefer **explicit return types** when inference is wide, opaque, or unstable across edits.
+- **Explicit return types** on **named functions** (exports, hooks, and module-scope helpers). Narrow inline callbacks (`map`, `then`, etc.) may rely on inference when obvious.
 
 ## Boundaries
 

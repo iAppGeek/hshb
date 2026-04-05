@@ -16,4 +16,5 @@ alwaysApply: false
 
 - `src/types/database.ts` is auto-generated — NEVER edit it manually
 - To regenerate after schema changes, use the Supabase MCP `generate_typescript_types` tool
-- Or run manually: `npx supabase gen types typescript --schema public > src/types/database.ts`
+- **Local** (CLI linked to local Supabase): `npx supabase gen types typescript --schema public > src/types/database.ts`
+- **Remote project** (matches `.claude/commands/gentypes.md`): `npx supabase gen types typescript --project-id "zfznuscqncvujhzjzinc" --schema public > src/types/database.ts`

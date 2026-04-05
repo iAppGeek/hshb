@@ -20,6 +20,7 @@
 - `src/lib/` — shared utilities and business logic
 - `src/types/` — shared TypeScript types and declarations
 - `src/app/` — Next.js App Router pages and API routes
+- `e2e/` — Playwright E2E (`e2e/tests/**/*.e2e.ts`), auth setup, fixtures, seed helpers
 
 ## Key Rules
 
@@ -28,6 +29,7 @@
 - New database queries go in the relevant file in `src/db/` — never inline in components
 - Client components (`"use client"`) go in `src/clientComponents/`, not `src/components/`
 - API routes go under `src/app/api/`
+- New **user-facing** features should include **Playwright** tests (`*.e2e.ts` under `e2e/tests/`) and **Vitest** for units/components (`*.spec.ts` / `*.spec.tsx` in `src/`)
 
 ## Imports
 
@@ -61,7 +63,12 @@ vi.mock('@/db/client', () => ({
 }))
 ```
 
+## Work quality
+
+- Do not leave **TODO** comments — implement, remove, or track outside the codebase.
+- Do not consider work complete until **`npm run pipeline:check`** passes.
+
 ## Verification
 
-- Run `npm run pipeline:check` after every change
-- This runs: lint → format:check → type-check → test:coverage → test:e2e → build
+- Run `npm run fix:all` after substantive edits (ESLint + Prettier, including `e2e/**/*.ts` and `playwright.config.ts`).
+- Run `npm run pipeline:check` before finishing — lint → format:check → type-check → test:coverage → test:e2e → build
