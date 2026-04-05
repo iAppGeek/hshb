@@ -12,6 +12,7 @@ alwaysApply: false
 - Test files use `.spec.tsx` / `.spec.ts` suffix alongside the source file
 - Component tests use React Testing Library
 - Never use `jest.mock()` — always use `vi.mock()`, `vi.spyOn()` or `vi.fn()`
+- **Mock factories** and test-only helpers: keep them in the **same spec file** unless reused across multiple tests — then colocate a small shared helper next to those specs (avoid a sprawling `__mocks__` tree without need).
 
 ## Supabase in tests
 

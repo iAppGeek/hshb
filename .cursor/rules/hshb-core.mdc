@@ -42,6 +42,10 @@ alwaysApply: true
 - All imports must be at the top of the file, before any other code
 - Never add imports inline or mid-file — always place them with the existing import block
 
+## Work quality
+
+Matches global Claude Code conventions: do not leave **TODO** comments in code — implement, remove, or track work outside the repo. Do not consider a task **complete** until **`npm run pipeline:check`** passes (fix all failures before moving on).
+
 ## Verification
 
 - Run `npm run fix:all` after every change — `lint:fix` covers `src/`, `e2e/**/*.ts`, and `playwright.config.ts`; `format` runs Prettier on the repo (including `*.e2e.ts`).
