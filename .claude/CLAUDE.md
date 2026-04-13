@@ -42,6 +42,7 @@
 - All database queries go in `src/db/` — one file per domain (students, staff, classes etc.)
 - The Supabase MCP is read-only — it cannot modify the database directly
 - Schema changes must go through `supabase/schema.sql` and be applied via the Supabase dashboard or CLI
+- Always keep `supabase/schema.sql` up to date with all database changes, this script should be able to recreate everything in the database from scratch
 
 ## Database Types
 
