@@ -10,6 +10,7 @@ vi.mock('@/db', () => ({
   signOutStaff: vi.fn(),
   logAuditEvent: vi.fn(),
 }))
+
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 import { signInAction, signOutAction } from './actions'
@@ -58,7 +59,7 @@ describe('signInAction', () => {
     expect(signInStaff).toHaveBeenCalledWith(
       STAFF_1,
       '2026-03-18',
-      '2026-03-18T09:00:00',
+      '2026-03-18T09:00:00.000Z',
     )
     expect(revalidatePath).toHaveBeenCalledWith('/portal/staff-attendance')
   })
@@ -94,7 +95,7 @@ describe('signInAction', () => {
     expect(signInStaff).toHaveBeenCalledWith(
       STAFF_1,
       '2026-03-18',
-      '2026-03-18T09:00:00',
+      '2026-03-18T09:00:00.000Z',
     )
   })
 
@@ -153,7 +154,7 @@ describe('signInAction', () => {
     expect(signInStaff).toHaveBeenCalledWith(
       SECRETARY_1,
       '2026-03-18',
-      '2026-03-18T09:00:00',
+      '2026-03-18T09:00:00.000Z',
     )
     expect(revalidatePath).toHaveBeenCalledWith('/portal/staff-attendance')
   })
@@ -193,7 +194,7 @@ describe('signOutAction', () => {
     expect(signOutStaff).toHaveBeenCalledWith(
       STAFF_1,
       '2026-03-18',
-      '2026-03-18T17:00:00',
+      '2026-03-18T17:00:00.000Z',
     )
     expect(revalidatePath).toHaveBeenCalledWith('/portal/staff-attendance')
   })
@@ -258,7 +259,7 @@ describe('signOutAction', () => {
     expect(signOutStaff).toHaveBeenCalledWith(
       SECRETARY_1,
       '2026-03-18',
-      '2026-03-18T17:00:00',
+      '2026-03-18T17:00:00.000Z',
     )
     expect(revalidatePath).toHaveBeenCalledWith('/portal/staff-attendance')
   })

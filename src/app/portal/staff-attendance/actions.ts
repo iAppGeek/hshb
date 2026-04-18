@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
 import { signInStaff, signOutStaff, logAuditEvent } from '@/db'
+import { schoolTzToUtcIso } from '@/lib/datetime'
 import { getUserFriendlyDbError } from '@/lib/db-error'
 import { canManageStaffAttendance } from '@/lib/permissions'
 import {
@@ -12,10 +13,6 @@ import {
   type ActionResult,
 } from '@/lib/schemas'
 import type { StaffRole } from '@/types/next-auth'
-
-function buildTimestamp(date: string, time: string): string {
-  return `${date}T${time}:00`
-}
 
 export async function signInAction(formData: FormData): Promise<ActionResult> {
   const session = await auth()
@@ -33,7 +30,7 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
   }
 
   try {
-    await signInStaff(staffId, date, buildTimestamp(date, time))
+    await signInStaff(staffId, date, schoolTzToUtcIso(date, time))
     logAuditEvent({
       staffId: session.user.staffId ?? null,
       action: 'sign_in',
@@ -68,7 +65,7 @@ export async function signOutAction(formData: FormData): Promise<ActionResult> {
   }
 
   try {
-    await signOutStaff(staffId, date, buildTimestamp(date, time))
+    await signOutStaff(staffId, date, schoolTzToUtcIso(date, time))
     logAuditEvent({
       staffId: session.user.staffId ?? null,
       action: 'sign_out',

@@ -1,4 +1,5 @@
 import type { IncidentCounts } from '@/db'
+import { formatCalendarDate } from '@/lib/datetime'
 
 import SectionCard from '../../_components/SectionCard'
 
@@ -32,9 +33,10 @@ const TH =
   'px-6 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase'
 
 function formatDateShort(dateStr: string): string {
-  const d = new Date(dateStr + 'T12:00:00')
-  const day = d.toLocaleDateString('en-GB', { weekday: 'short' })
-  return `${day} ${d.getDate()}`
+  const day = formatCalendarDate(dateStr, { weekday: 'short' })
+  const match = dateStr.match(/^\d{4}-\d{2}-(\d{2})/)
+  const dayOfMonth = match ? Number(match[1]) : ''
+  return `${day} ${dayOfMonth}`
 }
 
 function pct(n: number, total: number): string {

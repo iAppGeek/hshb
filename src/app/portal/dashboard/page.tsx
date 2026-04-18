@@ -19,6 +19,7 @@ import {
   getAttendanceSummaryByDate,
   getStaffSignedInCount,
 } from '@/db'
+import { todayInSchoolTz } from '@/lib/datetime'
 import { isTeacher } from '@/lib/permissions'
 import { roleLabels } from '@/lib/roleLabels'
 import type { StaffRole } from '@/types/next-auth'
@@ -33,7 +34,7 @@ export default async function DashboardPage() {
   const role = session?.user?.role as StaffRole
   const staffId = session?.user?.staffId
   const teacherOnly = isTeacher(role)
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayInSchoolTz()
 
   const [
     studentCount,

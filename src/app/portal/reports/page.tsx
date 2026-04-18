@@ -2,6 +2,11 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
+import {
+  formatCalendarDate,
+  formatTimeInSchoolTz,
+  todayInSchoolTz,
+} from '@/lib/datetime'
 import { canAccessReports, isTeachingStaff } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 import {
@@ -42,7 +47,7 @@ export default async function ReportsPage({
     redirect('/portal/dashboard')
   }
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayInSchoolTz()
   const params = await searchParams
 
   const mode: ReportMode =
@@ -53,11 +58,13 @@ export default async function ReportsPage({
   const selectedMonth = params.month ?? today.slice(0, 7)
   const [yearNum, monthNum] = selectedMonth.split('-').map(Number)
   const monthStart = `${yearNum}-${String(monthNum).padStart(2, '0')}-01`
-  const monthEnd = new Date(yearNum, monthNum, 0).toISOString().split('T')[0]
+  const monthEnd = new Date(Date.UTC(yearNum, monthNum, 0))
+    .toISOString()
+    .split('T')[0]
 
-  const todayDate = new Date(today + 'T12:00:00')
-  todayDate.setDate(todayDate.getDate() - 7)
-  const sevenDaysAgo = todayDate.toISOString().split('T')[0]
+  const todayAtNoonUtc = new Date(`${today}T12:00:00Z`)
+  todayAtNoonUtc.setUTCDate(todayAtNoonUtc.getUTCDate() - 7)
+  const sevenDaysAgo = todayAtNoonUtc.toISOString().split('T')[0]
   const rangeFrom = params.from ?? sevenDaysAgo
   const rangeTo = params.to ?? today
 
@@ -76,15 +83,12 @@ export default async function ReportsPage({
   let badgeColor = 'bg-amber-500'
 
   if (mode === 'day') {
-    subtitle = new Date(selectedDate + 'T12:00:00').toLocaleDateString(
-      'en-GB',
-      {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      },
-    )
+    subtitle = formatCalendarDate(selectedDate, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
     if (selectedDate === today) {
       badgeLabel = 'Today'
       badgeColor = 'bg-green-500'
@@ -94,13 +98,13 @@ export default async function ReportsPage({
       badgeLabel = 'Future'
     }
   } else if (mode === 'month') {
-    subtitle = new Date(yearNum, monthNum - 1).toLocaleDateString('en-GB', {
+    subtitle = formatCalendarDate(monthStart, {
       month: 'long',
       year: 'numeric',
     })
   } else {
     const fmtShort = (d: string) =>
-      new Date(d + 'T12:00:00').toLocaleDateString('en-GB', {
+      formatCalendarDate(d, {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -137,12 +141,6 @@ export default async function ReportsPage({
       0,
     )
 
-    const fmt = (ts: string) =>
-      new Date(ts).toLocaleTimeString('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-
     const enrolmentByClass = classes.map((cls) => {
       const summary = attendanceSummary[cls.id]
       const enrolled = enrollmentCounts[cls.id] ?? 0
@@ -150,8 +148,12 @@ export default async function ReportsPage({
         name: cls.name,
         enrolled,
         presentCount: summary?.presentCount ?? null,
-        attendanceCreatedAt: summary ? fmt(summary.createdAt) : null,
-        attendanceUpdatedAt: summary ? fmt(summary.updatedAt) : null,
+        attendanceCreatedAt: summary
+          ? formatTimeInSchoolTz(summary.createdAt)
+          : null,
+        attendanceUpdatedAt: summary
+          ? formatTimeInSchoolTz(summary.updatedAt)
+          : null,
       }
     })
 

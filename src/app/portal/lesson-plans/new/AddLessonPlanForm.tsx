@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 
+import { todayInSchoolTz } from '@/lib/datetime'
+
 import { createLessonPlanAction } from '../actions'
 
 type ClassSummary = { id: string; name: string; year_group: string }
@@ -12,7 +14,7 @@ type Props = {
 }
 
 function todayDate() {
-  return new Date().toISOString().slice(0, 10)
+  return todayInSchoolTz()
 }
 
 export default function AddLessonPlanForm({ classes }: Props) {

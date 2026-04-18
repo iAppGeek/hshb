@@ -8,13 +8,18 @@ import {
   getStaffAttendanceByDate,
   getStaffAttendanceForToday,
 } from '@/db'
+import {
+  formatCalendarDate,
+  formatTimeInSchoolTz,
+  nowTimeInSchoolTz,
+  todayInSchoolTz,
+} from '@/lib/datetime'
 import { isTeacher, showsOnSignInSheet } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 import DatePicker from '@/components/DatePicker'
 
 import PrintButton from './PrintButton'
 import StaffAttendanceTable from './StaffAttendanceTable'
-import { fmtTime } from './utils'
 
 export const metadata: Metadata = { title: 'Staff Sign-In' }
 
@@ -29,9 +34,8 @@ export default async function StaffAttendancePage({
   const role = session.user?.role as StaffRole
   const staffId = session.user?.staffId ?? ''
 
-  const today = new Date().toISOString().split('T')[0]
-  const now = new Date()
-  const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+  const today = todayInSchoolTz()
+  const currentTime = nowTimeInSchoolTz()
 
   if (isTeacher(role)) {
     // Teachers always see today only, for themselves
@@ -109,10 +113,12 @@ export default async function StaffAttendancePage({
       return ca.localeCompare(cb)
     })
 
-  const formattedDate = new Date(selectedDate + 'T12:00:00').toLocaleDateString(
-    'en-GB',
-    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
-  )
+  const formattedDate = formatCalendarDate(selectedDate, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 
   return (
     <div className="max-w-5xl print:max-w-none">
@@ -208,7 +214,7 @@ export default async function StaffAttendancePage({
                 </td>
                 <td className="border border-gray-400 p-1 text-xs text-gray-700">
                   {record ? (
-                    fmtTime(record.signed_in_at)
+                    formatTimeInSchoolTz(record.signed_in_at)
                   ) : (
                     <span className="block min-w-[80px] border-b border-gray-400">
                       &nbsp;
@@ -217,7 +223,7 @@ export default async function StaffAttendancePage({
                 </td>
                 <td className="border border-gray-400 p-1 text-xs text-gray-700">
                   {record?.signed_out_at ? (
-                    fmtTime(record.signed_out_at)
+                    formatTimeInSchoolTz(record.signed_out_at)
                   ) : (
                     <span className="block min-w-[80px] border-b border-gray-400">
                       &nbsp;
