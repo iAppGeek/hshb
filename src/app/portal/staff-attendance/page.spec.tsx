@@ -20,10 +20,6 @@ vi.mock('./StaffAttendanceTable', () => ({
   default: vi.fn(() => <div data-testid="staff-table" />),
 }))
 
-vi.mock('./utils', () => ({
-  fmtTime: vi.fn((ts: string) => ts),
-}))
-
 vi.mock('@/components/DatePicker', () => ({
   default: vi.fn(() => <div data-testid="date-picker" />),
 }))
@@ -39,6 +35,7 @@ import {
   getStaffAttendanceByDate,
   getStaffAttendanceForToday,
 } from '@/db'
+import { todayInSchoolTz } from '@/lib/datetime'
 
 import StaffAttendancePage from './page'
 
@@ -156,7 +153,7 @@ describe('StaffAttendancePage', () => {
     it('calls getStaffAttendanceByDate (full staff list, not teacher-only)', async () => {
       render(await StaffAttendancePage({ searchParams: makeSearchParams() }))
 
-      const today = new Date().toISOString().split('T')[0]
+      const today = todayInSchoolTz()
       expect(getStaffAttendanceByDate).toHaveBeenCalledWith(today)
       expect(getStaffAttendanceForToday).not.toHaveBeenCalled()
     })
@@ -185,7 +182,7 @@ describe('StaffAttendancePage', () => {
     it('calls getStaffAttendanceByDate with today by default', async () => {
       render(await StaffAttendancePage({ searchParams: makeSearchParams() }))
 
-      const today = new Date().toISOString().split('T')[0]
+      const today = todayInSchoolTz()
       expect(getStaffAttendanceByDate).toHaveBeenCalledWith(today)
       expect(getStaffAttendanceForToday).not.toHaveBeenCalled()
     })

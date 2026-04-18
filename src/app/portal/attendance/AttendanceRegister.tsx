@@ -1,6 +1,7 @@
 import BulkEmailDropdown from '@/clientComponents/BulkEmailDropdown'
 import { getStudentsByClass, getAttendanceByClassAndDate } from '@/db'
 import type { AttendanceStatus } from '@/db'
+import { todayInSchoolTz } from '@/lib/datetime'
 import { guardianEmailsForMailto, mailtoWithBcc } from '@/lib/mailto'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -29,7 +30,7 @@ export default async function AttendanceRegister({
     existing[row.student_id] = row.status as AttendanceStatus
   }
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayInSchoolTz()
   const dateLabel =
     date === today ? 'Today' : date < today ? 'Historical' : 'Future'
 

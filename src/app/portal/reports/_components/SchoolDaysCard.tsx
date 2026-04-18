@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
+import { formatCalendarDate } from '@/lib/datetime'
+
 export type SchoolDayDate = {
   date: string
   staffCount: number
@@ -15,7 +17,7 @@ type Props = {
 }
 
 function formatDateFull(dateStr: string): string {
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {
+  return formatCalendarDate(dateStr, {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

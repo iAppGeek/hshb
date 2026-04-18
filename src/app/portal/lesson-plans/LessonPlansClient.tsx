@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
 import type { LessonPlanRow } from '@/db'
+import { formatCalendarDate, formatDateTimeInSchoolTz } from '@/lib/datetime'
 import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 import Tooltip from '@/components/Tooltip'
@@ -17,7 +18,7 @@ type Props = {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB')
+  return formatCalendarDate(dateStr)
 }
 
 export default function LessonPlansClient({
@@ -247,7 +248,7 @@ function LessonPlanModal({
                 {plan.creator.first_name} {plan.creator.last_name}
               </p>
               <p className="text-xs text-gray-400">
-                {new Date(plan.created_at).toLocaleString('en-GB')}
+                {formatDateTimeInSchoolTz(plan.created_at)}
               </p>
               {plan.updater && (
                 <>
@@ -258,7 +259,7 @@ function LessonPlanModal({
                     {plan.updater.first_name} {plan.updater.last_name}
                   </p>
                   <p className="text-xs text-gray-400">
-                    {new Date(plan.updated_at).toLocaleString('en-GB')}
+                    {formatDateTimeInSchoolTz(plan.updated_at)}
                   </p>
                 </>
               )}

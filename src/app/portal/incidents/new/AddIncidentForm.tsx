@@ -4,6 +4,7 @@ import { useState, useTransition, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
 import type { IncidentType } from '@/db'
+import { nowDatetimeLocalInSchoolTz } from '@/lib/datetime'
 
 import { createIncidentAction } from '../actions'
 
@@ -13,13 +14,6 @@ type Props = {
   students: StudentSummary[]
   staffId: string
   type: IncidentType
-}
-
-function localNow() {
-  const now = new Date()
-  return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 16)
 }
 
 export default function AddIncidentForm({ students, type }: Props) {
@@ -98,7 +92,7 @@ export default function AddIncidentForm({ students, type }: Props) {
             name="incident_date"
             type="datetime-local"
             required
-            defaultValue={localNow()}
+            defaultValue={nowDatetimeLocalInSchoolTz()}
           />
         </div>
       </div>
@@ -126,7 +120,7 @@ export default function AddIncidentForm({ students, type }: Props) {
               label="Date & time notified"
               name="parent_notified_at"
               type="datetime-local"
-              defaultValue={localNow()}
+              defaultValue={nowDatetimeLocalInSchoolTz()}
             />
           </div>
         )}

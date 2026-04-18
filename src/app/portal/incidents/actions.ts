@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth'
 import { createIncident, updateIncident, logAuditEvent } from '@/db'
+import { datetimeLocalToUtcIso } from '@/lib/datetime'
 import { getUserFriendlyDbError } from '@/lib/db-error'
 import { canEditIncidents } from '@/lib/permissions'
 import {
@@ -25,16 +26,21 @@ export async function createIncidentAction(
   const parsed = createIncidentSchema.safeParse(raw)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
-  const { type, parent_notified, parent_notified_at, ...rest } = parsed.data
+  const { type, parent_notified, parent_notified_at, incident_date, ...rest } =
+    parsed.data
   const created_by = session.user.staffId!
 
   try {
     const incident = await createIncident({
       type,
       ...rest,
+      incident_date: datetimeLocalToUtcIso(incident_date),
       created_by,
       parent_notified,
-      parent_notified_at: parent_notified ? parent_notified_at : null,
+      parent_notified_at:
+        parent_notified && parent_notified_at
+          ? datetimeLocalToUtcIso(parent_notified_at)
+          : null,
     })
     logAuditEvent({
       staffId: created_by,
@@ -69,15 +75,20 @@ export async function updateIncidentAction(
   const parsed = updateIncidentSchema.safeParse(raw)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
-  const { type, parent_notified, parent_notified_at, ...rest } = parsed.data
+  const { type, parent_notified, parent_notified_at, incident_date, ...rest } =
+    parsed.data
   const updated_by = session.user.staffId!
 
   try {
     await updateIncident(id, {
       ...rest,
+      incident_date: datetimeLocalToUtcIso(incident_date),
       updated_by,
       parent_notified,
-      parent_notified_at: parent_notified ? parent_notified_at : null,
+      parent_notified_at:
+        parent_notified && parent_notified_at
+          ? datetimeLocalToUtcIso(parent_notified_at)
+          : null,
     })
     logAuditEvent({
       staffId: updated_by,

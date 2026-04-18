@@ -4,18 +4,15 @@ import { useState, useTransition } from 'react'
 import Link from 'next/link'
 
 import type { IncidentRow } from '@/db'
+import {
+  nowDatetimeLocalInSchoolTz,
+  toDatetimeLocalInSchoolTz,
+} from '@/lib/datetime'
 
 import { updateIncidentAction } from '../../actions'
 
 type Props = {
   incident: IncidentRow
-}
-
-function localNow() {
-  const now = new Date()
-  return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 16)
 }
 
 export default function EditIncidentForm({ incident }: Props) {
@@ -38,12 +35,12 @@ export default function EditIncidentForm({ incident }: Props) {
   }
 
   const defaultDateTime = incident.incident_date
-    ? incident.incident_date.slice(0, 16)
+    ? toDatetimeLocalInSchoolTz(incident.incident_date)
     : ''
 
   const defaultNotifiedAt = incident.parent_notified_at
-    ? incident.parent_notified_at.slice(0, 16)
-    : localNow()
+    ? toDatetimeLocalInSchoolTz(incident.parent_notified_at)
+    : nowDatetimeLocalInSchoolTz()
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

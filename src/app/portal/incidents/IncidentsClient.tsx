@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import type { IncidentRow, IncidentType } from '@/db'
+import { formatDateInSchoolTz } from '@/lib/datetime'
 import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 import Tooltip from '@/components/Tooltip'
@@ -85,9 +86,7 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                       {incident.student.first_name}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {new Date(incident.incident_date).toLocaleDateString(
-                        'en-GB',
-                      )}
+                      {formatDateInSchoolTz(incident.incident_date)}
                     </p>
                   </div>
                   {canEdit ? (
@@ -127,9 +126,7 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                   <span>
                     Guardians notified:{' '}
                     {incident.parent_notified_at
-                      ? new Date(
-                          incident.parent_notified_at,
-                        ).toLocaleDateString('en-GB')
+                      ? formatDateInSchoolTz(incident.parent_notified_at)
                       : incident.parent_notified
                         ? 'Yes'
                         : 'No'}
@@ -168,9 +165,7 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                   {filtered.map((incident) => (
                     <tr key={incident.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
-                        {new Date(incident.incident_date).toLocaleDateString(
-                          'en-GB',
-                        )}
+                        {formatDateInSchoolTz(incident.incident_date)}
                       </td>
                       <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
                         {incident.student.last_name},{' '}
@@ -198,9 +193,7 @@ export default function IncidentsClient({ incidents, role, canEdit }: Props) {
                       </td>
                       <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                         {incident.parent_notified_at
-                          ? new Date(
-                              incident.parent_notified_at,
-                            ).toLocaleDateString('en-GB')
+                          ? formatDateInSchoolTz(incident.parent_notified_at)
                           : incident.parent_notified
                             ? 'Yes'
                             : '—'}

@@ -4,11 +4,11 @@ import { useTransition, useState } from 'react'
 
 import type { StaffAttendanceRow } from '@/db'
 import Tooltip from '@/components/Tooltip'
+import { formatTimeInSchoolTz } from '@/lib/datetime'
 import { canManageStaffAttendance } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
 import { signInAction, signOutAction } from './actions'
-import { fmtTime } from './utils'
 
 export type StaffMember = {
   id: string
@@ -29,13 +29,14 @@ function StatusBadge({ record }: { record: StaffAttendanceRow | null }) {
   if (record.signed_out_at) {
     return (
       <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
-        In {fmtTime(record.signed_in_at)} · Out {fmtTime(record.signed_out_at)}
+        In {formatTimeInSchoolTz(record.signed_in_at)} · Out{' '}
+        {formatTimeInSchoolTz(record.signed_out_at)}
       </span>
     )
   }
   return (
     <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-      Signed In {fmtTime(record.signed_in_at)}
+      Signed In {formatTimeInSchoolTz(record.signed_in_at)}
     </span>
   )
 }

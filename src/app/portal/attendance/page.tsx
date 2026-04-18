@@ -3,6 +3,7 @@ import { type Metadata } from 'next'
 
 import { auth } from '@/auth'
 import { getAllClasses, getClassesByTeacher } from '@/db'
+import { todayInSchoolTz } from '@/lib/datetime'
 import { isTeacher } from '@/lib/permissions'
 import type { StaffRole } from '@/types/next-auth'
 
@@ -57,7 +58,7 @@ export default async function AttendancePage({
 
   const { classId: qClassId, date: qDate } = await searchParams
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayInSchoolTz()
   const selectedDate = qDate ?? today
 
   const classes = isTeacher(role)
