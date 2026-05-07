@@ -106,7 +106,7 @@ export const Community = (props: Props) => {
                             'font-mono text-sm',
                             groupIndex === selectedIndex
                               ? 'text-blue-600'
-                              : 'text-slate-500',
+                              : 'text-slate-600',
                           )}
                         >
                           <Tab className="ui-not-focus-visible:outline-none">
@@ -183,7 +183,7 @@ export const Community = (props: Props) => {
                       <h3 className="font-display mt-8 text-xl font-bold tracking-tight text-slate-900">
                         {person.name}
                       </h3>
-                      <div className="mt-1 text-base tracking-tight text-slate-500">
+                      <div className="mt-1 text-base tracking-tight text-slate-600">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {person.blurb}
                         </ReactMarkdown>

@@ -13,7 +13,7 @@ const FeaturedQuoteComp: FC<{ quote?: FeaturedQuote }> = ({ quote }) => {
           {quote?.text}
         </p>
       </blockquote>
-      <figcaption className="mt-2 text-sm text-slate-500">
+      <figcaption className="mt-2 text-sm text-slate-600">
         <strong className="pr-1 font-semibold text-blue-600 before:content-['—_']">
           {quote?.author}
         </strong>

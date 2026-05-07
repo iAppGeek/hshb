@@ -65,4 +65,11 @@ describe('FeaturedQuoteSelector', () => {
     unmount()
     expect(clearIntervalSpy).toHaveBeenCalled()
   })
+
+  it('figcaption uses text-slate-600 for sufficient color contrast', () => {
+    render(<FeaturedQuoteSelector items={mockQuotes} />)
+    const figcaption = document.querySelector('figcaption')
+    expect(figcaption?.className).toContain('text-slate-600')
+    expect(figcaption?.className).not.toContain('text-slate-500')
+  })
 })
