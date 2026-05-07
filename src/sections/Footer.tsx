@@ -18,7 +18,13 @@ export function Footer() {
           className="flex gap-1 rounded-md px-2 py-1 hover:bg-gray-400 hover:text-white"
           title="Contribute to our website!"
         >
-          <Image priority src={github} height={24} alt="Github Link" />
+          <Image
+            priority
+            src={github}
+            height={24}
+            width={24}
+            alt="Github Link"
+          />
           <span>Contribute</span>
         </a>
 

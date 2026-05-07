@@ -9,7 +9,7 @@ const PlaceholderImage = () => {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="absolute inset-0 flex items-center justify-center bg-[#6366F1]">
-        <Image src={discordImage} alt="" />
+        <Image src={discordImage} alt="" width={80} height={72} />
       </div>
     </div>
   )

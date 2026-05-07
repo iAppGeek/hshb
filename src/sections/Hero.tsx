@@ -12,7 +12,13 @@ export const Hero = (props: Props) => {
         <div className="relative flex items-center lg:col-span-5 lg:row-span-2">
           <div className="rounded-br-6xl absolute -top-20 right-1/2 -bottom-12 left-0 z-10 bg-blue-800 text-white/10 md:bottom-8 lg:-inset-y-12 lg:right-full lg:left-[-100vw] lg:-mr-40" />
           <div className="relative z-10 mx-auto flex w-64 pt-12 md:w-80 lg:pt-24">
-            <Image className="w-full" src={logo} alt="" placeholder="blur" />
+            <Image
+              className="w-full"
+              src={logo}
+              alt=""
+              placeholder="blur"
+              priority
+            />
           </div>
         </div>
         <div className="relative px-4 py-6 pb-0 sm:px-6 md:py-0 lg:col-span-7 lg:pt-0 lg:pr-0 lg:pb-8 lg:pl-16">

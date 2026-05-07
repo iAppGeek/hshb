@@ -168,7 +168,13 @@ export default function PortalSidebar({
           title="Go to main site"
           className="transition-transform duration-150 hover:scale-110 active:scale-95"
         >
-          <Image src={logo} alt="HSHB Logo" className="h-7 w-auto" />
+          <Image
+            src={logo}
+            alt="HSHB Logo"
+            className="h-7 w-auto"
+            width={28}
+            height={28}
+          />
         </Link>
         <span className="text-sm font-semibold text-white">Staff Portal</span>
       </div>
@@ -195,7 +201,13 @@ export default function PortalSidebar({
               title="Go to main site"
               className="transition-transform duration-150 hover:scale-110 active:scale-95"
             >
-              <Image src={logo} alt="HSHB Logo" className="h-7 w-auto" />
+              <Image
+                src={logo}
+                alt="HSHB Logo"
+                className="h-7 w-auto"
+                width={28}
+                height={28}
+              />
             </Link>
             <span className="text-sm font-semibold text-white">
               Staff Portal
@@ -221,7 +233,13 @@ export default function PortalSidebar({
             title="Go to main site"
             className="transition-transform duration-150 hover:scale-110 active:scale-95"
           >
-            <Image src={logo} alt="HSHB Logo" className="h-8 w-auto" />
+            <Image
+              src={logo}
+              alt="HSHB Logo"
+              className="h-8 w-auto"
+              width={32}
+              height={32}
+            />
           </Link>
           <div>
             <p className="text-sm font-semibold text-white">HSHB</p>
