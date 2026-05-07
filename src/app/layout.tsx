@@ -4,6 +4,8 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import clsx from 'clsx'
 
 import '../styles/tailwind.css'
+import { FontLoader } from '@/clientComponents/FontLoader'
+
 import IosSplashLinks from './portal/_components/IosSplashLinks'
 
 const inter = Inter({
@@ -76,12 +78,14 @@ export default function RootLayout({
           href="https://cdn.fontshare.com"
           crossOrigin="anonymous"
         />
-        <link
-          rel="stylesheet"
-          href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700&display=swap"
-        />
+        <link rel="dns-prefetch" href="https://api.fontshare.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
       </head>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <FontLoader />
+      </body>
       {process.env.NODE_ENV === 'production' && (
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
       )}
