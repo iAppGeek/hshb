@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
 import { Container } from '@/components/Container'
+import { CalendarEmbed } from '@/clientComponents/CalendarEmbed'
 import { ScrollTracker } from '@/clientComponents/ScrollTracker'
 import discordImage from '@/images/resources/discord.svg'
 import { PastEvent } from '@/data/contentful'
@@ -66,16 +67,11 @@ export const Events = (props: Props) => {
         >
           Our Events Calendar
         </h2>
-        <iframe
+        <CalendarEmbed
           src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&hl=en_GB&showCalendars=0&title&src=dG9uLmFudG9uaWFkb3VAZ21haWwuY29t&color=%233F51B5"
-          style={{ display: 'block' }}
-          className="mx-auto pb-5"
-          width="100%"
-          height="500"
           title="HSHB Events Calendar"
-          frameBorder="0"
-          scrolling="no"
-        ></iframe>
+          height={500}
+        />
       </Container>
       <Container>
         <h3 className="font-display mt-8 text-4xl font-bold tracking-tight text-slate-900">
