@@ -138,14 +138,26 @@ function SidebarLoadingSkeleton() {
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-3 bg-gray-900 px-4 md:hidden print:hidden">
         <div className="h-6 w-6 rounded bg-gray-700" />
-        <Image src={logo} alt="HSHB Logo" className="h-7 w-auto" />
+        <Image
+          src={logo}
+          alt="HSHB Logo"
+          className="h-7 w-auto"
+          width={28}
+          height={28}
+        />
         <span className="text-sm font-semibold text-white">Staff Portal</span>
       </div>
 
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-gray-900 md:flex print:hidden">
         <div className="flex items-center gap-3 border-b border-gray-700 px-5 py-4">
-          <Image src={logo} alt="HSHB Logo" className="h-8 w-auto" />
+          <Image
+            src={logo}
+            alt="HSHB Logo"
+            className="h-8 w-auto"
+            width={32}
+            height={32}
+          />
           <div>
             <p className="text-sm font-semibold text-white">HSHB</p>
             <p className="text-xs text-gray-400">Staff Portal</p>

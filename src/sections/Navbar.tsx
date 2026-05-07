@@ -120,7 +120,12 @@ export const Navbar = () => {
               className="flex shrink-0 items-center"
               onClick={() => onLinkClick('home')}
             >
-              <Image src={logo} alt="HSHB Logo" className="h-8 w-auto" />
+              <Image
+                src={logo}
+                alt="HSHB Logo"
+                className="h-8 w-auto"
+                priority
+              />
             </a>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
@@ -199,6 +204,7 @@ export const Navbar = () => {
                 priority
                 src={classdojoSmall}
                 height={28}
+                width={30}
                 alt="Parents Login"
               />
               <span className="hidden lg:inline">Parents</span>
