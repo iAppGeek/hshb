@@ -229,6 +229,7 @@ export const Navbar = () => {
               key={section.id}
               as="a"
               href={`#${section.id}`}
+              onClick={() => onLinkClick(section.id || 'home')}
               className={clsx(
                 sectionIndex === activeIndex
                   ? 'bg-gray-900 text-white'
