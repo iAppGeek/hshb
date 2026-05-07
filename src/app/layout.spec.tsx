@@ -9,6 +9,10 @@ vi.mock('@next/third-parties/google', () => ({
   GoogleAnalytics: () => null,
 }))
 
+vi.mock('@/clientComponents/FontLoader', () => ({
+  FontLoader: () => null,
+}))
+
 vi.mock('@/styles/tailwind.css', () => ({}))
 
 vi.mock('clsx', () => ({
