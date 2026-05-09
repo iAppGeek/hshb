@@ -13,13 +13,6 @@ jobs:
     timeout-minutes: 15
 
     env:
-      # Dummy values — only needed to satisfy NextAuth/Supabase init, not called at build time
-      AUTH_SECRET: ci-build-secret
-      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
-      SUPABASE_SERVICE_ROLE_KEY: ci-placeholder
-      AZURE_AD_CLIENT_ID: ci-placeholder
-      AZURE_AD_CLIENT_SECRET: ci-placeholder
-      AZURE_AD_TENANT_ID: ci-placeholder
       # Real values required — home page fetches Contentful at build time (SSG)
       CONTENTFUL_SPACE: ${{ secrets.CONTENTFUL_SPACE }}
       CONTENTFUL_TOKEN: ${{ secrets.CONTENTFUL_TOKEN }}
