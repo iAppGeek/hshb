@@ -210,7 +210,7 @@ export const Navbar = () => {
               <span className="hidden lg:inline">Parents</span>
             </a>
             <a
-              href="/portal/login"
+              href="https://portal.hshb.org.uk"
               title="Staff Portal"
               className="flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white"
               onClick={() => onLinkClick('staff-portal')}
