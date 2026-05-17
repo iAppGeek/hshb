@@ -1,3 +1,6 @@
+// Repo-wide guard: scans every src/ file, so it lives at src/ root rather
+// than co-located with any one source file.
+
 import { readFileSync, readdirSync, statSync } from 'fs'
 import { join } from 'path'
 
