@@ -29,6 +29,12 @@
 
 - Never add imports inline or mid-file — always place them with the existing import block at the top of the file
 
+## Contentful
+
+- `src/types/contentful/` is auto-generated — NEVER edit any file inside it manually
+- To regenerate: `npm run gen:types`
+- Requires `CONTENTFUL_MANAGEMENT_TOKEN` (a CMA personal access token, not the CDA delivery token) in `.env.local` — only needed locally; CI uses the committed files
+
 ## Work quality
 
 - Do not leave **TODO** comments — implement, remove, or track outside the codebase.
