@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { Container } from '@/components/Container'
-import { HeroVideo } from '@/clientComponents/HeroVideo'
+import { HeroVideo } from '@/components/HeroVideo'
 import { ScrollTracker } from '@/clientComponents/ScrollTracker'
 
 type Props = { text: string; videoUrl: string | undefined }
