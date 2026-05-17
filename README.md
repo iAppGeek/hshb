@@ -28,6 +28,16 @@ To find these values:
 5. Copy the **Space ID** → `CONTENTFUL_SPACE`
 6. Copy the **Content Delivery API - access token** → `CONTENTFUL_TOKEN`
 
+#### Optional: Contentful management token
+
+To regenerate the TypeScript types in `src/types/contentful/` after a content-model change, you also need a Contentful Management API personal access token:
+
+```env
+CONTENTFUL_MANAGEMENT_TOKEN=your_cma_token
+```
+
+Generate one at [https://app.contentful.com/account/profile/cma_tokens](https://app.contentful.com/account/profile/cma_tokens). This is **only needed locally** to run `npm run gen:types` — CI uses the committed types and never needs this token.
+
 ### Run the development server
 
 ```bash
@@ -48,16 +58,13 @@ See the [Sharp cross-platform docs](https://sharp.pixelplumbing.com/install#cros
 
 ## E2E tests (Playwright)
 
-Integration tests run against a local Supabase instance using Playwright. Tests cover all 4 staff roles across desktop and mobile viewports.
-
-### Prerequisites
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) running
+Smoke tests cover the public-facing critical paths (homepage, contact form, events section). They run against the local Next dev server, which hits Contentful at request time — so the same `CONTENTFUL_SPACE` / `CONTENTFUL_TOKEN` values used for development are required.
 
 ### First-time setup
 
 ```bash
-npm run supabase:start   # starts local Postgres on http://127.0.0.1:54321
+npx playwright install --with-deps chromium
+cp .env.e2e.example .env.e2e   # then fill in the Contentful values
 ```
 
 ### Running tests
@@ -67,27 +74,16 @@ npm run test:e2e         # headless
 npm run test:e2e:ui      # Playwright UI mode
 ```
 
-`supabase db reset` runs automatically before the suite (via `e2e/global-setup.ts`), so the database is always in a clean seed state.
-
-### Stopping Supabase
-
-```bash
-npm run supabase:stop
-```
+Playwright boots its own dev server (see `playwright.config.ts`) and shuts it down after the run.
 
 ### CI secrets
 
-The E2E GitHub Actions workflow requires these secrets set in **Settings → Secrets and variables → Actions**:
+The GitHub Actions workflow (`.github/workflows/ci.yml`) runs the E2E suite as part of the same job that lints, type-checks, and builds. It requires these repository secrets:
 
-| Secret                            | Value                                  | Notes                                                                                                              |
-| --------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `E2E_TEST_SECRET`                 | `e2e-test-secret-hshb`                 | Arbitrary string — gates the test-only login form                                                                  |
-| `AUTH_SECRET`                     | `e2e-auth-secret-for-jwt-signing-hshb` | Signs JWTs for the local test run only                                                                             |
-| `SUPABASE_SERVICE_ROLE_KEY_LOCAL` | see `.env.e2e`                         | The [public default key](https://supabase.com/docs/guides/cli/local-development) for every local Supabase instance |
-
-`CONTENTFUL_SPACE` and `CONTENTFUL_TOKEN` are already configured — the dev server needs them at startup.
-
-All three values are non-sensitive dummy values safe to share with the team.
+| Secret             | Notes                                               |
+| ------------------ | --------------------------------------------------- |
+| `CONTENTFUL_SPACE` | Same value used locally                             |
+| `CONTENTFUL_TOKEN` | Content Delivery API token (read-only); not the CMA |
 
 ## Tech stack
 
@@ -96,3 +92,4 @@ All three values are non-sensitive dummy values safe to share with the team.
 - [Contentful](https://www.contentful.com/developers/docs/) — Headless CMS for all site content
 - [Headless UI](https://headlessui.dev) — Accessible UI components
 - [Vitest](https://vitest.dev) — Unit testing
+- [Playwright](https://playwright.dev) — End-to-end testing

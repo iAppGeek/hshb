@@ -156,26 +156,33 @@ export const Community = (props: Props) => {
                           className="absolute inset-0 bg-indigo-50"
                           style={{ clipPath: `url(#${id}-${personIndex % 3})` }}
                         >
-                          {person.largeView ? (
-                            <>
-                              <br />
+                          {person.photo ? (
+                            person.largeView ? (
+                              <>
+                                <br />
+                                <Image
+                                  className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
+                                  src={person.photo}
+                                  alt={person.name + ' avatar'}
+                                  width={1000}
+                                  height={660}
+                                  sizes="100vw"
+                                />{' '}
+                              </>
+                            ) : (
                               <Image
                                 className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
                                 src={person.photo}
                                 alt={person.name + ' avatar'}
-                                width={1000}
-                                height={660}
-                                sizes="100vw"
-                              />{' '}
-                            </>
+                                width={300}
+                                height={300}
+                                sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                              />
+                            )
                           ) : (
-                            <Image
-                              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                              src={person.photo}
-                              alt={person.name + ' avatar'}
-                              width={300}
-                              height={300}
-                              sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                            <div
+                              className="absolute inset-0 bg-slate-100"
+                              aria-hidden="true"
                             />
                           )}
                         </div>

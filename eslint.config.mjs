@@ -10,6 +10,7 @@ const compat = new FlatCompat({
 })
 
 const eslintConfig = [
+  { ignores: ['src/types/contentful/**'] },
   ...nextCoreWebVitals,
   ...nextTypescript,
   ...compat.extends('plugin:prettier/recommended'),

@@ -18,6 +18,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "dotenv -e .env.e2e -- playwright test",
     "test:e2e:ui": "dotenv -e .env.e2e -- playwright test --ui",
+    "gen:types": "cf-content-types-generator -s $CONTENTFUL_SPACE -t $CONTENTFUL_MANAGEMENT_TOKEN -o src/types/contentful",
     "pipeline:check": "npm run lint && npm run format:check && npm run type-check && npm run test:coverage && npm run test:e2e && npm run build",
     "fix:all": "npm run lint:fix && npm run format && npm run type-check"
   },
@@ -56,6 +57,7 @@
     "@vitejs/plugin-react": "6.0.1",
     "@vitest/coverage-v8": "4.1.5",
     "autoprefixer": "10.5.0",
+    "cf-content-types-generator": "3.0.1",
     "dotenv-cli": "11.0.0",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",

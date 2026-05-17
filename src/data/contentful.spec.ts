@@ -162,6 +162,28 @@ describe('getCommunityDirectory', () => {
     const result = await getCommunityDirectory(client)
     expect(result).toEqual({})
   })
+
+  it('returns undefined photo (not "https:undefined") when file is missing', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [
+          {
+            fields: {
+              role: 'Teacher',
+              firstName: 'No',
+              lastName: 'Photo',
+              priorityOrder: 1,
+              largeView: false,
+              photo: { fields: { file: undefined } },
+            },
+          },
+        ],
+      }),
+    })
+
+    const result = await getCommunityDirectory(client)
+    expect(result['Teacher'][0].photo).toBeUndefined()
+  })
 })
 
 // ─── getEvents ────────────────────────────────────────────────────────────────
@@ -215,7 +237,30 @@ describe('getEvents', () => {
     })
 
     const result = await getEvents(client)
-    expect(result[0].media).toBeUndefined()
+    expect(result[0].media).toEqual([])
+  })
+
+  it('drops media entries that did not resolve to an Asset', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [
+          {
+            fields: {
+              name: 'Mixed Media',
+              date: '2024-05-01',
+              description: 'One resolved asset, one unresolved link',
+              media: [
+                { fields: { file: { url: '//example.com/resolved.jpg' } } },
+                { sys: { type: 'Link', linkType: 'Asset', id: 'missing' } },
+              ],
+            },
+          },
+        ],
+      }),
+    })
+
+    const result = await getEvents(client)
+    expect(result[0].media).toEqual(['https://example.com/resolved.jpg'])
   })
 })
 

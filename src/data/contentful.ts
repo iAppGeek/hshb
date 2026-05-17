@@ -1,26 +1,45 @@
 import type {
+  Asset,
   ContentfulClientApi,
+  Entry,
   EntryCollection,
-  EntrySkeletonType,
+  UnresolvedLink,
 } from 'contentful'
-import * as contentful from 'contentful'
+
+import type {
+  TypeAccordionEntrySkeleton,
+  TypeAccordionSkeleton,
+  TypeEventsSkeleton,
+  TypePeopleSkeleton,
+  TypeQuotesSkeleton,
+  TypeTestimonialsSkeleton,
+  TypeTextSkeleton,
+} from '@/types/contentful'
 
 export type CommunityMemeber = {
   priorityOrder: number
   name: string
-  blurb: string
+  blurb: string | undefined
   extendedBlurb: string | undefined
-  photo: string
+  photo: string | undefined
   largeView: boolean
 }
 export type CommunityDirectory = { [key: string]: CommunityMemeber[] }
 
-const getLinkedAssetUrl = (parentNode: contentful.Asset) => {
-  return 'https:' + parentNode?.fields?.file?.url
+type MaybeAsset = Asset | UnresolvedLink<'Asset'> | undefined
+
+// With `Modifiers = undefined`, AssetLink fields return either a resolved
+// Asset or an unresolved sys-only stub. Treat the latter as missing.
+const resolveAsset = (link: MaybeAsset): Asset | undefined =>
+  link && 'fields' in link ? link : undefined
+
+const getLinkedAssetUrl = (link: MaybeAsset): string | undefined => {
+  const url = resolveAsset(link)?.fields?.file?.url
+  return url ? `https:${url}` : undefined
 }
 
 let textCachePromise: Promise<
-  EntryCollection<EntrySkeletonType, undefined, string>
+  EntryCollection<TypeTextSkeleton, undefined, string>
 > | null = null
 
 export const getTextSectionData = async (
@@ -28,43 +47,49 @@ export const getTextSectionData = async (
   sectionId: string,
 ): Promise<string> => {
   if (!textCachePromise) {
-    textCachePromise = client.getEntries({ content_type: 'text' })
+    textCachePromise = client.getEntries<TypeTextSkeleton>({
+      content_type: 'text',
+    })
   }
   const textCache = await textCachePromise
 
-  const item = textCache.items.find((i) => i.fields['id'] === sectionId)
-  return item ? (item.fields['text'] as string) : ''
+  const item = textCache.items.find((i) => i.fields.id === sectionId)
+  return item ? item.fields.text : ''
 }
 
-export type FeaturedQuote = { text: string; author: string; role: string }
+export type FeaturedQuote = {
+  text: string
+  author: string
+  role: string | undefined
+}
 export const getFeaturedQuotes = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<FeaturedQuote[]> => {
-  const entries = await client.getEntries({
+  const entries = await client.getEntries<TypeQuotesSkeleton>({
     content_type: 'quotes',
   })
   return entries.items.map((entry) => ({
-    author: entry.fields['author'] as string,
-    role: entry.fields['role'] as string,
-    text: entry.fields['text'] as string,
+    author: entry.fields.author,
+    role: entry.fields.role,
+    text: entry.fields.text,
   }))
 }
 
 export const getCommunityDirectory = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<CommunityDirectory> => {
-  const people = await client.getEntries({ content_type: 'people' })
+  const people = await client.getEntries<TypePeopleSkeleton>({
+    content_type: 'people',
+  })
   const grouped = people.items.reduce((prev, curr) => {
-    const role = curr.fields['role'] as string
+    const role = curr.fields.role
     const member: CommunityMemeber = {
-      priorityOrder: curr.fields['priorityOrder'] as number,
-      blurb: curr.fields['blurb'] as string,
-      extendedBlurb: curr.fields['extendedBlurb'] as string | undefined,
-      name: `${curr.fields['firstName']} ${curr.fields['lastName']}`,
-      photo: getLinkedAssetUrl(
-        curr.fields['photo'] as contentful.Asset,
-      ) as string,
-      largeView: !!curr.fields['largeView'],
+      priorityOrder: curr.fields.priorityOrder,
+      blurb: curr.fields.blurb,
+      extendedBlurb: curr.fields.extendedBlurb,
+      name: `${curr.fields.firstName} ${curr.fields.lastName}`,
+      photo: getLinkedAssetUrl(curr.fields.photo),
+      largeView: !!curr.fields.largeView,
     }
 
     if (prev[role]) {
@@ -86,20 +111,20 @@ export type PastEvent = {
 export const getEvents = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<PastEvent[]> => {
-  const entries = await client.getEntries({ content_type: 'events', limit: 3 })
+  const entries = await client.getEntries<TypeEventsSkeleton>({
+    content_type: 'events',
+    limit: 3,
+  })
 
-  const events = entries.items.map(
-    (entry) =>
-      ({
-        name: entry.fields['name'] as string,
-        date: new Date(entry.fields['date'] as string),
-        description: entry.fields['description'] as string,
-        // @ts-expect-error - media is an array of assets?
-        media: entry.fields['media']?.map(getLinkedAssetUrl),
-      }) satisfies PastEvent,
-  )
-
-  return events
+  return entries.items.map((entry) => ({
+    name: entry.fields.name,
+    date: new Date(entry.fields.date),
+    description: entry.fields.description,
+    media:
+      entry.fields.media
+        ?.map(getLinkedAssetUrl)
+        .filter((url): url is string => Boolean(url)) ?? [],
+  }))
 }
 
 export type AccordianData = { title: string; body: string }[]
@@ -107,39 +132,43 @@ export const getAccordion = async (
   client: ContentfulClientApi<undefined>,
   name: string,
 ): Promise<AccordianData> => {
-  const entry = await client.getEntries({
+  const result = await client.getEntries<TypeAccordionSkeleton>({
     content_type: 'accordion',
     'fields.name[match]': name,
     limit: 1,
   })
-  const entries = entry.items[0].fields['entries'] as contentful.Entry<
-    EntrySkeletonType,
-    undefined,
-    string
-  >[]
 
-  const formatted = entries?.map((i) => ({
-    title: i.fields.title as string,
-    body: i.fields.body as string,
-  }))
+  const entries = result.items[0]?.fields.entries
+  if (!entries) return []
 
-  return formatted!
+  return entries
+    .filter(
+      (e): e is Entry<TypeAccordionEntrySkeleton, undefined, string> =>
+        'fields' in e,
+    )
+    .map((e) => ({ title: e.fields.title, body: e.fields.body }))
 }
 
-export type Author = { name: string; role: string; image: string }
+export type Author = {
+  name: string
+  role: string | undefined
+  image: string | undefined
+}
 export type Testimonial = { title: string; text: string; author: Author }
 export const getTestimonials = async (
   client: ContentfulClientApi<undefined>,
 ): Promise<Testimonial[]> => {
-  const entries = await client.getEntries({ content_type: 'testimonials' })
+  const entries = await client.getEntries<TypeTestimonialsSkeleton>({
+    content_type: 'testimonials',
+  })
 
   return entries.items.map((e) => ({
-    title: e.fields['title'] as string,
-    text: e.fields['text'] as string,
+    title: e.fields.title,
+    text: e.fields.text,
     author: {
-      name: e.fields['author'] as string,
-      role: e.fields['role'] as string,
-      image: getLinkedAssetUrl(e.fields['icon'] as contentful.Asset) as string,
+      name: e.fields.author,
+      role: e.fields.role,
+      image: getLinkedAssetUrl(e.fields.icon),
     },
   }))
 }

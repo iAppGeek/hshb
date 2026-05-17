@@ -30,13 +30,17 @@ const TestimonialItem = ({
       </blockquote>
       <figcaption className="mt-6 flex items-center">
         <div className="overflow-hidden rounded-full bg-slate-50">
-          <Image
-            className="h-12 w-12 object-cover"
-            src={author.image}
-            alt=""
-            width={48}
-            height={48}
-          />
+          {author.image ? (
+            <Image
+              className="h-12 w-12 object-cover"
+              src={author.image}
+              alt=""
+              width={48}
+              height={48}
+            />
+          ) : (
+            <div className="h-12 w-12" aria-hidden="true" />
+          )}
         </div>
         <div className="ml-4">
           <div className="text-base leading-6 font-medium tracking-tight text-slate-900">
