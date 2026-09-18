@@ -5,6 +5,7 @@ vi.mock('next/image', () => ({
   default: ({ alt }: { alt: string }) => <img alt={alt} />,
 }))
 vi.mock('@/images/logo.png', () => ({ default: '/logo.png' }))
+vi.mock('@/images/resources/books.png', () => ({ default: '/books.png' }))
 vi.mock('@/images/icons/twitter.svg', () => ({ default: '/twitter.svg' }))
 vi.mock('@/images/icons/facebook.svg', () => ({ default: '/facebook.svg' }))
 vi.mock('@/images/icons/instagram.svg', () => ({ default: '/instagram.svg' }))

@@ -15,6 +15,7 @@ import instagramIcon from '@/images/icons/instagram.svg'
 import facebookIcon from '@/images/icons/facebook.svg'
 import twitterIcon from '@/images/icons/twitter.svg'
 import logo from '@/images/logo.png'
+import booksIllustration from '@/images/resources/books.png'
 import { sendEvent } from '@/data/events'
 import { buildContactMailto, LINKS, SOCIAL_LINKS } from '@/data/linktree'
 
@@ -83,7 +84,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
     <main className="relative flex min-h-dvh justify-center bg-slate-100 sm:items-center sm:p-4">
       <div
         className={clsx(
-          'relative flex h-dvh w-full flex-col overflow-hidden bg-linear-to-b from-blue-700 via-blue-500 to-blue-50',
+          'relative flex h-dvh w-full flex-col overflow-hidden bg-linear-to-b from-blue-50 via-blue-500 to-blue-700',
           // From `sm:` up, the card keeps a phone-like aspect ratio (rather
           // than a fixed max-width) so there's always proportionally enough
           // height for the content above the decorative image, even on a
@@ -187,19 +188,21 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
 
         {/*
           Reserves the remaining card height (whatever that is, at any
-          viewport) for a primary-school / education themed decorative
-          illustration, so it can never overlap the content above. Swap
-          this placeholder for a <next/image> once
-          src/images/linktree/corner-illustration.webp is provided.
+          viewport) for the decorative illustration, so it can never
+          overlap the content above.
         */}
         <div className="relative min-h-0 flex-1">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 flex items-end justify-end p-4"
           >
-            <div className="flex aspect-4/3 h-full max-h-40 w-auto max-w-[70%] items-center justify-center rounded-2xl border-2 border-dashed border-blue-300 bg-white/40">
-              <span className="text-xs font-medium text-blue-400">Image</span>
-            </div>
+            <Image
+              src={booksIllustration}
+              alt=""
+              aria-hidden="true"
+              priority
+              className="h-full max-h-64 w-auto object-contain object-bottom-right"
+            />
           </div>
         </div>
       </div>
