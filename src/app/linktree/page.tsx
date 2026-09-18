@@ -40,9 +40,13 @@ export const metadata: Metadata = {
   },
 }
 
+type LinktreePageProps = {
+  searchParams: Promise<{ t?: string | string[] }>
+}
+
 export default async function LinktreePage({
   searchParams,
-}: PageProps<'/linktree'>): Promise<React.JSX.Element> {
+}: LinktreePageProps): Promise<React.JSX.Element> {
   const { t } = await searchParams
 
   return (

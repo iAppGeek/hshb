@@ -21,7 +21,6 @@ describe('LinktreePage', () => {
     render(
       await LinktreePage({
         searchParams: Promise.resolve({ t: 'jsmith' }),
-        params: Promise.resolve({}),
       }),
     )
 
@@ -36,7 +35,6 @@ describe('LinktreePage', () => {
     render(
       await LinktreePage({
         searchParams: Promise.resolve({}),
-        params: Promise.resolve({}),
       }),
     )
 
@@ -51,7 +49,6 @@ describe('LinktreePage', () => {
     render(
       await LinktreePage({
         searchParams: Promise.resolve({ t: 'jsmith@evil.com' }),
-        params: Promise.resolve({}),
       }),
     )
 
