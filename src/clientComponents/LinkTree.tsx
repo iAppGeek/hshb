@@ -29,24 +29,25 @@ const SOCIAL_ICONS: Record<string, string> = {
 // brand icon as its social-row counterpart; the rest use heroicons matching
 // their function.
 const LINK_ICONS: Record<string, ReactNode> = {
-  homepage: <GlobeAltIcon aria-hidden="true" className="size-5" />,
-  registration: <UserPlusIcon aria-hidden="true" className="size-5" />,
+  homepage: <GlobeAltIcon aria-hidden="true" className="size-4 shrink-0" />,
+  registration: <UserPlusIcon aria-hidden="true" className="size-4 shrink-0" />,
   'dojo-school-signup': (
     <Image
       src={classdojoIcon}
       alt=""
       aria-hidden="true"
-      height={20}
-      width={20}
+      height={16}
+      width={16}
+      className="size-4 shrink-0"
     />
   ),
 }
 
 const linkClassName = clsx(
-  'flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-4 text-center',
-  'text-base font-medium text-slate-900 shadow-md transition-colors hover:bg-blue-50',
+  'flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-4 text-center',
+  'text-sm font-medium text-slate-900 shadow-md transition-colors hover:bg-blue-50',
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
-  '[@media(max-height:680px)]:min-h-9 [@media(max-height:680px)]:text-sm',
+  '[@media(max-height:680px)]:h-9',
 )
 
 type LinkTreeProps = {
@@ -139,7 +140,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
                 className={linkClassName}
                 onClick={() => trackClick('email-school')}
               >
-                <EnvelopeIcon aria-hidden="true" className="size-5" />
+                <EnvelopeIcon aria-hidden="true" className="size-4 shrink-0" />
                 Contact Us
               </a>
             </li>
@@ -177,6 +178,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
                   aria-hidden="true"
                   height={20}
                   width={20}
+                  className="size-5"
                 />
               </a>
             ))}
