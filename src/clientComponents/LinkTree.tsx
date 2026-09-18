@@ -156,7 +156,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
         */}
         <div
           aria-hidden="true"
-          className="absolute right-0 bottom-0 z-0 flex max-h-[26dvh] w-[55%] items-end justify-end p-4 [@media(max-height:680px)]:max-h-[18dvh]"
+          className="pointer-events-none absolute right-0 bottom-0 z-0 flex max-h-[26dvh] w-[55%] items-end justify-end p-4 [@media(max-height:680px)]:max-h-[18dvh]"
         >
           <div className="flex aspect-4/3 w-full items-center justify-center rounded-2xl border-2 border-dashed border-blue-300 bg-white/40">
             <span className="text-xs font-medium text-blue-400">Image</span>

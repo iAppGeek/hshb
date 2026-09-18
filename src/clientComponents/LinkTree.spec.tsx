@@ -106,6 +106,18 @@ describe('LinkTree', () => {
     })
   })
 
+  it('tracks a click on the internal homepage link', () => {
+    render(<LinkTree staff={null} staffEmail={null} />)
+    vi.mocked(sendEvent).mockClear()
+
+    fireEvent.click(screen.getByRole('link', { name: /school website/i }))
+
+    expect(sendEvent).toHaveBeenCalledWith('click', 'linktree-link', {
+      link: 'homepage',
+      staff: 'none',
+    })
+  })
+
   it('tracks social link clicks', () => {
     render(<LinkTree staff={null} staffEmail={null} />)
     vi.mocked(sendEvent).mockClear()
