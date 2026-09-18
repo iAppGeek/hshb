@@ -7,11 +7,10 @@ const VIEWPORTS = [
 ] as const
 
 const LINK_NAMES = [
-  /school registration/i,
-  /school website/i,
-  /parent sign in/i,
-  /join our school/i,
-  /contact.*email school/i,
+  /visit website/i,
+  /contact us/i,
+  /register student/i,
+  /classdojo family registration/i,
 ] as const
 
 const assertNoScroll = async (page: Page): Promise<void> => {
@@ -36,6 +35,7 @@ test.describe('Linktree page', () => {
       for (const name of LINK_NAMES) {
         await expect(page.getByRole('link', { name })).toBeVisible()
       }
+      await expect(page.getByTitle(/parent sign in/i)).toBeVisible()
       await expect(page.getByTitle(/instagram/i)).toBeVisible()
       await expect(page.getByTitle(/facebook/i)).toBeVisible()
       await expect(page.getByTitle(/follow us on x/i)).toBeVisible()
@@ -54,7 +54,7 @@ test.describe('Linktree page', () => {
     ).toBeVisible()
 
     const href = await page
-      .getByRole('link', { name: /contact.*email school/i })
+      .getByRole('link', { name: /contact us/i })
       .getAttribute('href')
     expect(href).toContain('cc=jsmith%40hshb.org.uk')
   })
@@ -65,7 +65,7 @@ test.describe('Linktree page', () => {
     await expect(page.getByText(/shared by/i)).toHaveCount(0)
 
     const href = await page
-      .getByRole('link', { name: /contact.*email school/i })
+      .getByRole('link', { name: /contact us/i })
       .getAttribute('href')
     expect(href).not.toContain('cc=')
   })
@@ -76,7 +76,7 @@ test.describe('Linktree page', () => {
     await expect(page.getByText(/shared by/i)).toHaveCount(0)
 
     const href = await page
-      .getByRole('link', { name: /contact.*email school/i })
+      .getByRole('link', { name: /contact us/i })
       .getAttribute('href')
     expect(href).not.toContain('cc=')
   })

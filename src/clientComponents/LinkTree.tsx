@@ -2,9 +2,15 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import clsx from 'clsx'
+import {
+  EnvelopeIcon,
+  GlobeAltIcon,
+  UserPlusIcon,
+} from '@heroicons/react/24/outline'
 
+import classdojoIcon from '@/images/icons/classdojo-icon.svg'
 import instagramIcon from '@/images/icons/instagram.svg'
 import facebookIcon from '@/images/icons/facebook.svg'
 import twitterIcon from '@/images/icons/twitter.svg'
@@ -13,13 +19,31 @@ import { sendEvent } from '@/data/events'
 import { buildContactMailto, LINKS, SOCIAL_LINKS } from '@/data/linktree'
 
 const SOCIAL_ICONS: Record<string, string> = {
+  'dojo-parent-login': classdojoIcon,
   instagram: instagramIcon,
   facebook: facebookIcon,
   x: twitterIcon,
 }
 
+// Icons for the main pill links, keyed by link id. ClassDojo uses the same
+// brand icon as its social-row counterpart; the rest use heroicons matching
+// their function.
+const LINK_ICONS: Record<string, ReactNode> = {
+  homepage: <GlobeAltIcon aria-hidden="true" className="size-5" />,
+  registration: <UserPlusIcon aria-hidden="true" className="size-5" />,
+  'dojo-school-signup': (
+    <Image
+      src={classdojoIcon}
+      alt=""
+      aria-hidden="true"
+      height={20}
+      width={20}
+    />
+  ),
+}
+
 const linkClassName = clsx(
-  'flex min-h-11 w-full items-center justify-center rounded-full bg-white px-4 text-center',
+  'flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-4 text-center',
   'text-base font-medium text-slate-900 shadow-md transition-colors hover:bg-blue-50',
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
   '[@media(max-height:680px)]:min-h-9 [@media(max-height:680px)]:text-sm',
@@ -48,15 +72,25 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
 
   const contactHref = buildContactMailto(staffEmail)
 
+  // Renders in the requested order: Visit Website, Contact Us, Register
+  // Student, ClassDojo Family Registration. Contact Us is spliced in after
+  // the homepage link since its href is built at runtime, not stored in
+  // the static LINKS list.
+  const [homepageLink, ...restLinks] = LINKS
+
   return (
     <main className="relative flex min-h-dvh justify-center bg-slate-100 sm:items-center sm:p-4">
       <div
         className={clsx(
-          'relative h-dvh w-full overflow-hidden bg-linear-to-b from-blue-700 via-blue-500 to-blue-50',
-          'sm:h-[min(calc(100dvh-2rem),56rem)] sm:max-w-md sm:rounded-[2.5rem] sm:shadow-xl',
+          'relative flex h-dvh w-full flex-col overflow-hidden bg-linear-to-b from-blue-700 via-blue-500 to-blue-50',
+          // From `sm:` up, the card keeps a phone-like aspect ratio (rather
+          // than a fixed max-width) so there's always proportionally enough
+          // height for the content above the decorative image, even on a
+          // short, wide desktop viewport.
+          'sm:aspect-9/19 sm:h-[min(calc(100dvh-2rem),44rem)] sm:w-auto sm:rounded-[2.5rem] sm:shadow-xl',
         )}
       >
-        <div className="relative z-10 flex h-full flex-col items-center px-6 pt-[8vh]">
+        <div className="relative z-10 flex flex-col items-center px-6 pt-[8vh]">
           <div
             className={clsx(
               'flex size-24 items-center justify-center rounded-full bg-white p-3 shadow-lg ring-4 ring-white/40',
@@ -89,40 +123,40 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
               '[@media(max-height:680px)]:mt-4 [@media(max-height:680px)]:gap-2',
             )}
           >
-            {LINKS.map((link) =>
-              link.external ? (
-                <li key={link.id}>
-                  <a
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={linkClassName}
-                    onClick={() => trackClick(link.id)}
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ) : (
-                <li key={link.id}>
-                  <Link
-                    href={link.href}
-                    className={linkClassName}
-                    onClick={() => trackClick(link.id)}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ),
-            )}
+            <li>
+              <Link
+                href={homepageLink.href}
+                className={linkClassName}
+                onClick={() => trackClick(homepageLink.id)}
+              >
+                {LINK_ICONS[homepageLink.id]}
+                {homepageLink.label}
+              </Link>
+            </li>
             <li>
               <a
                 href={contactHref}
                 className={linkClassName}
                 onClick={() => trackClick('email-school')}
               >
-                Contact / Email School
+                <EnvelopeIcon aria-hidden="true" className="size-5" />
+                Contact Us
               </a>
             </li>
+            {restLinks.map((link) => (
+              <li key={link.id}>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClassName}
+                  onClick={() => trackClick(link.id)}
+                >
+                  {LINK_ICONS[link.id]}
+                  {link.label}
+                </a>
+              </li>
+            ))}
           </ul>
 
           <div className="mt-6 flex justify-center gap-4">
@@ -150,16 +184,20 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
         </div>
 
         {/*
-          Placeholder for a primary-school / education themed decorative
-          illustration. Swap this block for a <next/image> once
+          Reserves the remaining card height (whatever that is, at any
+          viewport) for a primary-school / education themed decorative
+          illustration, so it can never overlap the content above. Swap
+          this placeholder for a <next/image> once
           src/images/linktree/corner-illustration.webp is provided.
         */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute right-0 bottom-0 z-0 flex max-h-[26dvh] w-[55%] items-end justify-end p-4 [@media(max-height:680px)]:max-h-[18dvh]"
-        >
-          <div className="flex aspect-4/3 w-full items-center justify-center rounded-2xl border-2 border-dashed border-blue-300 bg-white/40">
-            <span className="text-xs font-medium text-blue-400">Image</span>
+        <div className="relative min-h-0 flex-1">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 flex items-end justify-end p-4"
+          >
+            <div className="flex aspect-4/3 h-full max-h-40 w-auto max-w-[70%] items-center justify-center rounded-2xl border-2 border-dashed border-blue-300 bg-white/40">
+              <span className="text-xs font-medium text-blue-400">Image</span>
+            </div>
           </div>
         </div>
       </div>

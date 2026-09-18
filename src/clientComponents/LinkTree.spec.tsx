@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, within, fireEvent } from '@testing-library/react'
 
 vi.mock('next/image', () => ({
   default: ({ alt }: { alt: string }) => <img alt={alt} />,
@@ -8,6 +8,9 @@ vi.mock('@/images/logo.png', () => ({ default: '/logo.png' }))
 vi.mock('@/images/icons/twitter.svg', () => ({ default: '/twitter.svg' }))
 vi.mock('@/images/icons/facebook.svg', () => ({ default: '/facebook.svg' }))
 vi.mock('@/images/icons/instagram.svg', () => ({ default: '/instagram.svg' }))
+vi.mock('@/images/icons/classdojo-icon.svg', () => ({
+  default: '/classdojo.svg',
+}))
 
 vi.mock('@/data/events', () => ({ sendEvent: vi.fn() }))
 import { sendEvent } from '@/data/events'
@@ -19,28 +22,45 @@ beforeEach(() => {
 })
 
 describe('LinkTree', () => {
-  it('renders links to the homepage, both ClassDojo pages and registration', () => {
+  it('renders the homepage, registration and ClassDojo family registration links', () => {
     render(<LinkTree staff={null} staffEmail={null} />)
 
     expect(
-      screen.getByRole('link', { name: /school website/i }),
+      screen.getByRole('link', { name: /visit website/i }),
     ).toHaveAttribute('href', '/')
     expect(
-      screen.getByRole('link', { name: /parent sign in/i }),
-    ).toHaveAttribute('href', 'https://dojo.hshb.org.uk/')
+      screen.getByRole('link', { name: /register student/i }),
+    ).toHaveAttribute('href', 'https://portal.hshb.org.uk/register')
     expect(
-      screen.getByRole('link', { name: /join our school/i }),
+      screen.getByRole('link', { name: /classdojo family registration/i }),
     ).toHaveAttribute(
       'href',
       'https://www.classdojo.com/ul/p/addKid?target=school&schoolID=561ab2860a93dff956cace93',
     )
-    expect(
-      screen.getByRole('link', { name: /school registration/i }),
-    ).toHaveAttribute('href', 'https://portal.hshb.org.uk/register')
   })
 
-  it('renders the 3 social links', () => {
+  it('renders the links in the requested order', () => {
     render(<LinkTree staff={null} staffEmail={null} />)
+
+    const labels = within(screen.getByRole('list'))
+      .getAllByRole('link')
+      .map((link) => link.textContent)
+      .filter((text): text is string => Boolean(text))
+
+    expect(labels).toEqual([
+      'Visit Website',
+      'Contact Us',
+      'Register Student',
+      'ClassDojo Family Registration',
+    ])
+  })
+
+  it('renders the 4 icon-only social/utility links', () => {
+    render(<LinkTree staff={null} staffEmail={null} />)
+    expect(screen.getByTitle(/parent sign in/i)).toHaveAttribute(
+      'href',
+      'https://dojo.hshb.org.uk/',
+    )
     expect(screen.getByTitle(/instagram/i)).toHaveAttribute(
       'href',
       'https://instagram.hshb.org.uk/',
@@ -65,17 +85,13 @@ describe('LinkTree', () => {
 
     expect(screen.getByText(/shared by jsmith@hshb.org.uk/i)).toBeVisible()
 
-    const emailLink = screen.getByRole('link', {
-      name: /contact.*email school/i,
-    })
+    const emailLink = screen.getByRole('link', { name: /contact us/i })
     expect(emailLink.getAttribute('href')).toContain('cc=jsmith%40hshb.org.uk')
   })
 
   it('has no cc in the mailto link without a staff email', () => {
     render(<LinkTree staff={null} staffEmail={null} />)
-    const emailLink = screen.getByRole('link', {
-      name: /contact.*email school/i,
-    })
+    const emailLink = screen.getByRole('link', { name: /contact us/i })
     expect(emailLink.getAttribute('href')).not.toContain('cc=')
   })
 
@@ -98,7 +114,7 @@ describe('LinkTree', () => {
     render(<LinkTree staff="jsmith" staffEmail="jsmith@hshb.org.uk" />)
     vi.mocked(sendEvent).mockClear()
 
-    fireEvent.click(screen.getByRole('link', { name: /school registration/i }))
+    fireEvent.click(screen.getByRole('link', { name: /register student/i }))
 
     expect(sendEvent).toHaveBeenCalledWith('click', 'linktree-link', {
       link: 'registration',
@@ -110,10 +126,22 @@ describe('LinkTree', () => {
     render(<LinkTree staff={null} staffEmail={null} />)
     vi.mocked(sendEvent).mockClear()
 
-    fireEvent.click(screen.getByRole('link', { name: /school website/i }))
+    fireEvent.click(screen.getByRole('link', { name: /visit website/i }))
 
     expect(sendEvent).toHaveBeenCalledWith('click', 'linktree-link', {
       link: 'homepage',
+      staff: 'none',
+    })
+  })
+
+  it('tracks the ClassDojo parent sign-in icon click', () => {
+    render(<LinkTree staff={null} staffEmail={null} />)
+    vi.mocked(sendEvent).mockClear()
+
+    fireEvent.click(screen.getByTitle(/parent sign in/i))
+
+    expect(sendEvent).toHaveBeenCalledWith('click', 'linktree-link', {
+      link: 'dojo-parent-login',
       staff: 'none',
     })
   })

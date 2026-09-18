@@ -37,34 +37,29 @@ export const buildContactMailto = (staffEmail: string | null): string => {
 export type LinktreeLink = {
   id: string
   label: string
-  description?: string
   href: string
   external: boolean
 }
 
+// Order matches the requested display order: Visit Website, Contact Us
+// (rendered separately in LinkTree.tsx since its href is built at runtime
+// from the staff email), Register Student, ClassDojo Family Registration.
 export const LINKS: readonly LinktreeLink[] = [
   {
-    id: 'registration',
-    label: 'School Registration',
-    description: 'Register your child',
-    href: 'https://portal.hshb.org.uk/register',
-    external: true,
-  },
-  {
     id: 'homepage',
-    label: 'School Website',
+    label: 'Visit Website',
     href: '/',
     external: false,
   },
   {
-    id: 'dojo-parent-login',
-    label: 'ClassDojo — Parent Sign In',
-    href: 'https://dojo.hshb.org.uk/',
+    id: 'registration',
+    label: 'Register Student',
+    href: 'https://portal.hshb.org.uk/register',
     external: true,
   },
   {
     id: 'dojo-school-signup',
-    label: 'ClassDojo — Join Our School',
+    label: 'ClassDojo Family Registration',
     href: 'https://www.classdojo.com/ul/p/addKid?target=school&schoolID=561ab2860a93dff956cace93',
     external: true,
   },
@@ -76,7 +71,14 @@ export type LinktreeSocialLink = {
   href: string
 }
 
+// Rendered as a row of icon-only links, alongside the school's other
+// social links, matching the Navbar's icon treatment.
 export const SOCIAL_LINKS: readonly LinktreeSocialLink[] = [
+  {
+    id: 'dojo-parent-login',
+    label: 'ClassDojo — Parent Sign In',
+    href: 'https://dojo.hshb.org.uk/',
+  },
   {
     id: 'instagram',
     label: 'Follow us on Instagram',

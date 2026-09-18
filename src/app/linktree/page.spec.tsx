@@ -8,6 +8,9 @@ vi.mock('@/images/logo.png', () => ({ default: '/logo.png' }))
 vi.mock('@/images/icons/twitter.svg', () => ({ default: '/twitter.svg' }))
 vi.mock('@/images/icons/facebook.svg', () => ({ default: '/facebook.svg' }))
 vi.mock('@/images/icons/instagram.svg', () => ({ default: '/instagram.svg' }))
+vi.mock('@/images/icons/classdojo-icon.svg', () => ({
+  default: '/classdojo.svg',
+}))
 vi.mock('@/data/events', () => ({ sendEvent: vi.fn() }))
 
 import LinktreePage from './page'
@@ -23,7 +26,7 @@ describe('LinktreePage', () => {
 
     expect(screen.getByText(/shared by jsmith@hshb.org.uk/i)).toBeVisible()
     const emailLink = screen.getByRole('link', {
-      name: /contact.*email school/i,
+      name: /contact us/i,
     })
     expect(emailLink.getAttribute('href')).toContain('cc=jsmith%40hshb.org.uk')
   })
@@ -38,7 +41,7 @@ describe('LinktreePage', () => {
 
     expect(screen.queryByText(/shared by/i)).not.toBeInTheDocument()
     const emailLink = screen.getByRole('link', {
-      name: /contact.*email school/i,
+      name: /contact us/i,
     })
     expect(emailLink.getAttribute('href')).not.toContain('cc=')
   })
@@ -53,7 +56,7 @@ describe('LinktreePage', () => {
 
     expect(screen.queryByText(/shared by/i)).not.toBeInTheDocument()
     const emailLink = screen.getByRole('link', {
-      name: /contact.*email school/i,
+      name: /contact us/i,
     })
     expect(emailLink.getAttribute('href')).not.toContain('cc=')
   })

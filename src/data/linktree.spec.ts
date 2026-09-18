@@ -79,22 +79,15 @@ describe('LINKS', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('includes the school registration, homepage and both ClassDojo links', () => {
+  it('has the homepage, registration and ClassDojo school signup links, in order', () => {
     const ids = LINKS.map((link) => link.id)
-    expect(ids).toEqual(
-      expect.arrayContaining([
-        'registration',
-        'homepage',
-        'dojo-parent-login',
-        'dojo-school-signup',
-      ]),
-    )
+    expect(ids).toEqual(['homepage', 'registration', 'dojo-school-signup'])
   })
 })
 
 describe('SOCIAL_LINKS', () => {
-  it('includes instagram, facebook and x', () => {
+  it('has the ClassDojo parent sign-in, instagram, facebook and x links, in order', () => {
     const ids = SOCIAL_LINKS.map((link) => link.id)
-    expect(ids).toEqual(['instagram', 'facebook', 'x'])
+    expect(ids).toEqual(['dojo-parent-login', 'instagram', 'facebook', 'x'])
   })
 })
