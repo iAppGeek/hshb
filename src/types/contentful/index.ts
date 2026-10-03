@@ -9,6 +9,11 @@ export type {
   TypeAccordionEntrySkeleton,
 } from './TypeAccordionEntry'
 export type {
+  TypeDocShare,
+  TypeDocShareFields,
+  TypeDocShareSkeleton,
+} from './TypeDocShare'
+export type {
   TypeDocument,
   TypeDocumentFields,
   TypeDocumentSkeleton,
@@ -24,6 +29,11 @@ export type {
   TypePeopleFields,
   TypePeopleSkeleton,
 } from './TypePeople'
+export type {
+  TypePolicy,
+  TypePolicyFields,
+  TypePolicySkeleton,
+} from './TypePolicy'
 export type {
   TypeQuotes,
   TypeQuotesFields,

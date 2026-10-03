@@ -18,6 +18,13 @@ afterEach(() => {
 })
 
 describe('ContactForm', () => {
+  it('links to the privacy notice next to the submit button', () => {
+    render(<ContactForm />)
+    expect(
+      screen.getByRole('link', { name: 'Privacy Notice' }),
+    ).toHaveAttribute('href', '/policies/privacy-policy')
+  })
+
   it('renders all form fields', () => {
     render(<ContactForm />)
     expect(screen.getByLabelText('First name')).toBeTruthy()

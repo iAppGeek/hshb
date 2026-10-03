@@ -158,4 +158,22 @@ describe('LinkTree', () => {
       staff: 'none',
     })
   })
+  it('shows small policy links in the footer and tracks clicks', () => {
+    render(<LinkTree staff="jsmith" staffEmail="jsmith@hshb.org.uk" />)
+    vi.mocked(sendEvent).mockClear()
+
+    const nav = screen.getByRole('navigation', { name: /policies/i })
+    const privacy = within(nav).getByRole('link', { name: 'Privacy Notice' })
+    expect(
+      within(nav).getByRole('link', { name: 'School Policies' }),
+    ).toHaveAttribute('href', '/policies')
+    expect(privacy).toHaveAttribute('href', '/policies/privacy-policy')
+
+    fireEvent.click(privacy)
+
+    expect(sendEvent).toHaveBeenCalledWith('click', 'linktree-link', {
+      link: 'privacy-policy',
+      staff: 'jsmith',
+    })
+  })
 })

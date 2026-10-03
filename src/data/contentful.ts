@@ -11,6 +11,7 @@ import type {
   TypeAccordionSkeleton,
   TypeEventsSkeleton,
   TypePeopleSkeleton,
+  TypePolicySkeleton,
   TypeQuotesSkeleton,
   TypeTestimonialsSkeleton,
   TypeTextSkeleton,
@@ -178,4 +179,61 @@ export const getHeroVideo = async (
 ): Promise<string | undefined> => {
   const entry = await client.getAsset('4thhwbtIQVSSwI1LDbONsJ')
   return entry.fields.file?.url
+}
+
+export type PolicyDocument = {
+  url: string
+  fileName: string
+  size: number | undefined
+}
+export type Policy = {
+  slug: string
+  title: string
+  summary: string
+  version: string
+  publishDate: string
+  pdf: PolicyDocument | undefined
+}
+
+const toPolicyDocument = (link: MaybeAsset): PolicyDocument | undefined => {
+  const file = resolveAsset(link)?.fields?.file
+  // The SDK types `file` as either a single-locale file or a locale map;
+  // this client is single-locale, so narrow to the plain file shape.
+  if (!file || typeof file.url !== 'string') return undefined
+  if (file.contentType !== 'application/pdf') return undefined
+  const details = file.details
+  return {
+    url: `https:${file.url}`,
+    fileName: typeof file.fileName === 'string' ? file.fileName : 'policy.pdf',
+    size:
+      details && 'size' in details && typeof details.size === 'number'
+        ? details.size
+        : undefined,
+  }
+}
+
+export const getPolicies = async (
+  client: ContentfulClientApi<undefined>,
+): Promise<Policy[]> => {
+  const entries = await client.getEntries<TypePolicySkeleton>({
+    content_type: 'policy',
+    order: ['fields.title'],
+  })
+
+  return entries.items.map((e) => ({
+    slug: e.fields.slug,
+    title: e.fields.title,
+    summary: e.fields.summary,
+    version: e.fields.version,
+    publishDate: e.fields.publishDate,
+    pdf: toPolicyDocument(e.fields.pdf),
+  }))
+}
+
+export const getPolicy = async (
+  client: ContentfulClientApi<undefined>,
+  slug: string,
+): Promise<Policy | undefined> => {
+  const policies = await getPolicies(client)
+  return policies.find((p) => p.slug === slug)
 }

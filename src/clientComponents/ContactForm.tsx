@@ -1,9 +1,11 @@
 'use client'
 
 import { FormEventHandler, useState } from 'react'
+import Link from 'next/link'
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 
 import { sendEvent } from '@/data/events'
+import { policyPath, PRIVACY_POLICY_SLUG } from '@/data/policies'
 
 export const ContactForm = () => {
   const [status, setStatus] = useState<string | null>(null)
@@ -136,6 +138,16 @@ export const ContactForm = () => {
               </div>
             </div>
           </div>
+          <p className="mt-6 text-sm text-gray-600">
+            We only use these details to reply to your message. See our{' '}
+            <Link
+              href={policyPath(PRIVACY_POLICY_SLUG)}
+              className="font-semibold text-indigo-600 hover:text-indigo-500"
+            >
+              Privacy Notice
+            </Link>{' '}
+            for how we look after personal information.
+          </p>
           <div className="mt-8 flex justify-end">
             {status === 'ok' && (
               <div className="alert alert-success">

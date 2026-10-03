@@ -1,8 +1,10 @@
+import Link from 'next/link'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Container } from '@/components/Container'
 import { ScrollTracker } from '@/clientComponents/ScrollTracker'
 import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
+import { POLICIES_PATH, policyPath, PRIVACY_POLICY_SLUG } from '@/data/policies'
 
 type Props = {
   text: string
@@ -30,6 +32,23 @@ export const Enrolement = async (props: Props) => {
             components={mdxGridComponents}
           />
         </pre>
+        <p className="mt-6 text-base tracking-tight text-slate-700">
+          Before registering, please read our{' '}
+          <Link
+            href={POLICIES_PATH}
+            className="font-semibold text-blue-600 hover:text-blue-800"
+          >
+            School Policies
+          </Link>{' '}
+          and{' '}
+          <Link
+            href={policyPath(PRIVACY_POLICY_SLUG)}
+            className="font-semibold text-blue-600 hover:text-blue-800"
+          >
+            Privacy Notice
+          </Link>
+          .
+        </p>
       </Container>
       <ScrollTracker section="enrolment" />
     </section>
