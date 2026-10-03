@@ -81,7 +81,12 @@ describe('LINKS', () => {
 
   it('has the homepage, registration and ClassDojo school signup links, in order', () => {
     const ids = LINKS.map((link) => link.id)
-    expect(ids).toEqual(['homepage', 'registration', 'dojo-school-signup'])
+    expect(ids).toEqual([
+      'homepage',
+      'registration',
+      'whatsapp-community',
+      'dojo-school-signup',
+    ])
   })
 })
 

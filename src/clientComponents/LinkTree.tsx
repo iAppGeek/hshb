@@ -14,6 +14,7 @@ import classdojoIcon from '@/images/icons/classdojo-icon.svg'
 import instagramIcon from '@/images/icons/instagram.svg'
 import facebookIcon from '@/images/icons/facebook.svg'
 import twitterIcon from '@/images/icons/twitter.svg'
+import whatsappIcon from '@/images/icons/whatsapp.svg'
 import logo from '@/images/logo.png'
 import booksIllustration from '@/images/resources/books.png'
 import { sendEvent } from '@/data/events'
@@ -27,12 +28,22 @@ const SOCIAL_ICONS: Record<string, string> = {
   x: twitterIcon,
 }
 
-// Icons for the main pill links, keyed by link id. ClassDojo uses the same
-// brand icon as its social-row counterpart; the rest use heroicons matching
-// their function.
+// Icons for the main pill links, keyed by link id. ClassDojo and WhatsApp use
+// their brand icons (ClassDojo's matches its social-row counterpart); the rest
+// use heroicons matching their function.
 const LINK_ICONS: Record<string, ReactNode> = {
   homepage: <GlobeAltIcon aria-hidden="true" className="size-4 shrink-0" />,
   registration: <UserPlusIcon aria-hidden="true" className="size-4 shrink-0" />,
+  'whatsapp-community': (
+    <Image
+      src={whatsappIcon}
+      alt=""
+      aria-hidden="true"
+      height={16}
+      width={16}
+      className="size-4 shrink-0"
+    />
+  ),
   'dojo-school-signup': (
     <Image
       src={classdojoIcon}
@@ -45,12 +56,23 @@ const LINK_ICONS: Record<string, ReactNode> = {
   ),
 }
 
-const linkClassName = clsx(
-  'flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-4 text-center',
-  'text-sm font-medium text-slate-900 shadow-md transition-colors hover:bg-blue-50',
+const linkBaseClassName = clsx(
+  'flex h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-center',
+  'text-sm font-medium shadow-md transition-colors',
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
   '[@media(max-height:680px)]:h-9',
 )
+const defaultLinkColours = 'bg-white text-slate-900 hover:bg-blue-50'
+
+// Brand-coloured pills: WhatsApp green, and ClassDojo's Mojo-monster green.
+// Both use dark ink text, since white text fails WCAG contrast on these greens.
+const LINK_COLOURS: Record<string, string> = {
+  'whatsapp-community': 'bg-[#25D366] text-[#111B21] hover:bg-[#1EBE5B]',
+  'dojo-school-signup': 'bg-[#6ED10E] text-[#0A1F3D] hover:bg-[#62BD0C]',
+}
+
+const linkClassName = (linkId: string): string =>
+  clsx(linkBaseClassName, LINK_COLOURS[linkId] ?? defaultLinkColours)
 
 type LinkTreeProps = {
   staff: string | null
@@ -76,7 +98,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
   const contactHref = buildContactMailto(staffEmail)
 
   // Renders in the requested order: Visit Website, Contact Us, Register
-  // Student, ClassDojo Family Registration. Contact Us is spliced in after
+  // Student, Join WhatsApp Community, ClassDojo Family Registration. Contact Us is spliced in after
   // the homepage link since its href is built at runtime, not stored in
   // the static LINKS list.
   const [homepageLink, ...restLinks] = LINKS
@@ -129,7 +151,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
             <li>
               <Link
                 href={homepageLink.href}
-                className={linkClassName}
+                className={linkClassName(homepageLink.id)}
                 onClick={() => trackClick(homepageLink.id)}
               >
                 {LINK_ICONS[homepageLink.id]}
@@ -139,7 +161,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
             <li>
               <a
                 href={contactHref}
-                className={linkClassName}
+                className={linkClassName('email-school')}
                 onClick={() => trackClick('email-school')}
               >
                 <EnvelopeIcon aria-hidden="true" className="size-4 shrink-0" />
@@ -152,7 +174,7 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={linkClassName}
+                  className={linkClassName(link.id)}
                   onClick={() => trackClick(link.id)}
                 >
                   {LINK_ICONS[link.id]}

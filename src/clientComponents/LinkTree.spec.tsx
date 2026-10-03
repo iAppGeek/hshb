@@ -9,6 +9,7 @@ vi.mock('@/images/resources/books.png', () => ({ default: '/books.png' }))
 vi.mock('@/images/icons/twitter.svg', () => ({ default: '/twitter.svg' }))
 vi.mock('@/images/icons/facebook.svg', () => ({ default: '/facebook.svg' }))
 vi.mock('@/images/icons/instagram.svg', () => ({ default: '/instagram.svg' }))
+vi.mock('@/images/icons/whatsapp.svg', () => ({ default: '/whatsapp.svg' }))
 vi.mock('@/images/icons/classdojo-icon.svg', () => ({
   default: '/classdojo.svg',
 }))
@@ -52,6 +53,7 @@ describe('LinkTree', () => {
       'Visit Website',
       'Contact Us',
       'Register Student',
+      'Join WhatsApp Community',
       'ClassDojo Family Registration',
     ])
   })
@@ -175,5 +177,54 @@ describe('LinkTree', () => {
       link: 'privacy-policy',
       staff: 'jsmith',
     })
+  })
+
+  it('renders the WhatsApp Community button above ClassDojo family registration', () => {
+    render(<LinkTree staff={null} staffEmail={null} />)
+
+    const whatsapp = screen.getByRole('link', {
+      name: /join whatsapp community/i,
+    })
+    expect(whatsapp).toHaveAttribute(
+      'href',
+      'https://chat.whatsapp.com/KTqGHi2hQVx5Uuwbiw2bc2',
+    )
+    expect(whatsapp).toHaveAttribute('target', '_blank')
+
+    const dojo = screen.getByRole('link', {
+      name: /classdojo family registration/i,
+    })
+    expect(
+      whatsapp.compareDocumentPosition(dojo) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+  })
+
+  it('tracks WhatsApp Community clicks', () => {
+    render(<LinkTree staff={null} staffEmail={null} />)
+    vi.mocked(sendEvent).mockClear()
+
+    fireEvent.click(
+      screen.getByRole('link', { name: /join whatsapp community/i }),
+    )
+
+    expect(sendEvent).toHaveBeenCalledWith('click', 'linktree-link', {
+      link: 'whatsapp-community',
+      staff: 'none',
+    })
+  })
+
+  it('colours the WhatsApp and ClassDojo buttons with their brand colours', () => {
+    render(<LinkTree staff={null} staffEmail={null} />)
+
+    expect(
+      screen.getByRole('link', { name: /join whatsapp community/i }),
+    ).toHaveClass('bg-[#25D366]', 'text-[#111B21]')
+    expect(
+      screen.getByRole('link', { name: /classdojo family registration/i }),
+    ).toHaveClass('bg-[#6ED10E]', 'text-[#0A1F3D]')
+    expect(screen.getByRole('link', { name: /visit website/i })).toHaveClass(
+      'bg-white',
+      'text-slate-900',
+    )
   })
 })
