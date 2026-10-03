@@ -192,7 +192,7 @@ export type Policy = {
   summary: string
   version: string
   publishDate: string
-  pdf: PolicyDocument | undefined
+  pdf: PolicyDocument
 }
 
 const toPolicyDocument = (link: MaybeAsset): PolicyDocument | undefined => {
@@ -212,28 +212,46 @@ const toPolicyDocument = (link: MaybeAsset): PolicyDocument | undefined => {
   }
 }
 
-export const getPolicies = async (
-  client: ContentfulClientApi<undefined>,
-): Promise<Policy[]> => {
-  const entries = await client.getEntries<TypePolicySkeleton>({
-    content_type: 'policy',
-    order: ['fields.title'],
+// Only policies with a published PDF are returned. Only the entry metadata
+// is fetched here — never the PDF itself.
+const toPolicies = (
+  entries: EntryCollection<TypePolicySkeleton, undefined>,
+): Policy[] =>
+  entries.items.flatMap((e) => {
+    const pdf = toPolicyDocument(e.fields.pdf)
+    if (!pdf) return []
+    return [
+      {
+        slug: e.fields.slug,
+        title: e.fields.title,
+        summary: e.fields.summary,
+        version: e.fields.version,
+        publishDate: e.fields.publishDate,
+        pdf,
+      },
+    ]
   })
 
-  return entries.items.map((e) => ({
-    slug: e.fields.slug,
-    title: e.fields.title,
-    summary: e.fields.summary,
-    version: e.fields.version,
-    publishDate: e.fields.publishDate,
-    pdf: toPolicyDocument(e.fields.pdf),
-  }))
-}
+export const getPolicies = async (
+  client: ContentfulClientApi<undefined>,
+): Promise<Policy[]> =>
+  toPolicies(
+    await client.getEntries<TypePolicySkeleton>({
+      content_type: 'policy',
+      order: ['fields.title'],
+    }),
+  )
 
 export const getPolicy = async (
   client: ContentfulClientApi<undefined>,
   slug: string,
 ): Promise<Policy | undefined> => {
-  const policies = await getPolicies(client)
-  return policies.find((p) => p.slug === slug)
+  const [policy] = toPolicies(
+    await client.getEntries<TypePolicySkeleton>({
+      content_type: 'policy',
+      'fields.slug': slug,
+      limit: 1,
+    }),
+  )
+  return policy
 }

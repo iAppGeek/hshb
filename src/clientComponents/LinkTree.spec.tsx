@@ -160,21 +160,19 @@ describe('LinkTree', () => {
       staff: 'none',
     })
   })
-  it('shows small policy links in the footer and tracks clicks', () => {
+  it('shows a small policies link in the footer that opens in a new tab and tracks clicks', () => {
     render(<LinkTree staff="jsmith" staffEmail="jsmith@hshb.org.uk" />)
     vi.mocked(sendEvent).mockClear()
 
     const nav = screen.getByRole('navigation', { name: /policies/i })
-    const privacy = within(nav).getByRole('link', { name: 'Privacy Notice' })
-    expect(
-      within(nav).getByRole('link', { name: 'School Policies' }),
-    ).toHaveAttribute('href', '/policies')
-    expect(privacy).toHaveAttribute('href', '/policies/privacy-policy')
+    const link = within(nav).getByRole('link', { name: 'Policies & Privacy' })
+    expect(link).toHaveAttribute('href', '/policies')
+    expect(link).toHaveAttribute('target', '_blank')
 
-    fireEvent.click(privacy)
+    fireEvent.click(link)
 
     expect(sendEvent).toHaveBeenCalledWith('click', 'linktree-link', {
-      link: 'privacy-policy',
+      link: 'policies',
       staff: 'jsmith',
     })
   })

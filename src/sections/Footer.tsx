@@ -1,8 +1,7 @@
 import Image from 'next/image'
-import Link from 'next/link'
 
 import { GridPattern } from '@/components/GridPattern'
-import { POLICY_LINKS } from '@/data/policies'
+import { POLICIES_LINK_LABEL, POLICIES_PATH } from '@/data/policies'
 import github from '@/images/icons/github-mark.svg'
 
 export function Footer() {
@@ -13,18 +12,14 @@ export function Footer() {
       </div>
       <div className="relative flex flex-col items-center justify-center text-sm text-slate-600">
         <nav aria-label="Policies" className="mb-2">
-          <ul className="flex flex-wrap justify-center gap-x-2">
-            {POLICY_LINKS.map((link) => (
-              <li key={link.id}>
-                <Link
-                  href={link.href}
-                  className="rounded-md px-2 py-1 hover:bg-gray-400 hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <a
+            href={POLICIES_PATH}
+            target="_blank"
+            rel="noopener"
+            className="rounded-md px-2 py-1 hover:bg-gray-400 hover:text-white"
+          >
+            {POLICIES_LINK_LABEL}
+          </a>
         </nav>
         <p>Copyright &copy; {new Date().getFullYear()} Anthony Ladas</p>
 

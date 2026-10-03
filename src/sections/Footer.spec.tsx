@@ -9,15 +9,12 @@ vi.mock('@/images/icons/github-mark.svg', () => ({ default: '/github.svg' }))
 import { Footer } from './Footer'
 
 describe('Footer', () => {
-  it('links to the school policies and the privacy notice', () => {
+  it('links to the policies page in a new tab', () => {
     render(<Footer />)
 
     const nav = screen.getByRole('navigation', { name: /policies/i })
-    expect(
-      within(nav).getByRole('link', { name: 'School Policies' }),
-    ).toHaveAttribute('href', '/policies')
-    expect(
-      within(nav).getByRole('link', { name: 'Privacy Notice' }),
-    ).toHaveAttribute('href', '/policies/privacy-policy')
+    const link = within(nav).getByRole('link', { name: 'Policies & Privacy' })
+    expect(link).toHaveAttribute('href', '/policies')
+    expect(link).toHaveAttribute('target', '_blank')
   })
 })

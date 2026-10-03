@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 }
 
 export default async function PoliciesPage(): Promise<React.JSX.Element> {
-  const policies = (await getPolicies(client)).filter((p) => p.pdf)
+  const policies = await getPolicies(client)
 
   return (
     <>
@@ -69,7 +69,7 @@ export default async function PoliciesPage(): Promise<React.JSX.Element> {
                     <p className="mt-2 text-sm text-slate-500">
                       Version {policy.version} · Published{' '}
                       {formatPolicyDate(policy.publishDate)}
-                      {policy.pdf?.size !== undefined &&
+                      {policy.pdf.size !== undefined &&
                         ` · PDF, ${formatFileSize(policy.pdf.size)}`}
                     </p>
                   </div>

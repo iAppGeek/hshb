@@ -3,7 +3,6 @@ import { describe, it, expect } from 'vitest'
 import {
   formatFileSize,
   formatPolicyDate,
-  POLICY_LINKS,
   policyPath,
   safePdfFileName,
 } from './policies'
@@ -11,15 +10,6 @@ import {
 describe('policyPath', () => {
   it('builds the public URL path for a policy slug', () => {
     expect(policyPath('privacy-policy')).toBe('/policies/privacy-policy')
-  })
-})
-
-describe('POLICY_LINKS', () => {
-  it('links to the policies index and the privacy notice', () => {
-    expect(POLICY_LINKS.map((l) => l.href)).toEqual([
-      '/policies',
-      '/policies/privacy-policy',
-    ])
   })
 })
 

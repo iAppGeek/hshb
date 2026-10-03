@@ -18,11 +18,11 @@ afterEach(() => {
 })
 
 describe('ContactForm', () => {
-  it('links to the privacy notice next to the submit button', () => {
+  it('links to the policies page in a new tab next to the submit button', () => {
     render(<ContactForm />)
-    expect(
-      screen.getByRole('link', { name: 'Privacy Notice' }),
-    ).toHaveAttribute('href', '/policies/privacy-policy')
+    const link = screen.getByRole('link', { name: 'Privacy Notice' })
+    expect(link).toHaveAttribute('href', '/policies')
+    expect(link).toHaveAttribute('target', '_blank')
   })
 
   it('renders all form fields', () => {

@@ -382,7 +382,7 @@ const pdfFile = {
 }
 
 describe('getPolicies', () => {
-  it('maps policy entries, ordered by title, with their PDF', async () => {
+  it('maps policy entries, ordered by title, with their Contentful PDF URL', async () => {
     const getEntries = vi.fn().mockResolvedValue({
       items: [makePolicyEntry('privacy-policy', pdfFile)],
     })
@@ -410,28 +410,29 @@ describe('getPolicies', () => {
     ])
   })
 
-  it('leaves pdf undefined when the asset is unresolved', async () => {
+  it('leaves out a policy whose asset is unresolved', async () => {
     const entry = makePolicyEntry('a', undefined)
     ;(entry.fields as Record<string, unknown>).pdf = {
       sys: { type: 'Link', linkType: 'Asset', id: 'x' },
     }
     const client = makeClient({
-      getEntries: vi.fn().mockResolvedValue({ items: [entry] }),
+      getEntries: vi.fn().mockResolvedValue({
+        items: [entry, makePolicyEntry('b', pdfFile)],
+      }),
     })
 
-    const [policy] = await getPolicies(client)
-    expect(policy.pdf).toBeUndefined()
+    const result = await getPolicies(client)
+    expect(result.map((p) => p.slug)).toEqual(['b'])
   })
 
-  it('leaves pdf undefined when the asset is not a PDF', async () => {
+  it('leaves out a policy whose asset is not a PDF', async () => {
     const client = makeClient({
       getEntries: vi.fn().mockResolvedValue({
         items: [makePolicyEntry('a', { ...pdfFile, contentType: 'image/png' })],
       }),
     })
 
-    const [policy] = await getPolicies(client)
-    expect(policy.pdf).toBeUndefined()
+    expect(await getPolicies(client)).toEqual([])
   })
 
   it('falls back to a default file name and unknown size', async () => {
@@ -456,17 +457,19 @@ describe('getPolicies', () => {
 })
 
 describe('getPolicy', () => {
-  it('returns the policy with the matching slug', async () => {
-    const client = makeClient({
-      getEntries: vi.fn().mockResolvedValue({
-        items: [
-          makePolicyEntry('privacy-policy', pdfFile),
-          makePolicyEntry('school-policies', pdfFile),
-        ],
-      }),
+  it('queries Contentful for the single policy with that slug', async () => {
+    const getEntries = vi.fn().mockResolvedValue({
+      items: [makePolicyEntry('school-policies', pdfFile)],
     })
+    const client = makeClient({ getEntries })
 
     const result = await getPolicy(client, 'school-policies')
+
+    expect(getEntries).toHaveBeenCalledWith({
+      content_type: 'policy',
+      'fields.slug': 'school-policies',
+      limit: 1,
+    })
     expect(result?.title).toBe('Title school-policies')
   })
 
@@ -476,5 +479,15 @@ describe('getPolicy', () => {
     })
 
     expect(await getPolicy(client, 'missing')).toBeUndefined()
+  })
+
+  it('returns undefined when the policy has no PDF', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [makePolicyEntry('draft', undefined)],
+      }),
+    })
+
+    expect(await getPolicy(client, 'draft')).toBeUndefined()
   })
 })

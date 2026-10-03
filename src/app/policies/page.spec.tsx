@@ -31,7 +31,7 @@ beforeEach(() => {
 })
 
 describe('PoliciesPage', () => {
-  it('lists each policy with its metadata, linking to the clean PDF URL', async () => {
+  it('lists each policy with its metadata, linking to its clean PDF URL in a new tab', async () => {
     vi.mocked(getPolicies).mockResolvedValue([makePolicy()])
 
     render(await PoliciesPage())
@@ -63,17 +63,6 @@ describe('PoliciesPage', () => {
     expect(
       screen.getByText('Version 1.0 · Published 3 October 2026'),
     ).toBeVisible()
-  })
-
-  it('hides policies that have no PDF', async () => {
-    vi.mocked(getPolicies).mockResolvedValue([
-      makePolicy(),
-      makePolicy({ slug: 'draft', title: 'Draft Policy', pdf: undefined }),
-    ])
-
-    render(await PoliciesPage())
-
-    expect(screen.queryByText('Draft Policy')).not.toBeInTheDocument()
   })
 
   it('renders the site footer', async () => {

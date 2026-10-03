@@ -6,8 +6,11 @@ const POLICIES = [
   { slug: 'staff-privacy-policy', title: /^Staff Privacy Notice/ },
 ] as const
 
+const isDocumentRequest = (url: string): boolean =>
+  /^\/policies\/.+|\.pdf$/.test(new URL(url).pathname)
+
 test.describe('Policies', () => {
-  test('the index lists every policy, linking to its PDF URL', async ({
+  test('the index links each policy to its clean PDF URL in a new tab', async ({
     page,
   }) => {
     await page.goto('/policies')
@@ -18,11 +21,29 @@ test.describe('Policies', () => {
 
     const main = page.getByRole('main')
     for (const policy of POLICIES) {
-      await expect(
-        main.getByRole('link', { name: policy.title }),
-      ).toHaveAttribute('href', `/policies/${policy.slug}`)
+      const link = main.getByRole('link', { name: policy.title })
+      await expect(link).toHaveAttribute('href', `/policies/${policy.slug}`)
+      await expect(link).toHaveAttribute('target', '_blank')
     }
+    await expect(main.locator('a[href*="ctfassets.net"]')).toHaveCount(0)
   })
+
+  for (const path of ['/', '/policies', '/linktree']) {
+    test(`${path} does not download any policy document on load`, async ({
+      page,
+    }) => {
+      const documentRequests: string[] = []
+      page.on('request', (req) => {
+        if (isDocumentRequest(req.url())) documentRequests.push(req.url())
+      })
+
+      await page.goto(path)
+      await page.mouse.wheel(0, 100000)
+      await page.waitForLoadState('networkidle')
+
+      expect(documentRequests).toEqual([])
+    })
+  }
 
   for (const policy of POLICIES) {
     test(`/policies/${policy.slug} serves the original PDF inline`, async ({
@@ -45,60 +66,42 @@ test.describe('Policies', () => {
   })
 
   for (const source of ['/privacy', '/privacy-notice', '/privacy-policy']) {
-    test(`${source} permanently redirects to the privacy notice`, async ({
+    test(`${source} permanently redirects to the policies page`, async ({
       request,
     }) => {
       const res = await request.get(source, { maxRedirects: 0 })
 
       expect(res.status()).toBe(308)
-      expect(res.headers()['location']).toBe('/policies/privacy-policy')
+      expect(res.headers()['location']).toBe('/policies')
     })
   }
 
-  test('/policies/school-policy redirects to the school policies', async ({
-    request,
-  }) => {
-    const res = await request.get('/policies/school-policy', {
-      maxRedirects: 0,
-    })
-
-    expect(res.status()).toBe(308)
-    expect(res.headers()['location']).toBe('/policies/school-policies')
-  })
-
-  test('the homepage links to the policies from the footer, enrolment and contact form', async ({
+  test('the homepage links to the policies page in a new tab from the footer, enrolment and contact form', async ({
     page,
   }) => {
     await page.goto('/')
 
-    const footerNav = page
-      .locator('footer')
-      .getByRole('navigation', { name: 'Policies' })
-    await expect(
-      footerNav.getByRole('link', { name: 'School Policies' }),
-    ).toHaveAttribute('href', '/policies')
-    await expect(
-      footerNav.getByRole('link', { name: 'Privacy Notice' }),
-    ).toHaveAttribute('href', '/policies/privacy-policy')
-
-    await expect(
-      page.locator('#enrolment').getByRole('link', { name: 'Privacy Notice' }),
-    ).toHaveAttribute('href', '/policies/privacy-policy')
-    await expect(
+    const links = [
+      page
+        .locator('footer')
+        .getByRole('navigation', { name: 'Policies' })
+        .getByRole('link', { name: 'Policies & Privacy' }),
+      page.locator('#enrolment').getByRole('link', {
+        name: 'School Policies and Privacy Notice',
+      }),
       page
         .locator('form[name="contact-us-form"]')
         .getByRole('link', { name: 'Privacy Notice' }),
-    ).toHaveAttribute('href', '/policies/privacy-policy')
+    ]
+    for (const link of links) {
+      await expect(link).toHaveAttribute('href', '/policies')
+      await expect(link).toHaveAttribute('target', '_blank')
+    }
   })
 
-  test('the sitemap includes the policies', async ({ request }) => {
+  test('the sitemap includes the policies page', async ({ request }) => {
     const body = await (await request.get('/sitemap.xml')).text()
 
     expect(body).toContain('https://www.hshb.org.uk/policies</loc>')
-    for (const policy of POLICIES) {
-      expect(body).toContain(
-        `https://www.hshb.org.uk/policies/${policy.slug}</loc>`,
-      )
-    }
   })
 })

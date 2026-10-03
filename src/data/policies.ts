@@ -1,28 +1,7 @@
 export const POLICIES_PATH = '/policies'
-
-// Slugs of the Contentful `policy` entries that the site links to directly.
-// The /policies index lists every published policy, so a new entry only
-// needs adding here if it should also be linked from the footer.
-export const SCHOOL_POLICIES_SLUG = 'school-policies'
-export const PRIVACY_POLICY_SLUG = 'privacy-policy'
-export const STAFF_PRIVACY_POLICY_SLUG = 'staff-privacy-policy'
+export const POLICIES_LINK_LABEL = 'Policies & Privacy'
 
 export const policyPath = (slug: string): string => `${POLICIES_PATH}/${slug}`
-
-export type PolicyLink = {
-  id: string
-  label: string
-  href: string
-}
-
-export const POLICY_LINKS: readonly PolicyLink[] = [
-  { id: 'policies', label: 'School Policies', href: POLICIES_PATH },
-  {
-    id: 'privacy-policy',
-    label: 'Privacy Notice',
-    href: policyPath(PRIVACY_POLICY_SLUG),
-  },
-] as const
 
 // Contentful Date fields without a time are `YYYY-MM-DD`, which `Date`
 // parses as UTC midnight — format in UTC so the day never shifts.

@@ -40,12 +40,10 @@ test.describe('Linktree page', () => {
       await expect(page.getByTitle(/instagram/i)).toBeVisible()
       await expect(page.getByTitle(/facebook/i)).toBeVisible()
       await expect(page.getByTitle(/follow us on x/i)).toBeVisible()
-      const policies = page.getByRole('navigation', { name: 'Policies' })
       await expect(
-        policies.getByRole('link', { name: 'School Policies' }),
-      ).toBeVisible()
-      await expect(
-        policies.getByRole('link', { name: 'Privacy Notice' }),
+        page
+          .getByRole('navigation', { name: 'Policies' })
+          .getByRole('link', { name: 'Policies & Privacy' }),
       ).toBeVisible()
 
       await assertNoScroll(page)

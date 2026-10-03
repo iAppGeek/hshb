@@ -19,7 +19,7 @@ import logo from '@/images/logo.png'
 import booksIllustration from '@/images/resources/books.png'
 import { sendEvent } from '@/data/events'
 import { buildContactMailto, LINKS, SOCIAL_LINKS } from '@/data/linktree'
-import { POLICY_LINKS } from '@/data/policies'
+import { POLICIES_LINK_LABEL, POLICIES_PATH } from '@/data/policies'
 
 const SOCIAL_ICONS: Record<string, string> = {
   'dojo-parent-login': classdojoIcon,
@@ -233,16 +233,15 @@ export const LinkTree = ({ staff, staffEmail }: LinkTreeProps) => {
           aria-label="Policies"
           className="relative z-10 flex justify-center gap-4 px-6 pb-3 text-[11px] text-white/80"
         >
-          {POLICY_LINKS.map((link) => (
-            <Link
-              key={link.id}
-              href={link.href}
-              className="underline-offset-2 hover:text-white hover:underline"
-              onClick={() => trackClick(link.id)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <a
+            href={POLICIES_PATH}
+            target="_blank"
+            rel="noopener"
+            className="underline-offset-2 hover:text-white hover:underline"
+            onClick={() => trackClick('policies')}
+          >
+            {POLICIES_LINK_LABEL}
+          </a>
         </nav>
       </div>
     </main>
