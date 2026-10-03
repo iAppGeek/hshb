@@ -9,6 +9,7 @@ vi.mock('@/images/resources/books.png', () => ({ default: '/books.png' }))
 vi.mock('@/images/icons/twitter.svg', () => ({ default: '/twitter.svg' }))
 vi.mock('@/images/icons/facebook.svg', () => ({ default: '/facebook.svg' }))
 vi.mock('@/images/icons/instagram.svg', () => ({ default: '/instagram.svg' }))
+vi.mock('@/images/icons/whatsapp.svg', () => ({ default: '/whatsapp.svg' }))
 vi.mock('@/images/icons/classdojo-icon.svg', () => ({
   default: '/classdojo.svg',
 }))

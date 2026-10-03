@@ -10,6 +10,7 @@ const LINK_NAMES = [
   /visit website/i,
   /contact us/i,
   /register student/i,
+  /join whatsapp community/i,
   /classdojo family registration/i,
 ] as const
 
@@ -39,6 +40,11 @@ test.describe('Linktree page', () => {
       await expect(page.getByTitle(/instagram/i)).toBeVisible()
       await expect(page.getByTitle(/facebook/i)).toBeVisible()
       await expect(page.getByTitle(/follow us on x/i)).toBeVisible()
+      await expect(
+        page
+          .getByRole('navigation', { name: 'Policies' })
+          .getByRole('link', { name: 'Policies & Privacy' }),
+      ).toBeVisible()
 
       await assertNoScroll(page)
     })

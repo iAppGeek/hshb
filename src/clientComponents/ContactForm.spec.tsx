@@ -18,6 +18,13 @@ afterEach(() => {
 })
 
 describe('ContactForm', () => {
+  it('links to the policies page in a new tab next to the submit button', () => {
+    render(<ContactForm />)
+    const link = screen.getByRole('link', { name: 'Privacy Notice' })
+    expect(link).toHaveAttribute('href', '/policies')
+    expect(link).toHaveAttribute('target', '_blank')
+  })
+
   it('renders all form fields', () => {
     render(<ContactForm />)
     expect(screen.getByLabelText('First name')).toBeTruthy()

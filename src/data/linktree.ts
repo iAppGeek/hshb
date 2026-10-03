@@ -43,7 +43,8 @@ export type LinktreeLink = {
 
 // Order matches the requested display order: Visit Website, Contact Us
 // (rendered separately in LinkTree.tsx since its href is built at runtime
-// from the staff email), Register Student, ClassDojo Family Registration.
+// from the staff email), Register Student, Join WhatsApp Community,
+// ClassDojo Family Registration.
 export const LINKS: readonly LinktreeLink[] = [
   {
     id: 'homepage',
@@ -55,6 +56,12 @@ export const LINKS: readonly LinktreeLink[] = [
     id: 'registration',
     label: 'Register Student',
     href: 'https://portal.hshb.org.uk/register',
+    external: true,
+  },
+  {
+    id: 'whatsapp-community',
+    label: 'Join WhatsApp Community',
+    href: 'https://chat.whatsapp.com/KTqGHi2hQVx5Uuwbiw2bc2',
     external: true,
   },
   {

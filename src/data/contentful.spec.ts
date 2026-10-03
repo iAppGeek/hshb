@@ -10,6 +10,8 @@ import {
   getAccordion,
   getTestimonials,
   getHeroVideo,
+  getPolicies,
+  getPolicy,
 } from './contentful'
 
 const makeClient = (overrides: Partial<Record<string, unknown>> = {}) =>
@@ -353,5 +355,139 @@ describe('getHeroVideo', () => {
 
     const result = await getHeroVideo(client)
     expect(result).toBeUndefined()
+  })
+})
+
+// ─── getPolicies / getPolicy ──────────────────────────────────────────────────
+
+const makePolicyEntry = (
+  slug: string,
+  file: Record<string, unknown> | undefined,
+): Record<string, unknown> => ({
+  fields: {
+    slug,
+    title: `Title ${slug}`,
+    summary: `Summary ${slug}`,
+    version: '1.0',
+    publishDate: '2026-10-03',
+    pdf: file ? { sys: { id: `asset-${slug}` }, fields: { file } } : undefined,
+  },
+})
+
+const pdfFile = {
+  url: '//assets.ctfassets.net/space/id/hash/policy.pdf',
+  fileName: 'policy.pdf',
+  contentType: 'application/pdf',
+  details: { size: 1234 },
+}
+
+describe('getPolicies', () => {
+  it('maps policy entries, ordered by title, with their Contentful PDF URL', async () => {
+    const getEntries = vi.fn().mockResolvedValue({
+      items: [makePolicyEntry('privacy-policy', pdfFile)],
+    })
+    const client = makeClient({ getEntries })
+
+    const result = await getPolicies(client)
+
+    expect(getEntries).toHaveBeenCalledWith({
+      content_type: 'policy',
+      order: ['fields.title'],
+    })
+    expect(result).toEqual([
+      {
+        slug: 'privacy-policy',
+        title: 'Title privacy-policy',
+        summary: 'Summary privacy-policy',
+        version: '1.0',
+        publishDate: '2026-10-03',
+        pdf: {
+          url: 'https://assets.ctfassets.net/space/id/hash/policy.pdf',
+          fileName: 'policy.pdf',
+          size: 1234,
+        },
+      },
+    ])
+  })
+
+  it('leaves out a policy whose asset is unresolved', async () => {
+    const entry = makePolicyEntry('a', undefined)
+    ;(entry.fields as Record<string, unknown>).pdf = {
+      sys: { type: 'Link', linkType: 'Asset', id: 'x' },
+    }
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [entry, makePolicyEntry('b', pdfFile)],
+      }),
+    })
+
+    const result = await getPolicies(client)
+    expect(result.map((p) => p.slug)).toEqual(['b'])
+  })
+
+  it('leaves out a policy whose asset is not a PDF', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [makePolicyEntry('a', { ...pdfFile, contentType: 'image/png' })],
+      }),
+    })
+
+    expect(await getPolicies(client)).toEqual([])
+  })
+
+  it('falls back to a default file name and unknown size', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [
+          makePolicyEntry('a', {
+            url: pdfFile.url,
+            contentType: 'application/pdf',
+          }),
+        ],
+      }),
+    })
+
+    const [policy] = await getPolicies(client)
+    expect(policy.pdf).toEqual({
+      url: 'https://assets.ctfassets.net/space/id/hash/policy.pdf',
+      fileName: 'policy.pdf',
+      size: undefined,
+    })
+  })
+})
+
+describe('getPolicy', () => {
+  it('queries Contentful for the single policy with that slug', async () => {
+    const getEntries = vi.fn().mockResolvedValue({
+      items: [makePolicyEntry('school-policies', pdfFile)],
+    })
+    const client = makeClient({ getEntries })
+
+    const result = await getPolicy(client, 'school-policies')
+
+    expect(getEntries).toHaveBeenCalledWith({
+      content_type: 'policy',
+      'fields.slug': 'school-policies',
+      limit: 1,
+    })
+    expect(result?.title).toBe('Title school-policies')
+  })
+
+  it('returns undefined for an unknown slug', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({ items: [] }),
+    })
+
+    expect(await getPolicy(client, 'missing')).toBeUndefined()
+  })
+
+  it('returns undefined when the policy has no PDF', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [makePolicyEntry('draft', undefined)],
+      }),
+    })
+
+    expect(await getPolicy(client, 'draft')).toBeUndefined()
   })
 })

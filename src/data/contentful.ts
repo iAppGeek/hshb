@@ -11,6 +11,7 @@ import type {
   TypeAccordionSkeleton,
   TypeEventsSkeleton,
   TypePeopleSkeleton,
+  TypePolicySkeleton,
   TypeQuotesSkeleton,
   TypeTestimonialsSkeleton,
   TypeTextSkeleton,
@@ -178,4 +179,79 @@ export const getHeroVideo = async (
 ): Promise<string | undefined> => {
   const entry = await client.getAsset('4thhwbtIQVSSwI1LDbONsJ')
   return entry.fields.file?.url
+}
+
+export type PolicyDocument = {
+  url: string
+  fileName: string
+  size: number | undefined
+}
+export type Policy = {
+  slug: string
+  title: string
+  summary: string
+  version: string
+  publishDate: string
+  pdf: PolicyDocument
+}
+
+const toPolicyDocument = (link: MaybeAsset): PolicyDocument | undefined => {
+  const file = resolveAsset(link)?.fields?.file
+  // The SDK types `file` as either a single-locale file or a locale map;
+  // this client is single-locale, so narrow to the plain file shape.
+  if (!file || typeof file.url !== 'string') return undefined
+  if (file.contentType !== 'application/pdf') return undefined
+  const details = file.details
+  return {
+    url: `https:${file.url}`,
+    fileName: typeof file.fileName === 'string' ? file.fileName : 'policy.pdf',
+    size:
+      details && 'size' in details && typeof details.size === 'number'
+        ? details.size
+        : undefined,
+  }
+}
+
+// Only policies with a published PDF are returned. Only the entry metadata
+// is fetched here — never the PDF itself.
+const toPolicies = (
+  entries: EntryCollection<TypePolicySkeleton, undefined>,
+): Policy[] =>
+  entries.items.flatMap((e) => {
+    const pdf = toPolicyDocument(e.fields.pdf)
+    if (!pdf) return []
+    return [
+      {
+        slug: e.fields.slug,
+        title: e.fields.title,
+        summary: e.fields.summary,
+        version: e.fields.version,
+        publishDate: e.fields.publishDate,
+        pdf,
+      },
+    ]
+  })
+
+export const getPolicies = async (
+  client: ContentfulClientApi<undefined>,
+): Promise<Policy[]> =>
+  toPolicies(
+    await client.getEntries<TypePolicySkeleton>({
+      content_type: 'policy',
+      order: ['fields.title'],
+    }),
+  )
+
+export const getPolicy = async (
+  client: ContentfulClientApi<undefined>,
+  slug: string,
+): Promise<Policy | undefined> => {
+  const [policy] = toPolicies(
+    await client.getEntries<TypePolicySkeleton>({
+      content_type: 'policy',
+      'fields.slug': slug,
+      limit: 1,
+    }),
+  )
+  return policy
 }
