@@ -1,12 +1,9 @@
 'use client'
 
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from '@headlessui/react'
-import { useEffect, useRef } from 'react'
+import { Transition } from '@headlessui/react'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
+
+import { useAccordion } from '@/clientComponents/AccordionGroup'
 
 type Props = {
   id: string
@@ -14,35 +11,25 @@ type Props = {
   children: React.ReactNode
 }
 
-// Opens itself when the URL hash matches its id, so items can be linked to
-// directly (e.g. /#operating-hours-term-dates).
+// One item in an AccordionGroup, which decides whether it is open.
 export const AccordionItem = ({
   id,
   title,
   children,
 }: Props): React.JSX.Element => {
-  const itemRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const openIfTargeted = (): void => {
-      const button = buttonRef.current
-      if (!button || window.location.hash !== `#${id}`) return
-
-      if (button.getAttribute('aria-expanded') !== 'true') button.click()
-      itemRef.current?.scrollIntoView({ block: 'start' })
-    }
-
-    openIfTargeted()
-    window.addEventListener('hashchange', openIfTargeted)
-    return () => window.removeEventListener('hashchange', openIfTargeted)
-  }, [id])
+  const { openId, toggle } = useAccordion()
+  const isOpen = openId === id
+  const panelId = `${id}-panel`
 
   return (
-    <Disclosure as="div" id={id} ref={itemRef} className="scroll-mt-20 pt-6">
+    <div id={id} className="scroll-mt-20 pt-6">
       <dt>
-        <DisclosureButton
-          ref={buttonRef}
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? panelId : undefined}
+          data-open={isOpen ? '' : undefined}
+          onClick={(): void => toggle(id)}
           className="group flex w-full items-start justify-between text-left text-gray-900"
         >
           <span className="text-base leading-7 font-semibold">{title}</span>
@@ -56,15 +43,16 @@ export const AccordionItem = ({
               className="h-6 w-6 [.group:not([data-open])_&]:hidden"
             />
           </span>
-        </DisclosureButton>
+        </button>
       </dt>
-      <DisclosurePanel
-        as="dd"
-        className="prose mt-2 origin-top overflow-y-auto pr-12 transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0"
-        transition
-      >
-        {children}
-      </DisclosurePanel>
-    </Disclosure>
+      <Transition show={isOpen}>
+        <dd
+          id={panelId}
+          className="prose mt-2 origin-top overflow-y-auto pr-12 transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0"
+        >
+          {children}
+        </dd>
+      </Transition>
+    </div>
   )
 }

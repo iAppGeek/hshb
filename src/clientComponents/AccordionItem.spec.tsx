@@ -1,121 +1,73 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
 
+import { AccordionGroup } from './AccordionGroup'
 import { AccordionItem } from './AccordionItem'
 
-const renderItem = (): void => {
+const renderItems = (): ReturnType<typeof render> =>
   render(
-    <dl>
-      <AccordionItem id="term-dates" title="Term Dates">
+    <AccordionGroup ids={['faq-hours', 'faq-term-dates']}>
+      <AccordionItem id="faq-hours" title="Operating Hours">
+        <p>Saturday 9:30 to 13:00</p>
+      </AccordionItem>
+      <AccordionItem id="faq-term-dates" title="Term Dates">
         <p>Autumn term starts in September</p>
       </AccordionItem>
-    </dl>,
+    </AccordionGroup>,
   )
-}
 
-const setHash = (hash: string): void => {
-  window.history.replaceState(null, '', hash ? `/${hash}` : '/')
-}
+const button = (name: string): HTMLElement =>
+  screen.getByRole('button', { name })
 
-describe('AccordionItem', () => {
-  const scrollIntoView = vi.fn()
+describe('AccordionItem', (): void => {
+  it('renders its title closed by default with no panel', (): void => {
+    renderItems()
 
-  beforeEach(() => {
-    // jsdom does not implement scrollIntoView
-    Element.prototype.scrollIntoView = scrollIntoView
-  })
-
-  afterEach(() => {
-    setHash('')
-    scrollIntoView.mockReset()
-  })
-
-  it('renders the title closed by default', () => {
-    renderItem()
-
-    expect(screen.getByRole('button', { name: 'Term Dates' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    )
+    expect(button('Term Dates')).toHaveAttribute('aria-expanded', 'false')
+    expect(button('Term Dates')).not.toHaveAttribute('aria-controls')
     expect(
       screen.queryByText('Autumn term starts in September'),
     ).not.toBeInTheDocument()
   })
 
-  it('exposes its id so it can be targeted by a URL hash', () => {
-    const { container } = render(
-      <AccordionItem id="term-dates" title="Term Dates">
-        body
-      </AccordionItem>,
-    )
+  it('exposes its id so it can be targeted by a URL hash', (): void => {
+    const { container } = renderItems()
 
-    expect(container.querySelector('#term-dates')).not.toBeNull()
+    expect(container.querySelector('[id="faq-term-dates"]')).not.toBeNull()
   })
 
-  it('toggles open when the title is clicked', () => {
-    renderItem()
+  it('opens when its title is clicked and links the button to the panel', (): void => {
+    renderItems()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Term Dates' }))
+    fireEvent.click(button('Term Dates'))
 
-    expect(screen.getByRole('button', { name: 'Term Dates' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
+    expect(button('Term Dates')).toHaveAttribute('aria-expanded', 'true')
+    expect(button('Term Dates')).toHaveAttribute('data-open')
+    expect(button('Term Dates')).toHaveAttribute(
+      'aria-controls',
+      'faq-term-dates-panel',
     )
     expect(
-      screen.getByText('Autumn term starts in September'),
-    ).toBeInTheDocument()
+      screen.getByText('Autumn term starts in September').closest('dd'),
+    ).toHaveAttribute('id', 'faq-term-dates-panel')
   })
 
-  it('opens and scrolls into view when the page loads with a matching hash', () => {
-    setHash('#term-dates')
+  it('closes when its title is clicked again', (): void => {
+    renderItems()
 
-    renderItem()
+    fireEvent.click(button('Term Dates'))
+    fireEvent.click(button('Term Dates'))
 
-    expect(screen.getByRole('button', { name: 'Term Dates' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    )
-    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start' })
+    expect(button('Term Dates')).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('stays closed when the hash targets something else', () => {
-    setHash('#contact')
+  it('closes the other item when opened', (): void => {
+    renderItems()
 
-    renderItem()
+    fireEvent.click(button('Operating Hours'))
+    fireEvent.click(button('Term Dates'))
 
-    expect(screen.getByRole('button', { name: 'Term Dates' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    )
-    expect(scrollIntoView).not.toHaveBeenCalled()
-  })
-
-  it('opens when the hash changes to match after load', () => {
-    renderItem()
-
-    act(() => {
-      setHash('#term-dates')
-      window.dispatchEvent(new HashChangeEvent('hashchange'))
-    })
-
-    expect(screen.getByRole('button', { name: 'Term Dates' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    )
-  })
-
-  it('does not close an already open item when the hash is re-applied', () => {
-    renderItem()
-    fireEvent.click(screen.getByRole('button', { name: 'Term Dates' }))
-
-    act(() => {
-      setHash('#term-dates')
-      window.dispatchEvent(new HashChangeEvent('hashchange'))
-    })
-
-    expect(screen.getByRole('button', { name: 'Term Dates' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    )
+    expect(button('Operating Hours')).toHaveAttribute('aria-expanded', 'false')
+    expect(button('Term Dates')).toHaveAttribute('aria-expanded', 'true')
   })
 })
