@@ -8,6 +8,7 @@ import {
   getCommunityDirectory,
   getEvents,
   getAccordion,
+  toAnchorIds,
   getTestimonials,
   getHeroVideo,
   getPolicies,
@@ -288,8 +289,108 @@ describe('getAccordion', () => {
     const result = await getAccordion(client, 'About Us')
 
     expect(result).toEqual([
-      { title: 'Question 1', body: 'Answer 1' },
-      { title: 'Question 2', body: 'Answer 2' },
+      { id: 'faq-question-1', title: 'Question 1', body: 'Answer 1' },
+      { id: 'faq-question-2', title: 'Question 2', body: 'Answer 2' },
+    ])
+  })
+
+  it('gives duplicate and blank titles unique, non-empty ids', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [
+          {
+            fields: {
+              entries: [
+                { fields: { title: 'Fees', body: 'A' } },
+                { fields: { title: 'Fees', body: 'B' } },
+                { fields: { title: '???', body: 'C' } },
+              ],
+            },
+          },
+        ],
+      }),
+    })
+
+    const result = await getAccordion(client, 'About Us')
+
+    expect(result.map((r) => r.id)).toEqual([
+      'faq-fees',
+      'faq-fees-2',
+      'faq-item-3',
+    ])
+  })
+
+  it('skips unresolved entry links', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({
+        items: [
+          {
+            fields: {
+              entries: [
+                { sys: { type: 'Link', linkType: 'Entry', id: 'missing' } },
+                { fields: { title: 'Term Dates', body: 'Dates' } },
+              ],
+            },
+          },
+        ],
+      }),
+    })
+
+    const result = await getAccordion(client, 'About Us')
+
+    expect(result).toEqual([
+      { id: 'faq-term-dates', title: 'Term Dates', body: 'Dates' },
+    ])
+  })
+
+  it('returns an empty list when the accordion is missing', async () => {
+    const client = makeClient({
+      getEntries: vi.fn().mockResolvedValue({ items: [] }),
+    })
+
+    expect(await getAccordion(client, 'Nope')).toEqual([])
+  })
+})
+
+// ─── toAnchorIds ──────────────────────────────────────────────────────────────
+
+describe('toAnchorIds', () => {
+  it('converts titles into URL-friendly anchor ids', () => {
+    expect(toAnchorIds(['Operating Hours', 'Term Dates'])).toEqual([
+      'operating-hours',
+      'term-dates',
+    ])
+  })
+
+  it('strips accents and leading/trailing punctuation', () => {
+    expect(toAnchorIds(['  Café — Fees?  '])).toEqual(['cafe-fees'])
+  })
+
+  it('applies the prefix to every id', () => {
+    expect(toAnchorIds(['Term Dates'], 'faq-')).toEqual(['faq-term-dates'])
+  })
+
+  it('suffixes duplicates with -2, -3, ...', () => {
+    expect(toAnchorIds(['Fees', 'Fees', 'fees!'])).toEqual([
+      'fees',
+      'fees-2',
+      'fees-3',
+    ])
+  })
+
+  it('does not collide with a title that already ends in a suffix', () => {
+    expect(toAnchorIds(['Fees', 'Fees 2', 'Fees'])).toEqual([
+      'fees',
+      'fees-2',
+      'fees-3',
+    ])
+  })
+
+  it('falls back to item-N when a title has no usable characters', () => {
+    expect(toAnchorIds(['Ελληνικά', '', '!!!'], 'faq-')).toEqual([
+      'faq-item-1',
+      'faq-item-2',
+      'faq-item-3',
     ])
   })
 })

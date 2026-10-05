@@ -128,7 +128,33 @@ export const getEvents = async (
   }))
 }
 
-export type AccordianData = { title: string; body: string }[]
+// Prefix for accordion anchor ids so they can't clash with page section ids
+// such as #enrolment or #contact.
+export const ACCORDION_ID_PREFIX = 'faq-'
+
+const slugify = (text: string): string =>
+  text
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+// Turns titles into URL-friendly anchor ids that are never empty (falling back
+// to item-N) and unique within the list (duplicates get -2, -3, ...).
+export const toAnchorIds = (titles: string[], prefix = ''): string[] => {
+  const used = new Set<string>()
+
+  return titles.map((title, index): string => {
+    const base = `${prefix}${slugify(title) || `item-${index + 1}`}`
+    let id = base
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`
+    used.add(id)
+    return id
+  })
+}
+
+export type AccordianData = { id: string; title: string; body: string }[]
 export const getAccordion = async (
   client: ContentfulClientApi<undefined>,
   name: string,
@@ -142,12 +168,20 @@ export const getAccordion = async (
   const entries = result.items[0]?.fields.entries
   if (!entries) return []
 
-  return entries
-    .filter(
-      (e): e is Entry<TypeAccordionEntrySkeleton, undefined, string> =>
-        'fields' in e,
-    )
-    .map((e) => ({ title: e.fields.title, body: e.fields.body }))
+  const resolved = entries.filter(
+    (e): e is Entry<TypeAccordionEntrySkeleton, undefined, string> =>
+      'fields' in e,
+  )
+  const ids = toAnchorIds(
+    resolved.map((e): string => e.fields.title),
+    ACCORDION_ID_PREFIX,
+  )
+
+  return resolved.map((e, index): AccordianData[number] => ({
+    id: ids[index],
+    title: e.fields.title,
+    body: e.fields.body,
+  }))
 }
 
 export type Author = {
