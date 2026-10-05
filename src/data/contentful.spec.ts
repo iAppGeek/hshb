@@ -8,6 +8,7 @@ import {
   getCommunityDirectory,
   getEvents,
   getAccordion,
+  toAnchorId,
   getTestimonials,
   getHeroVideo,
   getPolicies,
@@ -288,9 +289,23 @@ describe('getAccordion', () => {
     const result = await getAccordion(client, 'About Us')
 
     expect(result).toEqual([
-      { title: 'Question 1', body: 'Answer 1' },
-      { title: 'Question 2', body: 'Answer 2' },
+      { id: 'question-1', title: 'Question 1', body: 'Answer 1' },
+      { id: 'question-2', title: 'Question 2', body: 'Answer 2' },
     ])
+  })
+})
+
+// ─── toAnchorId ───────────────────────────────────────────────────────────────
+
+describe('toAnchorId', () => {
+  it('converts a title into a URL-friendly anchor id', () => {
+    expect(toAnchorId('Operating Hours & Term Dates')).toBe(
+      'operating-hours-term-dates',
+    )
+  })
+
+  it('strips accents and leading/trailing punctuation', () => {
+    expect(toAnchorId('  Café — Fees?  ')).toBe('cafe-fees')
   })
 })
 

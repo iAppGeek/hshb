@@ -128,7 +128,15 @@ export const getEvents = async (
   }))
 }
 
-export type AccordianData = { title: string; body: string }[]
+export const toAnchorId = (text: string): string =>
+  text
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+export type AccordianData = { id: string; title: string; body: string }[]
 export const getAccordion = async (
   client: ContentfulClientApi<undefined>,
   name: string,
@@ -147,7 +155,11 @@ export const getAccordion = async (
       (e): e is Entry<TypeAccordionEntrySkeleton, undefined, string> =>
         'fields' in e,
     )
-    .map((e) => ({ title: e.fields.title, body: e.fields.body }))
+    .map((e) => ({
+      id: toAnchorId(e.fields.title),
+      title: e.fields.title,
+      body: e.fields.body,
+    }))
 }
 
 export type Author = {

@@ -1,11 +1,6 @@
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from '@headlessui/react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 
+import { AccordionItem } from '@/clientComponents/AccordionItem'
 import { AccordianData } from '@/data/contentful'
 import { mdxGridComponents, mdxOptions } from '@/data/mdxConfig'
 
@@ -20,36 +15,13 @@ export const AboutUsAcordian = (props: Props) => {
           </h2>
           <dl className="mt-6 space-y-3 divide-y divide-gray-900/10">
             {props.data.map((d) => (
-              <Disclosure key={d.title} as="div" className="pt-6">
-                <dt>
-                  <DisclosureButton className="group flex w-full items-start justify-between text-left text-gray-900">
-                    <span className="text-base leading-7 font-semibold">
-                      {d.title}
-                    </span>
-                    <span className="ml-6 flex h-7 items-center">
-                      <PlusIcon
-                        aria-hidden="true"
-                        className="h-6 w-6 group-data-open:hidden"
-                      />
-                      <MinusIcon
-                        aria-hidden="true"
-                        className="h-6 w-6 [.group:not([data-open])_&]:hidden"
-                      />
-                    </span>
-                  </DisclosureButton>
-                </dt>
-                <DisclosurePanel
-                  as="dd"
-                  className="prose mt-2 origin-top overflow-y-auto pr-12 transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0"
-                  transition
-                >
-                  <MDXRemote
-                    options={mdxOptions}
-                    source={d.body}
-                    components={mdxGridComponents}
-                  />
-                </DisclosurePanel>
-              </Disclosure>
+              <AccordionItem key={d.id} id={d.id} title={d.title}>
+                <MDXRemote
+                  options={mdxOptions}
+                  source={d.body}
+                  components={mdxGridComponents}
+                />
+              </AccordionItem>
             ))}
           </dl>
         </div>
