@@ -18,17 +18,15 @@ export const AboutUsAcordian = (props: Props): React.JSX.Element => {
             ids={props.data.map((d): string => d.id)}
             className="mt-6 space-y-3 divide-y divide-gray-900/10"
           >
-            {props.data.map(
-              (d): React.JSX.Element => (
-                <AccordionItem key={d.id} id={d.id} title={d.title}>
-                  <MDXRemote
-                    options={mdxOptions}
-                    source={d.body}
-                    components={mdxGridComponents}
-                  />
-                </AccordionItem>
-              ),
-            )}
+            {props.data.map((d): React.JSX.Element => (
+              <AccordionItem key={d.id} id={d.id} title={d.title}>
+                <MDXRemote
+                  options={mdxOptions}
+                  source={d.body}
+                  components={mdxGridComponents}
+                />
+              </AccordionItem>
+            ))}
           </AccordionGroup>
         </div>
       </div>

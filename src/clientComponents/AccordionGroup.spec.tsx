@@ -15,13 +15,11 @@ const renderGroup = ({ strict = false }: { strict?: boolean } = {}): ReturnType<
 > => {
   const group = (
     <AccordionGroup ids={ITEMS.map((i): string => i.id)}>
-      {ITEMS.map(
-        (i): React.JSX.Element => (
-          <AccordionItem key={i.id} id={i.id} title={i.title}>
-            <p>{i.title} body</p>
-          </AccordionItem>
-        ),
-      )}
+      {ITEMS.map((i): React.JSX.Element => (
+        <AccordionItem key={i.id} id={i.id} title={i.title}>
+          <p>{i.title} body</p>
+        </AccordionItem>
+      ))}
     </AccordionGroup>
   )
   return render(strict ? <StrictMode>{group}</StrictMode> : group)
