@@ -38,7 +38,7 @@ const jsonLd = {
   email: 'info@hshb.org.uk',
   foundingDate: '1977',
   description:
-    'The Hellenic School of High Barnet (HSHB) is an independent Greek language school in Cockfosters, North London, founded in 1977. Over 150 children attend from Nursery through to A Level, learning modern Greek language, history, and culture. The school prepares students for GCSE and A Level Greek examinations.',
+    'The Hellenic School of High Barnet (HSHB) is an independent Greek language school in Cockfosters, North London, founded in 1977. Over 120 children attend from Nursery through to A Level, learning modern Greek language, history, and culture. The school prepares students for GCSE and A Level Greek examinations.',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'East Barnet School, 5 Chestnut Grove',
