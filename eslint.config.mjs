@@ -2,7 +2,6 @@ import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
 import nextTypescript from 'eslint-config-next/typescript'
-import reactCompiler from 'eslint-plugin-react-compiler'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -14,10 +13,6 @@ const eslintConfig = [
   ...nextCoreWebVitals,
   ...nextTypescript,
   ...compat.extends('plugin:prettier/recommended'),
-  {
-    plugins: { 'react-compiler': reactCompiler },
-    rules: { 'react-compiler/react-compiler': 'error' },
-  },
   {
     files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.e2e.ts'],
     rules: {

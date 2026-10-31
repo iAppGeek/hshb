@@ -1,0 +1,11 @@
+{
+  "name": "minimatch-compat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Exposes minimatch@11 through the callable default-export API of minimatch@3-9, so unmaintained ESLint plugins get the patched matcher (GHSA-g3hv-75wg-m249).",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "minimatch-patched": "npm:minimatch@11.0.3"
+  }
+}
