@@ -59,7 +59,7 @@
     "autoprefixer": "10.6.2",
     "cf-content-types-generator": "3.0.1",
     "dotenv-cli": "11.1.0",
-    "eslint": "9.39.4",
+    "eslint": "10.14.0",
     "eslint-config-next": "16.4.3",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
